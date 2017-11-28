@@ -3,7 +3,7 @@ services:
   tendermint_init:
     image: tendermint/tendermint:0.12.0
     volumes:
-      - ./.data/tendermint:/tendermint
+      - tendermint:/tendermint
     entrypoint:
       - tendermint
       - init
@@ -11,19 +11,20 @@ services:
   tendermint:
     image: tendermint/tendermint:0.12.0
     volumes:
-      - ./.data/tendermint:/tendermint
+      - tendermint:/tendermint
     ports:
       - 46656:46656
       - 46657:46657
     depends_on:
       - tendermint_init
       # only needed with basecoin
-      - basecoin
+      # - basecoin
     entrypoint:
       - tendermint
       - node
+      - --consensus.create_empty_blocks=false
       # only needed with basecoin
-      - --proxy_app=tcp://basecoin:46658
+      - --proxy_app=dummy
 
   app:
     build: app
@@ -33,15 +34,17 @@ services:
       - ./.data/app:/app
     depends_on:
       - tendermint
+volumes:
+  tendermint:
 
-  basecoin:
-    image: tendermint/basecoin
-    volumes:
-      - ./.data/basecoin:/basecoin
-    entrypoint:
-      - basecoin
-      - start
-      - --without-tendermint
+  # basecoin:
+  #   image: tendermint/basecoin
+  #   volumes:
+  #     - ./.data/basecoin:/basecoin
+  #   entrypoint:
+  #     - basecoin
+  #     - start
+  #     - --without-tendermint
   # ethermint:
   #   image: tendermint/ethermint
   #   environment:
