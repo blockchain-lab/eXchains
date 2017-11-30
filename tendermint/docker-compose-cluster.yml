@@ -1,0 +1,91 @@
+version: '3.0'
+services:
+  app0:
+    build: app
+  tendermint0:
+    image: tendermint/tendermint:0.12.0
+    volumes:
+      - ./.data/cluster/mach0:/tendermint
+      - tendermint0:/tendermint/data
+    depends_on:
+      - app0
+    ports:
+      - 46656:46656
+      - 46657:46657
+    entrypoint:
+      - tendermint
+      - node
+      - --p2p.seeds=tendermint1:46656
+      - --consensus.create_empty_blocks=false
+      - --proxy_app=app0:46658
+
+  app1:
+    build: app
+  tendermint1:
+    image: tendermint/tendermint:0.12.0
+    volumes:
+      - ./.data/cluster/mach1:/tendermint
+      - tendermint1:/tendermint/data
+    depends_on:
+      - app1
+    entrypoint:
+      - tendermint
+      - node
+      - --p2p.seeds=tendermint2:46656
+      - --consensus.create_empty_blocks=false
+      - --proxy_app=app1:46658
+
+  app2:
+    build: app
+  tendermint2:
+    image: tendermint/tendermint:0.12.0
+    volumes:
+      - ./.data/cluster/mach2:/tendermint
+      - tendermint2:/tendermint/data
+    depends_on:
+      - app0
+    entrypoint:
+      - tendermint
+      - node
+      - --p2p.seeds=tendermint3:46656
+      - --consensus.create_empty_blocks=false
+      - --proxy_app=app2:46658
+
+  app3:
+    build: app
+  tendermint3:
+    image: tendermint/tendermint:0.12.0
+    volumes:
+      - ./.data/cluster/mach3:/tendermint
+      - tendermint3:/tendermint/data
+    depends_on:
+      - app0
+    entrypoint:
+      - tendermint
+      - node
+      - --p2p.seeds=tendermint4:46656
+      - --consensus.create_empty_blocks=false
+      - --proxy_app=app3:46658
+
+  app4:
+    build: app
+  tendermint4:
+    image: tendermint/tendermint:0.12.0
+    volumes:
+      - ./.data/cluster/mach4:/tendermint
+      - tendermint4:/tendermint/data
+    depends_on:
+      - app0
+    entrypoint:
+      - tendermint
+      - node
+      - --p2p.seeds=tendermint0:46656
+      - --consensus.create_empty_blocks=false
+      - --proxy_app=app4:46658
+      
+volumes:
+  tendermint0:
+  tendermint1:
+  tendermint2:
+  tendermint3:
+  tendermint4:
