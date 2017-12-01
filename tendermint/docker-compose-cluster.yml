@@ -17,7 +17,7 @@ services:
       - node
       - --p2p.seeds=tendermint1:46656
       - --consensus.create_empty_blocks=false
-      - --proxy_app=app0:46658
+      - --proxy_app=dummy
 
   app1:
     build: app
@@ -33,7 +33,7 @@ services:
       - node
       - --p2p.seeds=tendermint2:46656
       - --consensus.create_empty_blocks=false
-      - --proxy_app=app1:46658
+      - --proxy_app=dummy
 
   app2:
     build: app
@@ -49,7 +49,7 @@ services:
       - node
       - --p2p.seeds=tendermint3:46656
       - --consensus.create_empty_blocks=false
-      - --proxy_app=app2:46658
+      - --proxy_app=dummy
 
   app3:
     build: app
@@ -65,7 +65,7 @@ services:
       - node
       - --p2p.seeds=tendermint4:46656
       - --consensus.create_empty_blocks=false
-      - --proxy_app=app3:46658
+      - --proxy_app=dummy
 
   app4:
     build: app
@@ -81,7 +81,7 @@ services:
       - node
       - --p2p.seeds=tendermint0:46656
       - --consensus.create_empty_blocks=false
-      - --proxy_app=app4:46658
+      - --proxy_app=dummy
       
 volumes:
   tendermint0:
