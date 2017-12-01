@@ -3,13 +3,30 @@ import java.util.Map;
 
 
 public class Transaction {
-    public enum Type {
+    public enum MessageType {
         CLIENTREPORT
     }
 
-    private Type messageType;
+    private Integer uuid;
+    private Double production;
+    private Double consumption;
+    private HashMap<String, Double> predictedCons;
+    private HashMap<String, Double> predictedProd;
+    private HashMap<Double, Double> offeredFlexibility;
+    private MessageType messageType;
 
-    public Type getMessageType() {
+    public Transaction(MessageType messageType, Integer uuid, Double production, Double consumption, HashMap<String, Double> predictedCons, HashMap<String, Double> predictedProd, HashMap<Double, Double> offeredFlexibility) {
+        this.messageType = messageType;
+        this.uuid = uuid;
+        this.production = production;
+        this.consumption = consumption;
+        this.predictedCons = predictedCons;
+        this.predictedProd = predictedProd;
+        this.offeredFlexibility = offeredFlexibility;
+    }
+
+
+    public MessageType getMessageType() {
         return messageType;
     }
 
@@ -36,24 +53,5 @@ public class Transaction {
     public HashMap<Double, Double> getOfferedFlexibility() {
         return offeredFlexibility;
     }
-
-    private Integer uuid;
-    private Double production;
-    private Double consumption;
-    private HashMap<String, Double> predictedCons;
-    private HashMap<String, Double> predictedProd;
-    private HashMap<Double, Double> offeredFlexibility;
-
-
-    public Transaction(Type messageType, Integer uuid, Double production, Double consumption, HashMap<String, Double> predictedCons, HashMap<String, Double> predictedProd, HashMap<Double, Double> offeredFlexibility) {
-        messageType = messageType;
-        uuid = uuid;
-        production = production;
-        consumption = consumption;
-        predictedCons = predictedCons;
-        predictedProd = predictedProd;
-        offeredFlexibility = offeredFlexibility;
-    }
-
 
 }

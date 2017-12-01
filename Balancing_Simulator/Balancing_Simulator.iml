@@ -9,5 +9,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="opencsv-4.1" level="project" />
     <orderEntry type="library" name="common-lang3" level="project" />
+    <orderEntry type="library" name="gs-core-1.3" level="project" />
+    <orderEntry type="library" name="gs-ui-1.3" level="project" />
   </component>
 </module>

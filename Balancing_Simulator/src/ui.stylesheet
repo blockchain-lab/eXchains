@@ -1,0 +1,30 @@
+node.H {
+    fill-mode: plain;
+    fill-color: orange;
+	size: 20px;
+
+	stroke-mode: plain;
+    stroke-color: black;
+    stroke-width: 2px;
+
+    text-mode: normal;
+}
+
+edge {
+	shape: line;
+	fill-color: #222;
+	arrow-size: 3px, 2px;
+	text-alignment: center;
+	text-size: 20;
+	text-background-mode: rounded-box;
+	text-background-mode: rounded-box;
+	text-padding: 2px;
+}
+
+edge.active {
+	fill-color: #777;
+	shadow-mode: plain;
+	shadow-width: 3px;
+	shadow-color: red;
+	shadow-offset: 0px;
+}
