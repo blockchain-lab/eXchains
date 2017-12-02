@@ -1,16 +1,20 @@
 node.H {
-    fill-mode: plain;
-    fill-color: orange;
-	size: 20px;
-
-	stroke-mode: plain;
-    stroke-color: black;
-    stroke-width: 2px;
-
-    text-mode: normal;
+    size: 32px;
+    fill-mode: image-scaled;
+	fill-image: url('res/houshold.png');
+	shape: box;
 }
 
-edge {
+node.B {
+    size: 100px;
+    fill-mode: image-scaled;
+	fill-image: url('res/blockchain.png');
+	shape: box;
+	stroke-mode: plain;
+	stroke-color: #555;
+}
+
+edge.off {
 	shape: line;
 	fill-color: #222;
 	arrow-size: 3px, 2px;

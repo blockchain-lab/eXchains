@@ -16,9 +16,14 @@ public class Main {
     private static List<Household_Client> Households = new LinkedList<>();
     private static List<Blockchain> blockchains = new LinkedList<>();
 
-    public static final CyclicBarrier gate = new CyclicBarrier(56);
+    public static final int HousesPerCluster = 8;
+    public static final int NumberOfCusters= 5;
+
+    public static final CyclicBarrier gate = new CyclicBarrier(((HousesPerCluster+1)*NumberOfCusters)+1);
 
     public final static Graph graph = new SingleGraph("Balancing Simulator");
+
+
 
     public static void main(String[] args) {
 
@@ -30,16 +35,16 @@ public class Main {
         view.disableAutoLayout();
 
 
-        Blockchain blockchainL1 = new Blockchain(100, 0, null);
+        Blockchain blockchainL1 = new Blockchain(100, 1,-1, null);
         blockchainL1.start();
         blockchains.add(blockchainL1);
 
-        for (int i = 0; i < 5; i++) {
-            Blockchain blockchainL0 = new Blockchain(i, 100, blockchainL1);
+        for (int i = 0; i < NumberOfCusters; i++) {
+            Blockchain blockchainL0 = new Blockchain(i,0, 100, blockchainL1);
             blockchainL0.start();
             blockchains.add(blockchainL0);
 
-            for (int j = i*10; j < i*10+10; j++) {
+            for (int j = i*HousesPerCluster; j < (i+1)*HousesPerCluster; j++) {
                 Household_Client household = new Household_Client(j, i, blockchainL0);
                 household.start();
                 Households.add(household);

@@ -15,22 +15,25 @@ public class Blockchain extends Thread {
     Edge e = null;
     Blockchain Parent;
 
-    public Blockchain(int id, int ParentID, Blockchain parent){
+    public Blockchain(int id, int level, int ParentID, Blockchain parent){
         ID = id;
         Parent = parent;
         synchronized (Main.graph) {
             Node n = Main.graph.addNode("B" + ID);
-            if(parent != null){
-                n.setAttribute("xy", id*20+9.5, 30);
-                n.addAttribute("ui.label", "B" + ID);
-            }else{
-                n.setAttribute("xy", 50, 40);
-                n.addAttribute("ui.label", "B" + ID);
-            }
+            if(level == 0){
 
-            if(parent != null){
+                double x = (100/Main.NumberOfCusters)*(ID+0.38);
+
+                n.setAttribute("xy", x, 30);
+                n.addAttribute("ui.label", "B" + ID);
+                n.addAttribute("ui.class", "B");
+
                 Node BlockchainNode = Main.graph.getNode("B" + ParentID);
                 e = Main.graph.addEdge("BE" + ID, n, BlockchainNode);
+
+            }else{
+                n.setAttribute("xy", 47, 40);
+                n.addAttribute("ui.label", "B" + ID);
             }
         }
     }

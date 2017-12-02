@@ -26,10 +26,16 @@ public class Household_Client extends Thread{
             Node n = Main.graph.addNode("H" + ID);
             n.addAttribute("ui.label", "H" + ID);
             n.addAttribute("ui.class", "H");
-            n.setAttribute("xy", id*2, 20);
+
+            int totaalHouseholds = Main.HousesPerCluster * Main.NumberOfCusters;
+
+            double x = (id*90)/totaalHouseholds + (10/(Main.NumberOfCusters-1))*(id/Main.HousesPerCluster);
+
+            n.setAttribute("xy", x , 20);
 
             Node BlockchainNode = Main.graph.getNode("B" + ParentID);
             e = Main.graph.addEdge("HE" + ID, n, BlockchainNode);
+            e.addAttribute("ui.class", "off");
         }
     }
 
@@ -61,8 +67,7 @@ public class Household_Client extends Thread{
 
                 // Reading Records One by One in a String array
                 String[] nextRecord;
-                //skip first line in cvs
-                nextRecord = csvReader.readNext();
+
                 if((nextRecord = csvReader.readNext()) != null){
                     Double production = Double.parseDouble(nextRecord[4].replace(',', '.'));
                     Double consumption= Double.parseDouble(nextRecord[3].replace(',', '.'));
@@ -78,12 +83,9 @@ public class Household_Client extends Thread{
                     }
                     delay(800);
                     synchronized (Main.graph){
-                        e.addAttribute("ui.class", " ");
+                        e.addAttribute("ui.class", "off");
                     }
-
                 }
-
-
                 delay(5000);
             }
         } catch (IOException e) {
