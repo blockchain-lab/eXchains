@@ -2,17 +2,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class Transaction {
-    public enum Type {
-        CLIENTREPORT
-    }
-
-    private Type messageType;
-
-    public Type getMessageType() {
-        return messageType;
-    }
-
+public class ClientReport {
     public Integer getUuid() {
         return uuid;
     }
@@ -37,7 +27,11 @@ public class Transaction {
         return offeredFlexibility;
     }
 
+
+
+    private Integer receipient;
     private Integer uuid;
+    //Variables for CLIENTREPORT Messages
     private Double production;
     private Double consumption;
     private HashMap<String, Double> predictedCons;
@@ -45,8 +39,8 @@ public class Transaction {
     private HashMap<Double, Double> offeredFlexibility;
 
 
-    public Transaction(Type messageType, Integer uuid, Double production, Double consumption, HashMap<String, Double> predictedCons, HashMap<String, Double> predictedProd, HashMap<Double, Double> offeredFlexibility) {
-        messageType = messageType;
+
+    public ClientReport(Integer uuid, Double production, Double consumption, HashMap<String, Double> predictedCons, HashMap<String, Double> predictedProd, HashMap<Double, Double> offeredFlexibility) {
         uuid = uuid;
         production = production;
         consumption = consumption;
@@ -54,6 +48,4 @@ public class Transaction {
         predictedProd = predictedProd;
         offeredFlexibility = offeredFlexibility;
     }
-
-
 }
