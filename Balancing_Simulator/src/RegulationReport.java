@@ -17,10 +17,6 @@ public class RegulationReport {
         this.clusterProduction = clusterProduction;
     }
 
-    public Integer getReceipient() {
-        return receipient;
-    }
-
     public Integer getUuid() {
         return uuid;
     }
