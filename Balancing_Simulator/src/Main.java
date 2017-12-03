@@ -16,10 +16,14 @@ public class Main {
     private static List<Household_Client> Households = new LinkedList<>();
     private static List<Blockchain> blockchains = new LinkedList<>();
 
-    public static final int HousesPerCluster = 8;
-    public static final int NumberOfCusters= 5;
+    public static final int HousesPerCluster = 7;
+    public static final int NumberOfCusters = 3;
 
-    public static final CyclicBarrier gate = new CyclicBarrier(((HousesPerCluster+1)*NumberOfCusters)+1);
+    public static final int TimeSlotMin = 5;
+
+    public static final int simSpeed = 3;// time between each client send in seconds -1.5
+
+    public static final CyclicBarrier gate = new CyclicBarrier(((HousesPerCluster)*NumberOfCusters));
 
     public final static Graph graph = new SingleGraph("Balancing Simulator");
 

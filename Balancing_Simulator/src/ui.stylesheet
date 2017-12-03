@@ -3,7 +3,15 @@ node.H {
     fill-mode: image-scaled;
 	fill-image: url('res/houshold.png');
 	shape: box;
+	text-alignment: under;
+	text-color: white;
+	text-style: bold;
+	text-background-mode: rounded-box;
+	text-background-color: #222C;
+	text-padding: 5px, 4px;
+	text-offset: 0px, 7px;
 }
+
 
 node.B {
     size: 100px;
@@ -12,17 +20,20 @@ node.B {
 	shape: box;
 	stroke-mode: plain;
 	stroke-color: #555;
+    text-alignment: at-right;
+    text-color: white;
+    text-style: bold;
+    text-background-mode: rounded-box;
+    text-background-color: #222C;
+    text-padding: 5px, 4px;
+    text-offset: 10px, 0px;
 }
 
 edge.off {
 	shape: line;
 	fill-color: #222;
 	arrow-size: 3px, 2px;
-	text-alignment: center;
-	text-size: 20;
-	text-background-mode: rounded-box;
-	text-background-mode: rounded-box;
-	text-padding: 2px;
+	text-mode: hidden;
 }
 
 edge.active {
@@ -31,4 +42,10 @@ edge.active {
 	shadow-width: 3px;
 	shadow-color: red;
 	shadow-offset: 0px;
+	text-mode: normal;
+	text-alignment: along;
+    text-size: 15;
+    text-background-mode: rounded-box;
+    text-padding: 2px;
+    text-background-color: white;
 }

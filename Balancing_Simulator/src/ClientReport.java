@@ -2,10 +2,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class Transaction {
-    public enum MessageType {
-        CLIENTREPORT
-    }
+public class ClientReport {
 
     private Integer uuid;
     private Double production;
@@ -13,21 +10,14 @@ public class Transaction {
     private HashMap<String, Double> predictedCons;
     private HashMap<String, Double> predictedProd;
     private HashMap<Double, Double> offeredFlexibility;
-    private MessageType messageType;
 
-    public Transaction(MessageType messageType, Integer uuid, Double production, Double consumption, HashMap<String, Double> predictedCons, HashMap<String, Double> predictedProd, HashMap<Double, Double> offeredFlexibility) {
-        this.messageType = messageType;
+    public ClientReport( Integer uuid, Double production, Double consumption, HashMap<String, Double> predictedCons, HashMap<String, Double> predictedProd, HashMap<Double, Double> offeredFlexibility) {
         this.uuid = uuid;
         this.production = production;
         this.consumption = consumption;
         this.predictedCons = predictedCons;
         this.predictedProd = predictedProd;
         this.offeredFlexibility = offeredFlexibility;
-    }
-
-
-    public MessageType getMessageType() {
-        return messageType;
     }
 
     public Integer getUuid() {
