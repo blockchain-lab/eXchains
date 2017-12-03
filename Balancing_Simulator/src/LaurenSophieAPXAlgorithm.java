@@ -1,3 +1,5 @@
+import com.company.SortedUberArray;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -28,114 +30,44 @@ public class LaurenSophieAPXAlgorithm {
         return 1234.3;
     }
 
-
-
     public void Balance(){
         Double preImbalance = preImbalance();
         Double postImbalance = preImbalance;
         Double pricePoint = PricePoint(preImbalance);
 
-        //Probably split up to new function from here
-        Integer currentCheapestCons = Integer.MAX_VALUE;;
-        Integer currentCheapestProd = Integer.MAX_VALUE;;
-        Double currentCapacity = 0.0;
-        Double capacityPerClient;
+        SortedUberArray consumptionArray = new SortedUberArray();
+        SortedUberArray productionnArray = new SortedUberArray();
 
-        Double smallestCapacity = null;
-
-
+        //Select only the flexibility that meets the criteria (up or down, and below the max)
         if(preImbalance<0){ //Shortage detected
-            //Determine the cheapest solution for either
-            for (ClientReport currentReport:CR) { //For every client report, go find the smallest
+            for (ClientReport currentReport:CR) {
                 for (HashMap.Entry<Integer, Double> currentFlexibility: currentReport.getConsFlexibility().entrySet()){
-                    //shortage means we want decrease consumption, only count negative prices
-                    //And not more than we're willing to spent per kwh regulated
-                    if(currentFlexibility.getKey()<0 && currentFlexibility.getKey() >= -pricePoint ){
-                        if((-currentFlexibility.getKey()< currentCheapestCons)) {
-                            currentCheapestCons = -currentFlexibility.getKey();
-                        }
+                    if(currentFlexibility.getKey()<0 && currentFlexibility.getKey() >= -pricePoint){
+                        consumptionArray.addCapacity(currentReport.getUuid(),-currentFlexibility.getKey(),currentFlexibility.getValue());
                     }
                 }
                 for (HashMap.Entry<Integer, Double> currentFlexibility: currentReport.getProdFlexibility().entrySet()){
-                    //Shortage means increasing prod, only count keys for positive values
-                    //And not more than we're willing to spent per kwh regulated
-                    if(currentFlexibility.getKey()>0 && currentFlexibility.getKey() <= pricePoint ){
-                        if((currentFlexibility.getKey()< currentCheapestProd)) {
-                            currentCheapestProd = currentFlexibility.getKey();
-                        }
+                    if(currentFlexibility.getKey()>0 && currentFlexibility.getKey() <= pricePoint){
+                        productionnArray.addCapacity(currentReport.getUuid(),currentFlexibility.getKey(),currentFlexibility.getValue());
                     }
                 }
             }
-
-            smallestCapacity = Double.MAX_VALUE;
-
-            //If producing is cheaper (or the same price) first produce
-            if(currentCheapestProd <= currentCheapestCons){
-                int clientsThisRound=0;
-                //Get total capacity for cheapest option
-                for (ClientReport currentReport:CR) {
-                    if(currentReport.getProdFlexibility().containsKey(currentCheapestProd)){
-                        clientsThisRound++;
-                        currentCapacity += currentReport.getProdFlexibility().get(currentCheapestProd);
-                        if (currentReport.getProdFlexibility().get(currentCheapestProd)< smallestCapacity){
-                            smallestCapacity =  currentReport.getProdFlexibility().get(currentCheapestProd);
-                        }
+        }else{
+            for (ClientReport currentReport:CR) {
+                for (HashMap.Entry<Integer, Double> currentFlexibility: currentReport.getConsFlexibility().entrySet()){
+                    if(currentFlexibility.getKey()>0 && currentFlexibility.getKey() >= pricePoint){
+                        consumptionArray.addCapacity(currentReport.getUuid(),currentFlexibility.getKey(),currentFlexibility.getValue());
                     }
                 }
-
-                //Only utilize the capacity we actually need
-                if(currentCapacity>postImbalance){
-                    currentCapacity=postImbalance;
-                }
-                //Now spreadout the energy equally if multiple clients offer the same price
-                capacityPerClient = currentCapacity/clientsThisRound;
-
-                //But clients can only offer so much energy per time
-                if(capacityPerClient>smallestCapacity){
-                    capacityPerClient=smallestCapacity;
-                }
-
-                //Now we know how much the biggest order that everybody can execute. Time to execute it
-                for (ClientReport currentReport:CR) {
-                    if(currentReport.getProdFlexibility().containsKey(currentCheapestProd)){
-                        if(currentReport.getProdFlexibility().get(currentCheapestProd)<= capacityPerClient){
-                            //There is no energy remainig at this price, so it can be removed.
-                            currentReport.getProdFlexibility().remove(currentCheapestProd);
-                        } else{
-                            //There some energy left over at this flexibility, update the entry for the remaining value
-                            currentReport.getProdFlexibility().put(currentCheapestProd,   currentReport.getProdFlexibility().get(currentCheapestProd) - capacityPerClient);
-                        }
-                        if(RR.containsKey(currentReport.getUuid())){
-                            RegulationReport tempRR;
-                            tempRR = RR.get(currentReport.getUuid());
-                            if (capacityPerClient)
-                                RR.put(tempRR.getUuid(), (tempRR.getProdRegulationAmount() + capacityPerClient));
-                        }
+                for (HashMap.Entry<Integer, Double> currentFlexibility: currentReport.getProdFlexibility().entrySet()){
+                    if(currentFlexibility.getKey()<0 && currentFlexibility.getKey() >=-pricePoint){
+                        productionnArray.addCapacity(currentReport.getUuid(),-currentFlexibility.getKey(),currentFlexibility.getValue());
                     }
                 }
             }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         }
+        consumptionArray.Sort();
+        productionnArray.Sort();
     }
 
 }
