@@ -36,7 +36,8 @@ public class LaurenSophieAPXAlgorithm {
         Double pricePoint = PricePoint(preImbalance);
 
         //Probably split up to new function from here
-        Double currentLowestPrice = null;
+        Integer currentCheapestCons =Integer.MAX_VALUE;;
+        Integer currentCheapestProd = Integer.MAX_VALUE;;
         Double currentCapacity = 0.0;
         Double capacityPerClient;
 
@@ -44,50 +45,92 @@ public class LaurenSophieAPXAlgorithm {
 
 
         if(preImbalance<0){ //Shortage detected
+            //Determine the cheapest solution for either
             for (ClientReport currentReport:CR) { //For every client report, go find the smallest
-                for (HashMap.Entry<Double, Double> currentFlexibility: currentReport.getOfferedFlexibility().entrySet()){
-                    //check all the negative entries (shortage means we want decrease consumption & decrease production)
+                for (HashMap.Entry<Integer, Double> currentFlexibility: currentReport.getConsFlexibility().entrySet()){
+                    //shortage means we want decrease consumption, only count negative capacity
                     //And not more than we're willing to spent per kwh regulated
-                    if(currentFlexibility.getKey()<0 && currentFlexibility.getKey() <=pricePoint ){
-                        if((currentLowestPrice==null) || (currentFlexibility.getKey()<currentLowestPrice)) {
-                            currentLowestPrice = currentFlexibility.getKey();
+                    if(currentFlexibility.getKey()<0 && currentFlexibility.getKey() <= pricePoint ){
+                        if((currentFlexibility.getKey()< currentCheapestCons)) {
+                            currentCheapestCons = currentFlexibility.getKey();
+                        }
+                    }
+                }
+                for (HashMap.Entry<Integer, Double> currentFlexibility: currentReport.getProdFlexibility().entrySet()){
+                    //Shortage means increasing prod, only count keys for positive values
+                    //And not more than we're willing to spent per kwh regulated
+                    if(currentFlexibility.getKey()>0 && currentFlexibility.getKey() <= pricePoint ){
+                        if((currentFlexibility.getKey()< currentCheapestProd)) {
+                            currentCheapestProd = currentFlexibility.getKey();
                         }
                     }
                 }
             }
-            //Find all the clients that can offer flexibility for the lowest price and their total capacity.
-            int clientsThisRound=0;
-            for (ClientReport currentReport:CR) { //For every client report, go find the smallest
-                if(currentReport.getOfferedFlexibility().containsKey(currentLowestPrice)){
-                    clientsThisRound++;
-                    currentCapacity += currentReport.getOfferedFlexibility().get(currentLowestPrice);
-                    if (smallestCapacity==null || currentReport.getOfferedFlexibility().get(currentLowestPrice)< smallestCapacity){
-                        smallestCapacity =  currentReport.getOfferedFlexibility().get(currentLowestPrice);
+
+            smallestCapacity = Double.MAX_VALUE;
+
+            //If producing is cheaper (or the same price) first produce
+            if(currentCheapestProd <= currentCheapestCons){
+                int clientsThisRound=0;
+                //Get total capacity for cheapest option
+                for (ClientReport currentReport:CR) {
+                    if(currentReport.getProdFlexibility().containsKey(currentCheapestProd)){
+                        clientsThisRound++;
+                        currentCapacity += currentReport.getProdFlexibility().get(currentCheapestProd);
+                        if (currentReport.getProdFlexibility().get(currentCheapestProd)< smallestCapacity){
+                            smallestCapacity =  currentReport.getProdFlexibility().get(currentCheapestProd);
+                        }
                     }
                 }
-            }
-            //Only utilize the capacity we actually need
-            if(currentCapacity>postImbalance){
-                currentCapacity=postImbalance;
-            }
-            //Now spreadout the energy equally if multiple clients offer the same price
-            capacityPerClient = currentCapacity/clientsThisRound;
-            //But clients can only offer so much energy per time
-            if(capacityPerClient>smallestCapacity){
-                capacityPerClient=smallestCapacity;
+
+                //Only utilize the capacity we actually need
+                if(currentCapacity>postImbalance){
+                    currentCapacity=postImbalance;
+                }
+                //Now spreadout the energy equally if multiple clients offer the same price
+                capacityPerClient = currentCapacity/clientsThisRound;
+
+                //But clients can only offer so much energy per time
+                if(capacityPerClient>smallestCapacity){
+                    capacityPerClient=smallestCapacity;
+                }
+
+                //Now we know how much the biggest order that everybody can execute. Time to execute it
+                for (ClientReport currentReport:CR) {
+                    if(currentReport.getProdFlexibility().containsKey(currentCheapestProd)){
+                        if(currentReport.getProdFlexibility().get(currentCheapestProd)<= capacityPerClient){
+                            //There is no energy remainig at this price, so it can be removed.
+                            currentReport.getProdFlexibility().remove(currentCheapestProd);
+                        } else{
+                            //There some energy left over at this flexibility, update the entry for the remaining value
+                            currentReport.getProdFlexibility().put(currentCheapestProd,   currentReport.getProdFlexibility().get(currentCheapestProd) - capacityPerClient);
+                        }
+                        if(RR.containsKey(currentReport.getUuid())){
+                            RegulationReport tempRR;
+                            tempRR = RR.get(currentReport.getUuid());
+                            if (capacityPerClient)
+                                RR.put(tempRR.getUuid(), (tempRR.getProdRegulationAmount() + capacityPerClient));
+
+                        }
+                    }
+                }
             }
 
-            for (ClientReport currentReport:CR) { //For every client report, go find the smallest
-                if(currentReport.getOfferedFlexibility().containsKey(currentLowestPrice)){
-                    if(currentReport.getOfferedFlexibility().get(currentLowestPrice)<= capacityPerClient){
-                        //There is no energy remainig at this price, so it can be removed.
-                        currentReport.getOfferedFlexibility().remove(currentLowestPrice);
-                    } else{
-                        //There some energy left over at this flexibility, update the entry for the remaining value
-                        currentReport.getOfferedFlexibility().put(currentLowestPrice,   currentReport.getOfferedFlexibility().get(currentLowestPrice) - capacityPerClient);
-                    }
-                }
-            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

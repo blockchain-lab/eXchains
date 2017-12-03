@@ -1,8 +1,19 @@
 import java.util.HashMap;
 import java.util.Map;
 
-
+//All the prices mention here are displayed in Euro-centicents
 public class ClientReport {
+
+    public ClientReport(Integer uuid, Double production, Double consumption, HashMap<String, Double> predictedCons, HashMap<String, Double> predictedProd, HashMap<Integer, Double> consFlexibility, HashMap<Integer, Double> prodFlexibility) {
+        this.uuid = uuid;
+        this.production = production;
+        this.consumption = consumption;
+        this.predictedCons = predictedCons;
+        this.predictedProd = predictedProd;
+        this.consFlexibility = consFlexibility;
+        this.prodFlexibility = prodFlexibility;
+    }
+
     public Integer getUuid() {
         return uuid;
     }
@@ -23,29 +34,23 @@ public class ClientReport {
         return predictedProd;
     }
 
-    public HashMap<Double, Double> getOfferedFlexibility() {
-        return offeredFlexibility;
+    public HashMap<Integer, Double> getConsFlexibility() {
+        return consFlexibility;
     }
 
+    public HashMap<Integer, Double> getProdFlexibility() {
+        return prodFlexibility;
+    }
 
-
-    private Integer receipient;
     private Integer uuid;
     //Variables for CLIENTREPORT Messages
     private Double production;
     private Double consumption;
     private HashMap<String, Double> predictedCons;
     private HashMap<String, Double> predictedProd;
-    private HashMap<Double, Double> offeredFlexibility;
+    private HashMap<Integer, Double> consFlexibility;
+    private HashMap<Integer, Double> prodFlexibility;
 
 
 
-    public ClientReport(Integer uuid, Double production, Double consumption, HashMap<String, Double> predictedCons, HashMap<String, Double> predictedProd, HashMap<Double, Double> offeredFlexibility) {
-        uuid = uuid;
-        production = production;
-        consumption = consumption;
-        predictedCons = predictedCons;
-        predictedProd = predictedProd;
-        offeredFlexibility = offeredFlexibility;
-    }
 }

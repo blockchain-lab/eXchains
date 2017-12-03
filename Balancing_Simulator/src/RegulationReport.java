@@ -5,33 +5,31 @@ public class RegulationReport {
         return uuid;
     }
 
-    public Double getRegulationAmount() {
-        return regulationAmount;
-    }
 
     public Double getPricePoint() {
         return pricePoint;
     }
 
-    public Double getClusterConsumption() {
-        return clusterConsumption;
-    }
-
-    public Double getClusterProduction() {
-        return clusterProduction;
-    }
 
     private Integer uuid;
 
-    private Double regulationAmount;
+    public Double getConsRegulationAmount() {
+        return consRegulationAmount;
+    }
+
+    public Double getProdRegulationAmount() {
+        return ProdRegulationAmount;
+    }
+
+    private Double consRegulationAmount;
+    private Double ProdRegulationAmount;
     private Double pricePoint;
-    private Double clusterConsumption;
-    private Double clusterProduction;
 
 
-    public RegulationReport(Integer receipient, Integer uuid, Double regulationAmount, Double pricePoint, Double clusterConsumption, Double clusterProduction) {
+    public RegulationReport(Integer receipient, Integer uuid, Double upRegulationAmount, Double consRegulationAmount, Double pricePoint, Double ProdRegulationAmount, Double clusterProduction) {
         this.uuid = uuid;
-        this.regulationAmount = regulationAmount;
+        this.consRegulationAmount = consRegulationAmount;
+        this.ProdRegulationAmount = ProdRegulationAmount;
         this.pricePoint = pricePoint;
     }
 }
