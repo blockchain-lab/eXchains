@@ -36,7 +36,7 @@ public class LaurenSophieAPXAlgorithm {
         Double pricePoint = PricePoint(preImbalance);
 
         //Probably split up to new function from here
-        Integer currentCheapestCons =Integer.MAX_VALUE;;
+        Integer currentCheapestCons = Integer.MAX_VALUE;;
         Integer currentCheapestProd = Integer.MAX_VALUE;;
         Double currentCapacity = 0.0;
         Double capacityPerClient;
@@ -48,11 +48,11 @@ public class LaurenSophieAPXAlgorithm {
             //Determine the cheapest solution for either
             for (ClientReport currentReport:CR) { //For every client report, go find the smallest
                 for (HashMap.Entry<Integer, Double> currentFlexibility: currentReport.getConsFlexibility().entrySet()){
-                    //shortage means we want decrease consumption, only count negative capacity
+                    //shortage means we want decrease consumption, only count negative prices
                     //And not more than we're willing to spent per kwh regulated
-                    if(currentFlexibility.getKey()<0 && currentFlexibility.getKey() <= pricePoint ){
-                        if((currentFlexibility.getKey()< currentCheapestCons)) {
-                            currentCheapestCons = currentFlexibility.getKey();
+                    if(currentFlexibility.getKey()<0 && currentFlexibility.getKey() >= -pricePoint ){
+                        if((-currentFlexibility.getKey()< currentCheapestCons)) {
+                            currentCheapestCons = -currentFlexibility.getKey();
                         }
                     }
                 }
@@ -110,7 +110,6 @@ public class LaurenSophieAPXAlgorithm {
                             tempRR = RR.get(currentReport.getUuid());
                             if (capacityPerClient)
                                 RR.put(tempRR.getUuid(), (tempRR.getProdRegulationAmount() + capacityPerClient));
-
                         }
                     }
                 }
