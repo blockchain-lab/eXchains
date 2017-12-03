@@ -9,9 +9,9 @@ public class ClientReport {
     private Double consumption;
     private HashMap<String, Double> predictedCons;
     private HashMap<String, Double> predictedProd;
-    private HashMap<Double, Double> offeredFlexibility;
+    private HashMap<Integer, Double> offeredFlexibility;
 
-    public ClientReport( Integer uuid, Double production, Double consumption, HashMap<String, Double> predictedCons, HashMap<String, Double> predictedProd, HashMap<Double, Double> offeredFlexibility) {
+    public ClientReport( Integer uuid, Double production, Double consumption, HashMap<String, Double> predictedCons, HashMap<String, Double> predictedProd, HashMap<Integer, Double> offeredFlexibility) {
         this.uuid = uuid;
         this.production = production;
         this.consumption = consumption;
@@ -40,7 +40,7 @@ public class ClientReport {
         return predictedProd;
     }
 
-    public HashMap<Double, Double> getOfferedFlexibility() {
+    public HashMap<Integer, Double> getOfferedFlexibility() {
         return offeredFlexibility;
     }
 

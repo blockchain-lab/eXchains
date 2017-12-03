@@ -17,10 +17,13 @@ public class Blockchain extends Thread {
     Blockchain Parent;
     int Level = 0;
 
+    LaurenSophieAPXAlgorithm algorithm;
+
     public Blockchain(int id, int level, int ParentID, Blockchain parent){
         ID = id;
         Parent = parent;
         Level = level;
+        algorithm = new LaurenSophieAPXAlgorithm();
 
         synchronized (Main.graph) {
             n = Main.graph.addNode("B" + ID);
@@ -55,13 +58,15 @@ public class Blockchain extends Thread {
         Double consumption = 0.0;
         HashMap<String, Double> predictedCons = new HashMap<>();
         HashMap<String, Double> predictedProd = new HashMap<>();
-        HashMap<Double, Double> offeredFlexibility = new HashMap<>();
+        HashMap<Integer, Double> offeredFlexibility = new HashMap<>();
 
         // Main loop
         while(true){
 
             // sync up all threads
             //sync();
+
+            offeredFlexibility = new HashMap<>();
 
             if(Level == 0){
 
@@ -76,9 +81,12 @@ public class Blockchain extends Thread {
                 while((transaction = queue.poll()) != null) {
                     preConsumption += transaction.getPredictedCons().get("t1");
                     preProduction += transaction.getPredictedProd().get("t1");
+                    offeredFlexibility = algorithm.sumOfferdFlex(offeredFlexibility, transaction.getOfferedFlexibility());
                 }
                 predictedCons.put("t1", preConsumption);
                 predictedProd.put("t1", preProduction);
+
+
 
                 // build transaction out
                 ClientReport transactionOut = new ClientReport(ID, production, consumption, predictedCons, predictedProd, offeredFlexibility);
@@ -120,9 +128,13 @@ public class Blockchain extends Thread {
                 while((transaction = queue.poll()) != null) {
                     preConsumption += transaction.getPredictedCons().get("t1");
                     preProduction += transaction.getPredictedProd().get("t1");
+                    offeredFlexibility = algorithm.sumOfferdFlex(offeredFlexibility, transaction.getOfferedFlexibility());
                 }
                 predictedCons.put("t1", preConsumption);
                 predictedProd.put("t1", preProduction);
+
+                System.out.println("offeredFlexibility size: " + offeredFlexibility.size());
+                System.out.println("offeredFlexibility: " + offeredFlexibility);
 
                 // build transaction out
                 ClientReport transactionOut = new ClientReport(ID, production, consumption, predictedCons, predictedProd, offeredFlexibility);

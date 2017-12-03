@@ -1,6 +1,5 @@
 public class RegulationReport {
 
-    private Integer receipient;
     private Integer uuid;
 
     private Double regulationAmount;
@@ -8,8 +7,7 @@ public class RegulationReport {
     private Double clusterConsumption;
     private Double clusterProduction;
 
-    public RegulationReport(Integer receipient, Integer uuid, Double regulationAmount, Double pricePoint, Double clusterConsumption, Double clusterProduction) {
-        this.receipient = receipient;
+    public RegulationReport(Integer uuid, Double regulationAmount, Double pricePoint, Double clusterConsumption, Double clusterProduction) {
         this.uuid = uuid;
         this.regulationAmount = regulationAmount;
         this.pricePoint = pricePoint;

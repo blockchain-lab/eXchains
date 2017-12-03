@@ -65,10 +65,12 @@ public class Household_Client extends Thread{
             Double consumption = 0.0;
             HashMap<String, Double> predictedCons = new HashMap<>();
             HashMap<String, Double> predictedProd = new HashMap<>();
-            HashMap<Double, Double> offeredFlexibility = new HashMap<>();
+            HashMap<Integer, Double> offeredFlexibility = new HashMap<>();
 
             // Main loop
             while(true){
+
+                offeredFlexibility = new HashMap<>();
 
                 // sync up all houses
                 sync();
@@ -97,6 +99,29 @@ public class Household_Client extends Thread{
                 predictedProd.put("t1", preProduction);
 
                 //TODO put something in offeredFlexibility
+
+                int P1P = rn.nextInt(900)+100;    // 100 - 1000
+                int P1N = -1*rn.nextInt(900)+100;    // 100 - 1000
+                Double W1 = ((double)rn.nextInt(10));            // 0 - 10
+
+
+                int P2P = rn.nextInt(4500)+500;    //  500 - 50000
+                int P2N = -1*rn.nextInt(4500)+500;    //  500 - 50000
+                Double W2 = ((double)rn.nextInt(133));          // 0 - 133
+
+                int P3P = rn.nextInt(4000)+4000;   //  40000 - 80000
+                int P3N = -1*rn.nextInt(4000)+4000;   //  40000 - 80000
+                Double W3 = ((double)rn.nextInt(50));            // 0 - 50
+
+
+                offeredFlexibility.put(P1P, W1);
+                offeredFlexibility.put(P1N, W1);
+
+                offeredFlexibility.put(P2P, W2);
+                offeredFlexibility.put(P2N, W2);
+
+                offeredFlexibility.put(P3P, W2);
+                offeredFlexibility.put(P3N, W2);
 
                 // build Client report
                 ClientReport report = new ClientReport( ID, production, consumption, predictedCons, predictedProd, offeredFlexibility);
