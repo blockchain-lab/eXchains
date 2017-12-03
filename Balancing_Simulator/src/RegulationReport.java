@@ -1,10 +1,6 @@
 public class RegulationReport {
 
 
-    public Integer getReceipient() {
-        return receipient;
-    }
-
     public Integer getUuid() {
         return uuid;
     }
@@ -25,7 +21,6 @@ public class RegulationReport {
         return clusterProduction;
     }
 
-    private Integer receipient;
     private Integer uuid;
 
     private Double regulationAmount;
@@ -35,11 +30,8 @@ public class RegulationReport {
 
 
     public RegulationReport(Integer receipient, Integer uuid, Double regulationAmount, Double pricePoint, Double clusterConsumption, Double clusterProduction) {
-        this.receipient = receipient;
         this.uuid = uuid;
         this.regulationAmount = regulationAmount;
         this.pricePoint = pricePoint;
-        this.clusterConsumption = clusterConsumption;
-        this.clusterProduction = clusterProduction;
     }
 }
