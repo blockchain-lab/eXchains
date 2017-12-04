@@ -27,19 +27,21 @@ public class LaurenSophieAPXAlgorithm {
     private Double preImbalance(){
         Double result = 0.0;
         for (ClientReport temp:CR) {
-            result += temp.getPredictedCons().get("t1") - temp.getPredictedProd().get("t1");
+            result += + temp.getPredictedProd().get("t1") - temp.getPredictedCons().get("t1");
         }
+        System.out.println("Found a balance of: " + result);
         return result;
     }
 
     private Integer PricePoint(Double imbalance){
         //todo: crate a function that generates a regulation pricepoint based on the imbalance
 
-        return 1234;
+        return 5;
     }
 
     private void PopulateUberArray(Double imbalance){
         if(imbalance<0){ //Shortage detected
+            System.out.println("Shortage detected");
             for (ClientReport currentReport:CR) {
                 for (HashMap.Entry<Integer, Double> currentFlexibility: currentReport.getConsFlexibility().entrySet()){
                     if(currentFlexibility.getKey()<0 && currentFlexibility.getKey() >= -pricePoint){
@@ -53,6 +55,7 @@ public class LaurenSophieAPXAlgorithm {
                 }
             }
         }else{
+            System.out.println("SurPlus detected!");
             for (ClientReport currentReport:CR) {
                 for (HashMap.Entry<Integer, Double> currentFlexibility: currentReport.getConsFlexibility().entrySet()){
                     if(currentFlexibility.getKey()>0 && currentFlexibility.getKey() >= pricePoint){
@@ -74,6 +77,7 @@ public class LaurenSophieAPXAlgorithm {
         Double imbalance= preImbalance();
         pricePoint = PricePoint(imbalance);
         PopulateUberArray(imbalance);
+        Balancing(imbalance);
 
         return RR;
     }
@@ -82,6 +86,7 @@ public class LaurenSophieAPXAlgorithm {
         Double postImbalance = imbalance;
         Double smallestCapacity;
         Integer numberOfClients;
+        System.out.println("Let's balance the shit out of this " + imbalance + " watt imbalance");
         if (productionnArray.isEmpty() && consumptionArray.isEmpty()){
             return; //No need to try balancing when there is no available capacity
         }
@@ -141,6 +146,7 @@ public class LaurenSophieAPXAlgorithm {
                     addRegulationReport(tempUuid, smallestCapacity, 0.0);
                 }
             }
+
             postImbalance -=  (smallestCapacity * numberOfClients);
             if (postImbalance>0) { //this is done because small rounding errors may results a small surplus and we don't want infinit balancing
                 Balancing(postImbalance);

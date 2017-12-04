@@ -45,7 +45,6 @@ public class SortedUberArray {
         List<Integer> uuidList = prices.get(0).deployCapacity(capacity);
         System.out.println("Done one price level");
         //If whe created an empty price entry, remove it
-        System.out.println("Size is currently " + prices.get(0).capacityList);
         if(prices.get(0).capacityList.isEmpty()){
             prices.remove(0);
         }
@@ -116,7 +115,7 @@ public class SortedUberArray {
         }
 
         private List<Integer> deployCapacity(Double capacity){
-            System.out.println("Now doing this at the price level");
+            //System.out.println("Now doing this at the price level");
             List<Integer> uuidList = new ArrayList<>();
             int j = 0; //To keep track of the amount of deleted as the index shifts
             int startingSize = capacityList.size();
