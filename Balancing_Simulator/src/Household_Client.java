@@ -66,6 +66,8 @@ public class Household_Client extends Thread{
             HashMap<String, Double> predictedCons = new HashMap<>();
             HashMap<String, Double> predictedProd = new HashMap<>();
             HashMap<Integer, Double> offeredFlexibility = new HashMap<>();
+            HashMap<Integer, Double> consFlexibility = new HashMap<>();
+            HashMap<Integer, Double> prodFlexibility = new HashMap<>();
 
             // Main loop
             while(true){
@@ -124,7 +126,7 @@ public class Household_Client extends Thread{
                 offeredFlexibility.put(P3N, W2);
 
                 // build Client report
-                ClientReport report = new ClientReport( ID, production, consumption, predictedCons, predictedProd, offeredFlexibility);
+                ClientReport report = new ClientReport( ID, production, consumption, predictedCons, predictedProd, consFlexibility, prodFlexibility);
 
                 // set production and consumption for next report
                 consumption = preConsumption;

@@ -23,7 +23,7 @@ public class Blockchain extends Thread {
         ID = id;
         Parent = parent;
         Level = level;
-        algorithm = new LaurenSophieAPXAlgorithm();
+        algorithm = new LaurenSophieAPXAlgorithm(id);
 
         synchronized (Main.graph) {
             n = Main.graph.addNode("B" + ID);
@@ -81,7 +81,7 @@ public class Blockchain extends Thread {
                 while((transaction = queue.poll()) != null) {
                     preConsumption += transaction.getPredictedCons().get("t1");
                     preProduction += transaction.getPredictedProd().get("t1");
-                    offeredFlexibility = algorithm.sumOfferdFlex(offeredFlexibility, transaction.getOfferedFlexibility());
+                    //offeredFlexibility = algorithm.sumOfferdFlex(offeredFlexibility, transaction.getPredictedCons());
                 }
                 predictedCons.put("t1", preConsumption);
                 predictedProd.put("t1", preProduction);
@@ -89,7 +89,7 @@ public class Blockchain extends Thread {
 
 
                 // build transaction out
-                ClientReport transactionOut = new ClientReport(ID, production, consumption, predictedCons, predictedProd, offeredFlexibility);
+                ClientReport transactionOut = new ClientReport(ID, production, consumption, predictedCons, predictedProd, offeredFlexibility, offeredFlexibility);
 
                 // set production and consumption for next report
                 consumption = preConsumption;
@@ -128,7 +128,7 @@ public class Blockchain extends Thread {
                 while((transaction = queue.poll()) != null) {
                     preConsumption += transaction.getPredictedCons().get("t1");
                     preProduction += transaction.getPredictedProd().get("t1");
-                    offeredFlexibility = algorithm.sumOfferdFlex(offeredFlexibility, transaction.getOfferedFlexibility());
+                    //offeredFlexibility = algorithm.sumOfferdFlex(offeredFlexibility, transaction.getOfferedFlexibility());
                 }
                 predictedCons.put("t1", preConsumption);
                 predictedProd.put("t1", preProduction);
@@ -137,7 +137,7 @@ public class Blockchain extends Thread {
                 System.out.println("offeredFlexibility: " + offeredFlexibility);
 
                 // build transaction out
-                ClientReport transactionOut = new ClientReport(ID, production, consumption, predictedCons, predictedProd, offeredFlexibility);
+                ClientReport transactionOut = new ClientReport(ID, production, consumption, predictedCons, predictedProd, offeredFlexibility, offeredFlexibility);
 
                 // set production and consumption for next report
                 consumption = preConsumption;
