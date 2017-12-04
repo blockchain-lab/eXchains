@@ -21,13 +21,34 @@ public class SortedUberArray {
         }
     }
 
-    Integer getLowestPrice(){
+    public boolean isEmpty(){
+        return (!prices.isEmpty() && !prices.get(0).capacityList.isEmpty());
+    }
+
+    public Integer getLowestPrice(){
         return prices.get(0).getPrice();
     }
 
-    Double getLowestCapacity(){
+    public Integer getNumberOfCheapestClients(){
+        return prices.get(0).capacityList.size();
+    }
+
+    public Double getLowestCapacity(){
         return prices.get(0).getLowestCapacity();
     }
+
+    public List<Integer> deployCapacity(Double capacity){
+        List<Integer> uuidList = prices.get(0).deployCapacity(capacity);
+        //If whe created an empty price entry, remove it
+        if(prices.get(0).capacityList.isEmpty()){
+            prices.remove(0);
+        }
+        //perform a sort just in case, (Don't know for sure if everything shift nicely when removing the head of list)
+        this.Sort();
+        return uuidList;
+    }
+
+
 
     public void Sort(){
         this.prices.sort(Prices::compareTo);
@@ -45,6 +66,10 @@ public class SortedUberArray {
 
         public Double getCapacity() {
             return capacity;
+        }
+
+        private void deployCapacity(Double capacity){
+            this.capacity -= capacity;
         }
 
         public int getUuid() {
@@ -81,6 +106,20 @@ public class SortedUberArray {
             return this.capacityList.add(capacity);
         }
 
+        private List<Integer> deployCapacity(Double capacity){
+            List<Integer> uuidList = new ArrayList<>();
+            for (Capacity tempcapacity: capacityList){
+                //If this is the last capacity, delete the entry, else adjust
+                if (tempcapacity.capacity<=capacity){
+                    capacityList.remove(tempcapacity);
+                }else{
+                    tempcapacity.deployCapacity(capacity);
+                }
+                uuidList.add(tempcapacity.getUuid());
+            }
+            return uuidList;
+        }
+
         private Integer price;                      //in centicents
         private List<Capacity> capacityList;
 
@@ -110,8 +149,6 @@ public class SortedUberArray {
             if (!(newPrice instanceof Prices))return false;
             Prices otherMyClass = (Prices)newPrice;
             return this.price.equals(otherMyClass.getPrice());
-
-
         }
     }
 }

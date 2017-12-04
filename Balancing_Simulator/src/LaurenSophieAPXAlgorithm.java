@@ -2,6 +2,7 @@ import com.company.SortedUberArray;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 
 public class LaurenSophieAPXAlgorithm {
     // Version 0.1
@@ -10,10 +11,16 @@ public class LaurenSophieAPXAlgorithm {
     private Integer myID;
     private LinkedList<ClientReport> CR;
     private HashMap<Integer, RegulationReport> RR;
+    private Integer pricePoint; //In Centicents
+    private SortedUberArray consumptionArray;
+    private SortedUberArray productionnArray;
 
     public LaurenSophieAPXAlgorithm(Integer uuid, LinkedList<ClientReport> CR) {
         this.myID = uuid;
         this.CR = new LinkedList<ClientReport>(CR);
+        this.RR = new HashMap<Integer, RegulationReport>();
+        this.consumptionArray = new SortedUberArray();
+        this.productionnArray = new SortedUberArray();
     }
 
     private Double preImbalance(){
@@ -24,22 +31,14 @@ public class LaurenSophieAPXAlgorithm {
         return result;
     }
 
-    private Double PricePoint(Double imbalance){
+    private Integer PricePoint(Double imbalance){
         //todo: crate a function that generates a regulation pricepoint based on the imbalance
 
-        return 1234.3;
+        return 1234;
     }
 
-    public void Balance(){
-        Double preImbalance = preImbalance();
-        Double postImbalance = preImbalance;
-        Double pricePoint = PricePoint(preImbalance);
-
-        SortedUberArray consumptionArray = new SortedUberArray();
-        SortedUberArray productionnArray = new SortedUberArray();
-
-        //Select only the flexibility that meets the criteria (up or down, and below the max)
-        if(preImbalance<0){ //Shortage detected
+    private void PopulateUberArray(Double imbalance){
+        if(imbalance<0){ //Shortage detected
             for (ClientReport currentReport:CR) {
                 for (HashMap.Entry<Integer, Double> currentFlexibility: currentReport.getConsFlexibility().entrySet()){
                     if(currentFlexibility.getKey()<0 && currentFlexibility.getKey() >= -pricePoint){
@@ -68,6 +67,90 @@ public class LaurenSophieAPXAlgorithm {
         }
         consumptionArray.Sort();
         productionnArray.Sort();
+    }
+
+    public HashMap<Integer, RegulationReport> Balance(){
+        Double imbalance= preImbalance();
+        pricePoint = PricePoint(imbalance);
+        PopulateUberArray(imbalance);
+
+        return RR;
+    }
+
+    private void Balancing(Double imbalance){
+        Double postImbalance = imbalance;
+        Double smallestCapacity;
+        Integer numberOfClients;
+        if (postImbalance<0) { //If we have a negative surplus (shortage)
+            if (productionnArray.getLowestPrice() <= consumptionArray.getLowestPrice()) {
+                smallestCapacity = productionnArray.getLowestCapacity();
+                numberOfClients = productionnArray.getNumberOfCheapestClients();
+                //if smallest capacity is more than enough, readjust smallest capacity.
+                if (-postImbalance < smallestCapacity * numberOfClients) {
+                    smallestCapacity = (-postImbalance) / numberOfClients;
+                }
+                //Get a list of all the uuid's that participated in this round
+                List<Integer> uuidList = productionnArray.deployCapacity(smallestCapacity);
+                for (Integer tempUuid : uuidList) {
+                    addRegulationReport(tempUuid, 0.0, smallestCapacity);
+                }
+            } else {
+                smallestCapacity = consumptionArray.getLowestCapacity();
+                numberOfClients = consumptionArray.getNumberOfCheapestClients();
+                //if smallest capacity is more than enough, readjust smallest capacity.
+                if (-postImbalance < smallestCapacity * numberOfClients) {
+                    smallestCapacity = (-postImbalance) / numberOfClients;
+                }
+                List<Integer> uuidList = consumptionArray.deployCapacity(smallestCapacity);
+                for (Integer tempUuid : uuidList) {
+                    addRegulationReport(tempUuid, -smallestCapacity, 0.0);
+                }
+            }
+            postImbalance +=  (smallestCapacity * numberOfClients);
+            if (postImbalance<0) { //this is done because small rounding errors may results a small surplus and we don't want infinit balancing
+                Balancing(postImbalance);
+            }
+
+        }else{  //If we have a positive surplus
+            if (productionnArray.getLowestPrice() <= consumptionArray.getLowestPrice()) {
+                smallestCapacity = productionnArray.getLowestCapacity();
+                numberOfClients = productionnArray.getNumberOfCheapestClients();
+                //if smallest capacity is more than enough, readjust smallest capacity.
+                if (postImbalance < smallestCapacity * numberOfClients) {
+                    smallestCapacity = postImbalance / numberOfClients;
+                }
+                //Get a list of all the uuid's that participated in this round
+                List<Integer> uuidList = productionnArray.deployCapacity(smallestCapacity);
+                for (Integer tempUuid : uuidList) {
+                    addRegulationReport(tempUuid, 0.0, -smallestCapacity);
+                }
+            } else {
+                smallestCapacity = consumptionArray.getLowestCapacity();
+                numberOfClients = consumptionArray.getNumberOfCheapestClients();
+                //if smallest capacity is more than enough, readjust smallest capacity.
+                if (postImbalance < smallestCapacity * numberOfClients) {
+                    smallestCapacity = postImbalance / numberOfClients;
+                }
+                List<Integer> uuidList = consumptionArray.deployCapacity(smallestCapacity);
+                for (Integer tempUuid : uuidList) {
+                    addRegulationReport(tempUuid, smallestCapacity, 0.0);
+                }
+            }
+            postImbalance -=  (smallestCapacity * numberOfClients);
+            if (postImbalance>0) { //this is done because small rounding errors may results a small surplus and we don't want infinit balancing
+                Balancing(postImbalance);
+            }
+        }
+    }
+
+    private void addRegulationReport(Integer uuid, Double consAmount, Double prodAmount){
+        RegulationReport temp;
+        if(RR.containsKey(uuid)){
+             temp = new RegulationReport(uuid, RR.get(uuid).getConsRegulationAmount() + consAmount, RR.get(uuid).getProdRegulationAmount() + prodAmount, pricePoint);
+        }else{
+            temp = new RegulationReport(uuid,  consAmount, prodAmount, pricePoint);
+        }
+        RR.put(uuid, temp);
     }
 
 }

@@ -6,7 +6,7 @@ public class RegulationReport {
     }
 
 
-    public Double getPricePoint() {
+    public Integer getPricePoint() {
         return pricePoint;
     }
 
@@ -23,10 +23,10 @@ public class RegulationReport {
 
     private Double consRegulationAmount;
     private Double ProdRegulationAmount;
-    private Double pricePoint;
+    private Integer pricePoint;
 
 
-    public RegulationReport(Integer receipient, Integer uuid, Double upRegulationAmount, Double consRegulationAmount, Double pricePoint, Double ProdRegulationAmount, Double clusterProduction) {
+    public RegulationReport(Integer uuid, Double consRegulationAmount, Double ProdRegulationAmount, Integer pricePoint) {
         this.uuid = uuid;
         this.consRegulationAmount = consRegulationAmount;
         this.ProdRegulationAmount = ProdRegulationAmount;
