@@ -1,5 +1,6 @@
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 
 public class LaurenSophieAPXAlgorithm {
     // Version 0.1
@@ -8,10 +9,16 @@ public class LaurenSophieAPXAlgorithm {
     private Integer myID;
     private LinkedList<ClientReport> CR;
     private HashMap<Integer, RegulationReport> RR;
+    private Integer pricePoint; //In Centicents
+    private SortedUberArray consumptionArray;
+    private SortedUberArray productionnArray;
 
-    public LaurenSophieAPXAlgorithm() {
-        //this.myID = uuid;
-        //this.CR = new LinkedList<ClientReport>(CR);
+    public LaurenSophieAPXAlgorithm(Integer uuid, LinkedList<ClientReport> CR) {
+        this.myID = uuid;
+        this.CR = new LinkedList<ClientReport>(CR);
+        this.RR = new HashMap<Integer, RegulationReport>();
+        this.consumptionArray = new SortedUberArray();
+        this.productionnArray = new SortedUberArray();
     }
 
     private Double preImbalance(){
@@ -22,91 +29,126 @@ public class LaurenSophieAPXAlgorithm {
         return result;
     }
 
-    private Double PricePoint(Double imbalance){
+    private Integer PricePoint(Double imbalance){
         //todo: crate a function that generates a regulation pricepoint based on the imbalance
 
-        return 1234.3;
+        return 1234;
     }
 
-
-
-//    public void Balance(){
-//        Double preImbalance = preImbalance();
-//        Double postImbalance = preImbalance;
-//        Double pricePoint = PricePoint(preImbalance);
-//
-//        //Probably split up to new function from here
-//        Double currentLowestPrice = null;
-//        Double currentCapacity = 0.0;
-//        Double capacityPerClient;
-//
-//        Double smallestCapacity = null;
-//
-//
-//        if(preImbalance<0){ //Shortage detected
-//            for (ClientReport currentReport:CR) { //For every client report, go find the smallest
-//                for (HashMap.Entry<Double, Double> currentFlexibility: currentReport.getOfferedFlexibility().entrySet()){
-//                    //check all the negative entries (shortage means we want decrease consumption & decrease production)
-//                    //And not more than we're willing to spent per kwh regulated
-//                    if(currentFlexibility.getKey()<0 && currentFlexibility.getKey() <=pricePoint ){
-//                        if((currentLowestPrice==null) || (currentFlexibility.getKey()<currentLowestPrice)) {
-//                            currentLowestPrice = currentFlexibility.getKey();
-//                        }
-//                    }
-//                }
-//            }
-//            //Find all the clients that can offer flexibility for the lowest price and their total capacity.
-//            int clientsThisRound=0;
-//            for (ClientReport currentReport:CR) { //For every client report, go find the smallest
-//                if(currentReport.getOfferedFlexibility().containsKey(currentLowestPrice)){
-//                    clientsThisRound++;
-//                    currentCapacity += currentReport.getOfferedFlexibility().get(currentLowestPrice);
-//                    if (smallestCapacity==null || currentReport.getOfferedFlexibility().get(currentLowestPrice)< smallestCapacity){
-//                        smallestCapacity =  currentReport.getOfferedFlexibility().get(currentLowestPrice);
-//                    }
-//                }
-//            }
-//            //Only utilize the capacity we actually need
-//            if(currentCapacity>postImbalance){
-//                currentCapacity=postImbalance;
-//            }
-//            //Now spreadout the energy equally if multiple clients offer the same price
-//            capacityPerClient = currentCapacity/clientsThisRound;
-//            //But clients can only offer so much energy per time
-//            if(capacityPerClient>smallestCapacity){
-//                capacityPerClient=smallestCapacity;
-//            }
-//
-//            for (ClientReport currentReport:CR) { //For every client report, go find the smallest
-//                if(currentReport.getOfferedFlexibility().containsKey(currentLowestPrice)){
-//                    if(currentReport.getOfferedFlexibility().get(currentLowestPrice)<= capacityPerClient){
-//                        //There is no energy remainig at this price, so it can be removed.
-//                        currentReport.getOfferedFlexibility().remove(currentLowestPrice);
-//                    } else{
-//                        //There some energy left over at this flexibility, update the entry for the remaining value
-//                        currentReport.getOfferedFlexibility().put(currentLowestPrice,   currentReport.getOfferedFlexibility().get(currentLowestPrice) - capacityPerClient);
-//                    }
-//                }
-//            }
-//
-//
-//
-//
-//
-//        }
-//    }
-
-    public HashMap<Integer, Double> sumOfferdFlex(HashMap<Integer, Double> List1, HashMap<Integer, Double> List2){
-        HashMap<Integer, Double> L1 = new HashMap<>(List1);
-
-        for (HashMap.Entry<Integer, Double> Entry: List2.entrySet()) {
-            if(L1.containsKey(Entry.getKey())){
-                L1.put(Entry.getKey(), L1.get(Entry.getKey()) + Entry.getValue());
-            }else{
-                L1.put(Entry.getKey(), Entry.getValue());
+    private void PopulateUberArray(Double imbalance){
+        if(imbalance<0){ //Shortage detected
+            for (ClientReport currentReport:CR) {
+                for (HashMap.Entry<Integer, Double> currentFlexibility: currentReport.getConsFlexibility().entrySet()){
+                    if(currentFlexibility.getKey()<0 && currentFlexibility.getKey() >= -pricePoint){
+                        consumptionArray.addCapacity(currentReport.getUuid(),-currentFlexibility.getKey(),currentFlexibility.getValue());
+                    }
+                }
+                for (HashMap.Entry<Integer, Double> currentFlexibility: currentReport.getProdFlexibility().entrySet()){
+                    if(currentFlexibility.getKey()>0 && currentFlexibility.getKey() <= pricePoint){
+                        productionnArray.addCapacity(currentReport.getUuid(),currentFlexibility.getKey(),currentFlexibility.getValue());
+                    }
+                }
+            }
+        }else{
+            for (ClientReport currentReport:CR) {
+                for (HashMap.Entry<Integer, Double> currentFlexibility: currentReport.getConsFlexibility().entrySet()){
+                    if(currentFlexibility.getKey()>0 && currentFlexibility.getKey() >= pricePoint){
+                        consumptionArray.addCapacity(currentReport.getUuid(),currentFlexibility.getKey(),currentFlexibility.getValue());
+                    }
+                }
+                for (HashMap.Entry<Integer, Double> currentFlexibility: currentReport.getProdFlexibility().entrySet()){
+                    if(currentFlexibility.getKey()<0 && currentFlexibility.getKey() >=-pricePoint){
+                        productionnArray.addCapacity(currentReport.getUuid(),-currentFlexibility.getKey(),currentFlexibility.getValue());
+                    }
+                }
             }
         }
-        return L1;
+        consumptionArray.Sort();
+        productionnArray.Sort();
+    }
+
+    public HashMap<Integer, RegulationReport> Balance(){
+        Double imbalance= preImbalance();
+        pricePoint = PricePoint(imbalance);
+        PopulateUberArray(imbalance);
+
+        return RR;
+    }
+
+    private void Balancing(Double imbalance){
+        Double postImbalance = imbalance;
+        Double smallestCapacity;
+        Integer numberOfClients;
+        if (postImbalance<0) { //If we have a negative surplus (shortage)
+            if (productionnArray.getLowestPrice() <= consumptionArray.getLowestPrice()) {
+                smallestCapacity = productionnArray.getLowestCapacity();
+                numberOfClients = productionnArray.getNumberOfCheapestClients();
+                //if smallest capacity is more than enough, readjust smallest capacity.
+                if (-postImbalance < smallestCapacity * numberOfClients) {
+                    smallestCapacity = (-postImbalance) / numberOfClients;
+                }
+                //Get a list of all the uuid's that participated in this round
+                List<Integer> uuidList = productionnArray.deployCapacity(smallestCapacity);
+                for (Integer tempUuid : uuidList) {
+                    addRegulationReport(tempUuid, 0.0, smallestCapacity);
+                }
+            } else {
+                smallestCapacity = consumptionArray.getLowestCapacity();
+                numberOfClients = consumptionArray.getNumberOfCheapestClients();
+                //if smallest capacity is more than enough, readjust smallest capacity.
+                if (-postImbalance < smallestCapacity * numberOfClients) {
+                    smallestCapacity = (-postImbalance) / numberOfClients;
+                }
+                List<Integer> uuidList = consumptionArray.deployCapacity(smallestCapacity);
+                for (Integer tempUuid : uuidList) {
+                    addRegulationReport(tempUuid, -smallestCapacity, 0.0);
+                }
+            }
+            postImbalance +=  (smallestCapacity * numberOfClients);
+            if (postImbalance<0) { //this is done because small rounding errors may results a small surplus and we don't want infinit balancing
+                Balancing(postImbalance);
+            }
+
+        }else{  //If we have a positive surplus
+            if (productionnArray.getLowestPrice() <= consumptionArray.getLowestPrice()) {
+                smallestCapacity = productionnArray.getLowestCapacity();
+                numberOfClients = productionnArray.getNumberOfCheapestClients();
+                //if smallest capacity is more than enough, readjust smallest capacity.
+                if (postImbalance < smallestCapacity * numberOfClients) {
+                    smallestCapacity = postImbalance / numberOfClients;
+                }
+                //Get a list of all the uuid's that participated in this round
+                List<Integer> uuidList = productionnArray.deployCapacity(smallestCapacity);
+                for (Integer tempUuid : uuidList) {
+                    addRegulationReport(tempUuid, 0.0, -smallestCapacity);
+                }
+            } else {
+                smallestCapacity = consumptionArray.getLowestCapacity();
+                numberOfClients = consumptionArray.getNumberOfCheapestClients();
+                //if smallest capacity is more than enough, readjust smallest capacity.
+                if (postImbalance < smallestCapacity * numberOfClients) {
+                    smallestCapacity = postImbalance / numberOfClients;
+                }
+                List<Integer> uuidList = consumptionArray.deployCapacity(smallestCapacity);
+                for (Integer tempUuid : uuidList) {
+                    addRegulationReport(tempUuid, smallestCapacity, 0.0);
+                }
+            }
+            postImbalance -=  (smallestCapacity * numberOfClients);
+            if (postImbalance>0) { //this is done because small rounding errors may results a small surplus and we don't want infinit balancing
+                Balancing(postImbalance);
+            }
+        }
+    }
+
+    private void addRegulationReport(Integer uuid, Double consAmount, Double prodAmount){
+        RegulationReport temp;
+        if(RR.containsKey(uuid)){
+             temp = new RegulationReport(uuid, RR.get(uuid).getConsRegulationAmount() + consAmount, RR.get(uuid).getProdRegulationAmount() + prodAmount, pricePoint);
+        }else{
+            temp = new RegulationReport(uuid,  consAmount, prodAmount, pricePoint);
+        }
+        RR.put(uuid, temp);
     }
 
 }
