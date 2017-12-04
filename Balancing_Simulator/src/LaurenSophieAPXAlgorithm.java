@@ -13,8 +13,11 @@ public class LaurenSophieAPXAlgorithm {
     private SortedUberArray consumptionArray;
     private SortedUberArray productionnArray;
 
-    public LaurenSophieAPXAlgorithm(Integer uuid, LinkedList<ClientReport> CR) {
+    public LaurenSophieAPXAlgorithm(Integer uuid) {
         this.myID = uuid;
+    }
+
+    public void initialize(LinkedList<ClientReport> CR){
         this.CR = new LinkedList<ClientReport>(CR);
         this.RR = new HashMap<Integer, RegulationReport>();
         this.consumptionArray = new SortedUberArray();
@@ -144,7 +147,7 @@ public class LaurenSophieAPXAlgorithm {
     private void addRegulationReport(Integer uuid, Double consAmount, Double prodAmount){
         RegulationReport temp;
         if(RR.containsKey(uuid)){
-             temp = new RegulationReport(uuid, RR.get(uuid).getConsRegulationAmount() + consAmount, RR.get(uuid).getProdRegulationAmount() + prodAmount, pricePoint);
+            temp = new RegulationReport(uuid, RR.get(uuid).getConsRegulationAmount() + consAmount, RR.get(uuid).getProdRegulationAmount() + prodAmount, pricePoint);
         }else{
             temp = new RegulationReport(uuid,  consAmount, prodAmount, pricePoint);
         }
