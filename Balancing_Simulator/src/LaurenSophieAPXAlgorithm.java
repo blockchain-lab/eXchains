@@ -82,6 +82,10 @@ public class LaurenSophieAPXAlgorithm {
         Double postImbalance = imbalance;
         Double smallestCapacity;
         Integer numberOfClients;
+        if (productionnArray.isEmpty() && consumptionArray.isEmpty()){
+            return; //No need to try balancing when there is no available capacity
+        }
+
         if (postImbalance<0) { //If we have a negative surplus (shortage)
             if (productionnArray.getLowestPrice() <= consumptionArray.getLowestPrice()) {
                 smallestCapacity = productionnArray.getLowestCapacity();

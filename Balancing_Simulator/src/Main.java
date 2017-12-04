@@ -12,7 +12,10 @@ import java.util.List;
 import java.util.concurrent.CyclicBarrier;
 
 public class Main {
+    //Lauren's variables
+    static SortedUberArray test = new SortedUberArray();
 
+    //Sophie's variables
     private static List<Household_Client> Households = new LinkedList<>();
     private static List<Blockchain> blockchains = new LinkedList<>();
 
@@ -28,32 +31,42 @@ public class Main {
     public final static Graph graph = new SingleGraph("Balancing Simulator");
 
 
-
     public static void main(String[] args) {
+        test.addCapacity(1,1,5.0);
+        test.addCapacity(1,1,5.0);
+        test.addCapacity(1,1,5.0);
+        test.addCapacity(1,2,4.0);
+        test.addCapacity(1,2,3.0);
+        test.addCapacity(1,2,4.0);
+        System.out.println(test.getLowestCapacity());
+        test.Sort();
+        System.out.println(test.getLowestCapacity());
+        test.deployCapacity(5.0);
+        System.out.println(test.getLowestCapacity());
 
-        System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
-        graph.addAttribute("ui.quality");
-        graph.addAttribute("ui.antialias");
-        graph.addAttribute("ui.stylesheet", readFile("src\\ui.stylesheet", Charset.defaultCharset()));
-        Viewer view =  graph.display();
-        view.disableAutoLayout();
-
-
-        Blockchain blockchainL1 = new Blockchain(100, 1,-1, null);
-        blockchainL1.start();
-        blockchains.add(blockchainL1);
-
-        for (int i = 0; i < NumberOfCusters; i++) {
-            Blockchain blockchainL0 = new Blockchain(i,0, 100, blockchainL1);
-            blockchainL0.start();
-            blockchains.add(blockchainL0);
-
-            for (int j = i*HousesPerCluster; j < (i+1)*HousesPerCluster; j++) {
-                Household_Client household = new Household_Client(j, i, blockchainL0);
-                household.start();
-                Households.add(household);
-            }
-        }
+//        System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
+//        graph.addAttribute("ui.quality");
+//        graph.addAttribute("ui.antialias");
+//        graph.addAttribute("ui.stylesheet", readFile("src\\ui.stylesheet", Charset.defaultCharset()));
+//        Viewer view =  graph.display();
+//        view.disableAutoLayout();
+//
+//
+//        Blockchain blockchainL1 = new Blockchain(100, 1,-1, null);
+//        blockchainL1.start();
+//        blockchains.add(blockchainL1);
+//
+//        for (int i = 0; i < NumberOfCusters; i++) {
+//            Blockchain blockchainL0 = new Blockchain(i,0, 100, blockchainL1);
+//            blockchainL0.start();
+//            blockchains.add(blockchainL0);
+//
+//            for (int j = i*HousesPerCluster; j < (i+1)*HousesPerCluster; j++) {
+//                Household_Client household = new Household_Client(j, i, blockchainL0);
+//                household.start();
+//                Households.add(household);
+//            }
+//        }
 
     }
 
