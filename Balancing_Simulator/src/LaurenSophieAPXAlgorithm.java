@@ -84,7 +84,7 @@ public class LaurenSophieAPXAlgorithm {
         PopulateUberArray(preImbalance);
         postImbalance = Balancing(preImbalance);
 
-        System.out.println("Pre-Balancing: " + preImbalance + " Post-balancing: " + postImbalance + " for: €" + expenses);
+        System.out.println("Pre-Balancing: " + preImbalance + " Post-balancing: " + postImbalance + " for: €" + expenses/10000 + " size RR: " + RR.size());
         return RR;
     }
 

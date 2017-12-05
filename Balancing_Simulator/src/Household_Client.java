@@ -139,7 +139,7 @@ public class Household_Client extends Thread{
                 prodFlexibility.put(P3P, W2);
                 consFlexibility.put(P3N, W2);
 
-                //System.out.println("HouseHold " + ID + " adjusted consumption: " + consRegulationAmount + " adjusted production: " + prodRegulationAmount);
+                System.out.println("HouseHold " + ID + " adjusted consumption: " + consRegulationAmount + " adjusted production: " + prodRegulationAmount);
                 consumption += consRegulationAmount;
                 production += prodRegulationAmount;
 
@@ -175,7 +175,7 @@ public class Household_Client extends Thread{
     }
 
     public void sendRegulationReport(RegulationReport report){
-        //System.out.println("HouseHold " + ID + "recived regulationReport");
+        System.out.println("HouseHold " + ID + "recived regulationReport");
 
         consRegulationAmount = report.getConsRegulationAmount();
         prodRegulationAmount = report.getProdRegulationAmount();

@@ -64,6 +64,8 @@ public class Blockchain extends Thread {
         HashMap<Integer, Double> consFlexibility = new HashMap<>();
         HashMap<Integer, Double> prodFlexibility = new HashMap<>();
 
+        delay(500);
+
         // Main loop
         while(true){
 
@@ -84,6 +86,9 @@ public class Blockchain extends Thread {
                 Double preProduction = 0.0;
                 Double preConsumption = 0.0;
 
+                consumption = 0.0;
+                production = 0.0;
+
 
                 while((transaction = queue.poll()) != null) {
                     preConsumption += transaction.getPredictedCons().get("t1");
@@ -103,10 +108,6 @@ public class Blockchain extends Thread {
 
                 // build transaction out
                 ClientReport transactionOut = new ClientReport(ID, production, consumption, predictedCons, predictedProd, consFlexibility, prodFlexibility);
-
-                // set production and consumption for next report
-                consumption = preConsumption;
-                production = preProduction;
 
 
                 synchronized (Main.graph) {
@@ -174,10 +175,6 @@ public class Blockchain extends Thread {
                 // build transaction out
                 ClientReport transactionOut = new ClientReport(ID, production, consumption, predictedCons, predictedProd, consFlexibility, prodFlexibility);
 
-                // set production and consumption for next report
-                consumption = preConsumption;
-                production = preProduction;
-
                 synchronized (Main.graph) {
                     n.addAttribute("ui.label",  ((int)(consumption/5)) + " / " + ((int)(production/5)) + " W");
                 }
@@ -191,17 +188,20 @@ public class Blockchain extends Thread {
     }
 
     public void sendRegulationReport(RegulationReport report){
-        //System.out.println("Blockchain " + ID + "recived regulationReport");
+        System.out.println("Blockchain " + ID + " recived regulationReport");
 
         algorithm.initialize(ClientReports);
 
-        HashMap<Integer, RegulationReport> regulationReports = algorithm.Balance(report.getPricePoint());
+        HashMap<Integer, RegulationReport> regulationReports = new HashMap<>(algorithm.Balance(report.getPricePoint()));
 
         for (HashMap.Entry<Integer, RegulationReport> entry: regulationReports.entrySet()) {
             ((Household_Client) clients.get(entry.getKey())).sendRegulationReport(entry.getValue());
         }
 
         //TODO verdeel energie onder clients
+
+
+        clients = new HashMap<>();
     }
 
     public void connect(int id, Object client){
