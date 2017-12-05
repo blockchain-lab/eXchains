@@ -41,9 +41,7 @@ public class SortedUberArray {
     }
 
     public List<Integer> deployCapacity(Double capacity){
-        System.out.println("Deploying capacity: " + capacity);
         List<Integer> uuidList = prices.get(0).deployCapacity(capacity);
-        System.out.println("Done one price level");
         //If whe created an empty price entry, remove it
         if(prices.get(0).capacityList.isEmpty()){
             prices.remove(0);

@@ -65,14 +65,14 @@ public class Household_Client extends Thread{
             Double consumption = 0.0;
             HashMap<String, Double> predictedCons = new HashMap<>();
             HashMap<String, Double> predictedProd = new HashMap<>();
-            HashMap<Integer, Double> offeredFlexibility = new HashMap<>();
             HashMap<Integer, Double> consFlexibility = new HashMap<>();
             HashMap<Integer, Double> prodFlexibility = new HashMap<>();
 
             // Main loop
             while(true){
 
-                offeredFlexibility = new HashMap<>();
+                consFlexibility = new HashMap<>();
+                prodFlexibility = new HashMap<>();
 
                 // sync up all houses
                 sync();
@@ -88,10 +88,10 @@ public class Household_Client extends Thread{
                 // "predict" data from coming time block
                 Double preProduction = 0.0;
                 Double preConsumption = 0.0;
-                for (int i = 0; i < Main.TimeSlotMin*60; i++) {
+                for (int i = 0; i < Main.TimeSlotMin; i++) {
                     if((nextRecord = csvReader.readNext()) != null){
-                        preConsumption += Double.parseDouble(nextRecord[3].replace(',', '.'));
-                        preProduction += Double.parseDouble(nextRecord[4].replace(',', '.'));
+                        preConsumption += Double.parseDouble(nextRecord[3].replace(',', '.'))/Main.TimeSlotMin;
+                        preProduction += Double.parseDouble(nextRecord[4].replace(',', '.'))/Main.TimeSlotMin;
                     }else{
                         System.err.println("Household " + ID + " reached EOF!");
                         break;
@@ -116,14 +116,14 @@ public class Household_Client extends Thread{
                 Double W3 = ((double)rn.nextInt(50));            // 0 - 50
 
 
-                offeredFlexibility.put(P1P, W1);
-                offeredFlexibility.put(P1N, W1);
+                prodFlexibility.put(P1P, W1);
+                consFlexibility.put(P1N, W1);
 
-                offeredFlexibility.put(P2P, W2);
-                offeredFlexibility.put(P2N, W2);
+                prodFlexibility.put(P2P, W2);
+                consFlexibility.put(P2N, W2);
 
-                offeredFlexibility.put(P3P, W2);
-                offeredFlexibility.put(P3N, W2);
+                prodFlexibility.put(P3P, W2);
+                consFlexibility.put(P3N, W2);
 
                 // build Client report
                 ClientReport report = new ClientReport( ID, production, consumption, predictedCons, predictedProd, consFlexibility, prodFlexibility);
@@ -141,7 +141,7 @@ public class Household_Client extends Thread{
                 delay(1000);
 
                 //send report to blockchain
-                blockchain.sendTransaction(report);
+                blockchain.sendClientReport(report);
 
                 delay(500);
                 synchronized (Main.graph){

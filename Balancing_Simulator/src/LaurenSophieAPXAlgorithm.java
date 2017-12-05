@@ -36,7 +36,7 @@ public class LaurenSophieAPXAlgorithm {
     private Integer PricePoint(Double imbalance){
         //todo: crate a function that generates a regulation pricepoint based on the imbalance
 
-        return 5;
+        return 100000;
     }
 
     private void PopulateUberArray(Double imbalance){
@@ -154,7 +154,7 @@ public class LaurenSophieAPXAlgorithm {
         }
     }
 
-    private void addRegulationReport(Integer uuid, Double consAmount, Double prodAmount){
+    void addRegulationReport(Integer uuid, Double consAmount, Double prodAmount){
         RegulationReport temp;
         if(RR.containsKey(uuid)){
             temp = new RegulationReport(uuid, RR.get(uuid).getConsRegulationAmount() + consAmount, RR.get(uuid).getProdRegulationAmount() + prodAmount, pricePoint);
