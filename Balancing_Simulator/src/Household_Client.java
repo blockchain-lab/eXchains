@@ -17,6 +17,10 @@ public class Household_Client extends Thread{
     Edge e;
     Node n;
 
+    double consRegulationAmount = 0;
+    double prodRegulationAmount = 0;
+
+
     public Household_Client(int id, int ParentID, Blockchain parent){
         ID = id;
         this.blockchain = parent;
@@ -125,6 +129,10 @@ public class Household_Client extends Thread{
                 prodFlexibility.put(P3P, W2);
                 consFlexibility.put(P3N, W2);
 
+                //System.out.println("HouseHold " + ID + " adjusted consumption: " + consRegulationAmount + " adjusted production: " + prodRegulationAmount);
+                consumption += consRegulationAmount;
+                production += prodRegulationAmount;
+
                 // build Client report
                 ClientReport report = new ClientReport( ID, production, consumption, predictedCons, predictedProd, consFlexibility, prodFlexibility);
 
@@ -154,6 +162,15 @@ public class Household_Client extends Thread{
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void sendRegulationReport(RegulationReport report){
+        //System.out.println("HouseHold " + ID + "recived regulationReport");
+
+        consRegulationAmount = report.getConsRegulationAmount();
+        prodRegulationAmount = report.getProdRegulationAmount();
+
+        //TODO verdeel energie onder clients
     }
 
     private void sync(){

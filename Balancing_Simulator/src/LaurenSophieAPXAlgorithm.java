@@ -74,20 +74,20 @@ public class LaurenSophieAPXAlgorithm {
     }
 
     public HashMap<Integer, RegulationReport> Balance(){
-        System.out.println("You called me, sir?");
+        //System.out.println("You called me, sir?");
         Double imbalance= preImbalance();
         pricePoint = PricePoint(imbalance);
         PopulateUberArray(imbalance);
-        System.out.println("Pre-Balancing: " + imbalance + " Post-balancing: " + Balancing(imbalance));
+        //System.out.println("Pre-Balancing: " + imbalance + " Post-balancing: " + Balancing(imbalance));
         return RR;
     }
 
     public HashMap<Integer, RegulationReport> Balance(Integer pricepoint){
-        System.out.println("You called me, sir?");
+        //System.out.println("You called me, sir?");
         Double imbalance= preImbalance();
         this.pricePoint = pricepoint;
         PopulateUberArray(imbalance);
-        System.out.println("Pre-Balancing: " + imbalance + " Post-balancing: " + Balancing(imbalance));
+        //System.out.println("Pre-Balancing: " + imbalance + " Post-balancing: " + Balancing(imbalance));
         return RR;
     }
     private Double Balancing(Double imbalance){
