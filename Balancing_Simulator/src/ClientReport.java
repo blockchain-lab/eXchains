@@ -4,7 +4,7 @@ import java.util.Map;
 //All the prices mention here are displayed in Euro-centicents
 public class ClientReport {
 
-    public ClientReport(Integer uuid, Double production, Double consumption, HashMap<String, Double> predictedCons, HashMap<String, Double> predictedProd, HashMap<Integer, Double> consFlexibility, HashMap<Integer, Double> prodFlexibility) {
+    public ClientReport(Integer uuid,  Double consumption, Double production, HashMap<String, Double> predictedCons, HashMap<String, Double> predictedProd, HashMap<Integer, Double> consFlexibility, HashMap<Integer, Double> prodFlexibility) {
         this.uuid = uuid;
         this.production = production;
         this.consumption = consumption;

@@ -20,11 +20,16 @@ public class SortedUberArray {
     }
 
     public boolean isEmpty(){
-        return (!prices.isEmpty() && !prices.get(0).capacityList.isEmpty());
+        return (!(!prices.isEmpty() && !prices.get(0).capacityList.isEmpty()));
     }
 
     public Integer getLowestPrice(){
-        return prices.get(0).getPrice();
+        if(isEmpty()){
+            return Integer.MAX_VALUE;
+        }else{
+            return prices.get(0).getPrice();
+        }
+
     }
 
     public Integer getNumberOfCheapestClients(){
@@ -36,7 +41,9 @@ public class SortedUberArray {
     }
 
     public List<Integer> deployCapacity(Double capacity){
+        System.out.println("Deploying capacity: " + capacity);
         List<Integer> uuidList = prices.get(0).deployCapacity(capacity);
+        System.out.println("Done one price level");
         //If whe created an empty price entry, remove it
         if(prices.get(0).capacityList.isEmpty()){
             prices.remove(0);
@@ -90,6 +97,9 @@ public class SortedUberArray {
 
 
     class Prices implements Comparable<Prices>, Comparator<Prices>{
+        private Integer price;                      //in centicents
+        private List<Capacity> capacityList;
+
         public Prices(int price, Capacity capacity) {
             capacityList = new ArrayList<>();
             this.price = price;
@@ -105,21 +115,25 @@ public class SortedUberArray {
         }
 
         private List<Integer> deployCapacity(Double capacity){
+            //System.out.println("Now doing this at the price level");
             List<Integer> uuidList = new ArrayList<>();
-            for (Capacity tempcapacity: capacityList){
+            int j = 0; //To keep track of the amount of deleted as the index shifts
+            int startingSize = capacityList.size();
+            for (int i =0;i<startingSize;i++){
                 //If this is the last capacity, delete the entry, else adjust
-                if (tempcapacity.capacity<=capacity){
-                    capacityList.remove(tempcapacity);
+                uuidList.add(capacityList.get(i-j).getUuid());
+                if (capacityList.get(i-j).capacity<=capacity){
+                    capacityList.remove(i-j);
+                    j++;
                 }else{
-                    tempcapacity.deployCapacity(capacity);
+                    capacityList.get(i-j).deployCapacity(capacity);
                 }
-                uuidList.add(tempcapacity.getUuid());
+
             }
             return uuidList;
         }
 
-        private Integer price;                      //in centicents
-        private List<Capacity> capacityList;
+
 
         void Sort(){
             capacityList.sort(Capacity::compareTo);
