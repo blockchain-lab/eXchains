@@ -20,7 +20,7 @@ public class Household_Client extends Thread{
     public Household_Client(int id, int ParentID, Blockchain parent){
         ID = id;
         this.blockchain = parent;
-        parent.connect();
+        parent.connect(id, this);
 
         synchronized (Main.graph) {
             n = Main.graph.addNode("H" + ID);
