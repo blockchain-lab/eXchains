@@ -2,6 +2,12 @@
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.ui.view.Viewer;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.ui.RefineryUtilities;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -31,6 +37,8 @@ public class Main {
 
     public static void main(String[] args) {
 
+        testGraph();
+
         System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
         graph.addAttribute("ui.quality");
         graph.addAttribute("ui.antialias");
@@ -57,6 +65,23 @@ public class Main {
 
     }
 
+    static void testGraph(){
+        XYLineChart_AWT chart = new XYLineChart_AWT("Browser Usage Statistics",
+                "Which Browser are you using?");
+        chart.pack( );
+        RefineryUtilities.centerFrameOnScreen( chart );
+        chart.setVisible( true );
+
+        chart.addData(1,2);
+        delay(1000);
+
+        chart.addData(2,4);
+        delay(1000);
+
+        chart.addData(3,6);
+
+    }
+
     static String readFile(String path, Charset encoding) {
         byte[] encoded = new byte[0];
         try {
@@ -66,5 +91,13 @@ public class Main {
             return "";
         }
         return new String(encoded, encoding);
+    }
+
+    static private void delay(int millis){
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
