@@ -93,9 +93,11 @@ public class Household_Client extends Thread{
                 Double preProduction = 0.0;
                 Double preConsumption = 0.0;
                 for (int i = 0; i < Main.TimeSlotMin; i++) {
+                    //A single entry is in watt power for that minute.
+                    //divide by 60 becomes wh and wh can be summed
                     if((nextRecord = csvReader.readNext()) != null){
-                        preConsumption += Double.parseDouble(nextRecord[3].replace(',', '.'))/Main.TimeSlotMin;
-                        preProduction += Double.parseDouble(nextRecord[4].replace(',', '.'))/Main.TimeSlotMin;
+                        preConsumption += Double.parseDouble(nextRecord[3].replace(',', '.'))/60;
+                        preProduction += Double.parseDouble(nextRecord[4].replace(',', '.'))/60;
                     }else{
                         System.err.println("Household " + ID + " reached EOF!");
                         break;

@@ -75,7 +75,7 @@ public class LaurenSophieAPXAlgorithm {
     }
 
     public HashMap<Integer, RegulationReport> Balance(){
-        //System.out.println("You called me, sir?");
+        System.out.println("You called me, sir?");
         Double preImbalance= preImbalance();
         Double postImbalance = 0.0;
         pricePoint = PricePoint(preImbalance);
@@ -85,7 +85,7 @@ public class LaurenSophieAPXAlgorithm {
         for (HashMap.Entry<Integer,RegulationReport> temp: RR.entrySet()){
             price += 0.0001 * temp.getValue().getPricePoint() * (Math.abs(temp.getValue().getConsRegulationAmount()) * Math.abs(temp.getValue().getProdRegulationAmount()));
         }
-        //System.out.println("Pre-Balancing: " + imbalance + " Post-balancing: " + Balancing(imbalance));
+        System.out.println("Pre-Balancing: " + preImbalance + " Post-balancing: " + postImbalance + " for: €" + price);
         return RR;
     }
 
@@ -131,7 +131,7 @@ public class LaurenSophieAPXAlgorithm {
                 }
             }
             postImbalance +=  (smallestCapacity * numberOfClients);
-            if (postImbalance<0) { //this is done because small rounding errors may results a small surplus and we don't want infinit balancing
+            if (postImbalance<0) { //this is done because small rounding errors may results a small surplus and we don't want infinite balancing
                 postImbalance = Balancing(postImbalance);
             }
 
