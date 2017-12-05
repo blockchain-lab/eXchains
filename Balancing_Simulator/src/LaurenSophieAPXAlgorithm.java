@@ -83,12 +83,12 @@ public class LaurenSophieAPXAlgorithm {
 
     public HashMap<Integer, RegulationReport> Balance(Integer pricepoint){
         this.pricePoint = pricepoint;
-        System.out.println("You called me, sir?");
+        //System.out.println("You called me, sir?");
         Double preImbalance= preImbalance();
         Double postImbalance = 0.0;
         PopulateUberArray(preImbalance);
         postImbalance = Balancing(preImbalance);
-        System.out.println("Pre-Balancing: " + preImbalance + " Post-balancing: " + postImbalance + " for: €" + expenses);
+        System.out.println(myID + ": Pre-Balancing: " + preImbalance + " Post-balancing: " + postImbalance + " at: " + this.pricePoint);
         return RR;
     }
     private Double Balancing(Double imbalance){

@@ -66,9 +66,9 @@ public class Household_Client extends Thread{
 
             //TODO andere start tijd
             // start on 11:00
-            for (int i = 0; i < 60*11; i++) {
-                csvReader.readNext();
-            }
+//            for (int i = 0; i < 60*11; i++) {
+//                csvReader.readNext();
+//            }
 
             // each loop we send:
             Double production = 0.0;
@@ -139,7 +139,7 @@ public class Household_Client extends Thread{
                 prodFlexibility.put(P3P, W2);
                 consFlexibility.put(P3N, W2);
 
-                System.out.println("HouseHold " + ID + " adjusted consumption: " + consRegulationAmount + " adjusted production: " + prodRegulationAmount);
+                //System.out.println("HouseHold " + ID + " adjusted consumption: " + consRegulationAmount + " adjusted production: " + prodRegulationAmount);
                 consumption += consRegulationAmount;
                 production += prodRegulationAmount;
 
@@ -175,7 +175,7 @@ public class Household_Client extends Thread{
     }
 
     public void sendRegulationReport(RegulationReport report){
-        System.out.println("HouseHold " + ID + "recived regulationReport");
+        //System.out.println("HouseHold " + ID + "recived regulationReport");
 
         consRegulationAmount = report.getConsRegulationAmount();
         prodRegulationAmount = report.getProdRegulationAmount();

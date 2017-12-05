@@ -27,7 +27,7 @@ public class Main {
 
     public static final int TimeSlotMin = 5;
 
-    public static final int simSpeed = 3;// time between each client send in seconds -1.5
+    public static final int simSpeed = 15;// time between each client send in seconds -1.5
 
     public static final CyclicBarrier gate = new CyclicBarrier(((HousesPerCluster)*NumberOfCusters));
 
