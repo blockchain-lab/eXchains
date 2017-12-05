@@ -83,6 +83,8 @@ public class Blockchain extends Thread {
                 // "predict" data from coming time block
                 Double preProduction = 0.0;
                 Double preConsumption = 0.0;
+
+
                 while((transaction = queue.poll()) != null) {
                     preConsumption += transaction.getPredictedCons().get("t1");
                     preProduction += transaction.getPredictedProd().get("t1");
@@ -97,7 +99,7 @@ public class Blockchain extends Thread {
                 predictedCons.put("t1", preConsumption);
                 predictedProd.put("t1", preProduction);
 
-                System.out.println("Level 0: preProduction" + preProduction);
+                //System.out.println("Blockchain " + ID + " preConsumption: " + preConsumption + ", preProduction: " + preProduction);
 
                 // build transaction out
                 ClientReport transactionOut = new ClientReport(ID, production, consumption, predictedCons, predictedProd, consFlexibility, prodFlexibility);
@@ -152,6 +154,7 @@ public class Blockchain extends Thread {
                     CR.add(transaction);
                 }
 
+                //System.out.println("Blockchain " + ID + " preConsumption: " + preConsumption + ", preProduction: " + preProduction);
 
                 predictedCons.put("t1", preConsumption);
                 predictedProd.put("t1", preProduction);
