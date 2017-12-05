@@ -74,21 +74,28 @@ public class LaurenSophieAPXAlgorithm {
     }
 
     public HashMap<Integer, RegulationReport> Balance(){
+        System.out.println("You called me, sir?");
         Double imbalance= preImbalance();
         pricePoint = PricePoint(imbalance);
         PopulateUberArray(imbalance);
-        Balancing(imbalance);
-
+        System.out.println("Pre-Balancing: " + imbalance + " Post-balancing: " + Balancing(imbalance));
         return RR;
     }
 
-    private void Balancing(Double imbalance){
+    public HashMap<Integer, RegulationReport> Balance(Integer pricepoint){
+        System.out.println("You called me, sir?");
+        Double imbalance= preImbalance();
+        this.pricePoint = pricepoint;
+        PopulateUberArray(imbalance);
+        System.out.println("Pre-Balancing: " + imbalance + " Post-balancing: " + Balancing(imbalance));
+        return RR;
+    }
+    private Double Balancing(Double imbalance){
         Double postImbalance = imbalance;
         Double smallestCapacity;
         Integer numberOfClients;
-        System.out.println("Let's balance the shit out of this " + imbalance + " watt imbalance");
         if (productionnArray.isEmpty() && consumptionArray.isEmpty()){
-            return; //No need to try balancing when there is no available capacity
+            return postImbalance; //No need to try balancing when there is no available capacity
         }
 
         if (postImbalance<0) { //If we have a negative surplus (shortage)
@@ -118,7 +125,7 @@ public class LaurenSophieAPXAlgorithm {
             }
             postImbalance +=  (smallestCapacity * numberOfClients);
             if (postImbalance<0) { //this is done because small rounding errors may results a small surplus and we don't want infinit balancing
-                Balancing(postImbalance);
+                postImbalance = Balancing(postImbalance);
             }
 
         }else{  //If we have a positive surplus
@@ -149,9 +156,10 @@ public class LaurenSophieAPXAlgorithm {
 
             postImbalance -=  (smallestCapacity * numberOfClients);
             if (postImbalance>0) { //this is done because small rounding errors may results a small surplus and we don't want infinit balancing
-                Balancing(postImbalance);
+                postImbalance = Balancing(postImbalance);
             }
         }
+        return postImbalance;
     }
 
     void addRegulationReport(Integer uuid, Double consAmount, Double prodAmount){
