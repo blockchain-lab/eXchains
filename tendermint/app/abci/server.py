@@ -2,11 +2,11 @@ import socket
 import select
 import sys
 import logging
-# import types_pb2
 
 from .wire import decode_varint, encode
 from .reader import BytesBuffer
 from .msg import RequestDecoder, message_types
+from .types_pb2 import Request, RequestInfo
 
 # hold the asyncronous state of a connection
 # ie. we may not get enough bytes on one read to decode the message
@@ -106,11 +106,13 @@ class ABCIServer():
 
                 # first read the request type and get the particular msg
                 # decoder
-                typeByte = conn.recBuf.read(1)
+                buf = conn.recBuf.read(conn.msgLength)
 
-
-                print("BYTES", typeByte);
-                print("LENGTH", conn.msgLength);
+                req = Request.FromString(buf)
+                # sadly does not work
+                # if (isinstance(req, RequestInfo)):
+                # 	print('info version:', req.version)
+                print(req)
                 return
 
                 typeByte = int(typeByte[0])
