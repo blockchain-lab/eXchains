@@ -1,6 +1,7 @@
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class LaurenSophieAPXAlgorithm {
     // Version 0.1
@@ -36,7 +37,7 @@ public class LaurenSophieAPXAlgorithm {
     private Integer PricePoint(Double imbalance){
         //todo: crate a function that generates a regulation pricepoint based on the imbalance
 
-        return 100000;
+        return 1000;
     }
 
     private void PopulateUberArray(Double imbalance){
@@ -75,10 +76,16 @@ public class LaurenSophieAPXAlgorithm {
 
     public HashMap<Integer, RegulationReport> Balance(){
         System.out.println("You called me, sir?");
-        Double imbalance= preImbalance();
-        pricePoint = PricePoint(imbalance);
-        PopulateUberArray(imbalance);
-        System.out.println("Pre-Balancing: " + imbalance + " Post-balancing: " + Balancing(imbalance));
+        Double preImbalance= preImbalance();
+        Double postImbalance = 0.0;
+        pricePoint = PricePoint(preImbalance);
+        PopulateUberArray(preImbalance);
+        postImbalance = Balancing(preImbalance);
+        Double price = 0.0;
+        for (HashMap.Entry<Integer,RegulationReport> temp: RR.entrySet()){
+            price += 0.0001 * temp.getValue().getPricePoint() * (Math.abs(temp.getValue().getConsRegulationAmount()) * Math.abs(temp.getValue().getProdRegulationAmount()));
+        }
+        System.out.println("Pre-Balancing: " + preImbalance + " Post-balancing: " + postImbalance + " for: " + price);
         return RR;
     }
 
