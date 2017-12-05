@@ -16,6 +16,9 @@ public class Blockchain extends Thread {
     Node n = null;
     Blockchain Parent;
     int Level = 0;
+    HashMap<Integer, Object> clients = new HashMap<>();
+
+    LinkedList<ClientReport> ClientReports = new LinkedList<>();
 
     LaurenSophieAPXAlgorithm algorithm;
 
@@ -29,7 +32,7 @@ public class Blockchain extends Thread {
             n = Main.graph.addNode("B" + ID);
             if(level == 0){
 
-                parent.connect();
+                parent.connect(id, this);
 
                 double x = (1000/Main.NumberOfCusters)*(ID)+(850/Main.NumberOfCusters)/2;
 
@@ -86,11 +89,15 @@ public class Blockchain extends Thread {
 
                     consFlexibility = sumOfferdFlex(consFlexibility, transaction.getConsFlexibility());
                     prodFlexibility = sumOfferdFlex(prodFlexibility, transaction.getProdFlexibility());
+
+                    consumption += transaction.getConsumption();
+                    production += transaction.getProduction();
+
                 }
                 predictedCons.put("t1", preConsumption);
                 predictedProd.put("t1", preProduction);
 
-
+                System.out.println("Level 0: preProduction" + preProduction);
 
                 // build transaction out
                 ClientReport transactionOut = new ClientReport(ID, production, consumption, predictedCons, predictedProd, consFlexibility, prodFlexibility);
@@ -117,9 +124,6 @@ public class Blockchain extends Thread {
 
 
 
-
-
-
             }else if(Level == 1){
                 // wait for all transactions
                 while(queue.size() != numberOfChilds){
@@ -131,6 +135,10 @@ public class Blockchain extends Thread {
                 // "predict" data from coming time block
                 Double preProduction = 0.0;
                 Double preConsumption = 0.0;
+
+                consumption = 0.0;
+                production = 0.0;
+
                 while((transaction = queue.poll()) != null) {
                     preConsumption += transaction.getPredictedCons().get("t1");
                     preProduction += transaction.getPredictedProd().get("t1");
@@ -138,19 +146,27 @@ public class Blockchain extends Thread {
                     consFlexibility = sumOfferdFlex(consFlexibility, transaction.getConsFlexibility());
                     prodFlexibility = sumOfferdFlex(prodFlexibility, transaction.getProdFlexibility());
 
+                    consumption += transaction.getConsumption();
+                    production += transaction.getProduction();
+
                     CR.add(transaction);
                 }
+
+
                 predictedCons.put("t1", preConsumption);
                 predictedProd.put("t1", preProduction);
 
-                System.out.println("consFlexibility size: " + consFlexibility.size());
-                //System.out.println("consFlexibility: " + consFlexibility);
 
-                System.out.println("prodFlexibility size: " + prodFlexibility.size());
-                //System.out.println("prodFlexibility: " + prodFlexibility);
+                System.out.println("predicted consumtion: " + preConsumption + " predicted production: " + preProduction);
+                System.out.println("adjusted consumtion: " + consumption + " adjusted production: " + production);
+
 
                 algorithm.initialize(CR);
-                algorithm.Balance();
+                HashMap<Integer, RegulationReport> regulationReports = algorithm.Balance();
+
+                for (HashMap.Entry<Integer, RegulationReport> entry: regulationReports.entrySet()) {
+                    ((Blockchain) clients.get(entry.getKey())).sendRegulationReport(entry.getValue());
+                }
 
                 // build transaction out
                 ClientReport transactionOut = new ClientReport(ID, production, consumption, predictedCons, predictedProd, consFlexibility, prodFlexibility);
@@ -168,14 +184,26 @@ public class Blockchain extends Thread {
 
     public void sendClientReport(ClientReport transaction){
         queue.add(transaction);
+        ClientReports.add(transaction);
     }
 
     public void sendRegulationReport(RegulationReport report){
+        //System.out.println("Blockchain " + ID + "recived regulationReport");
+
+        algorithm.initialize(ClientReports);
+
+        HashMap<Integer, RegulationReport> regulationReports = algorithm.Balance(report.getPricePoint());
+
+        for (HashMap.Entry<Integer, RegulationReport> entry: regulationReports.entrySet()) {
+            ((Household_Client) clients.get(entry.getKey())).sendRegulationReport(entry.getValue());
+        }
+
         //TODO verdeel energie onder clients
     }
 
-    public void connect(){
+    public void connect(int id, Object client){
         numberOfChilds++;
+        clients.put(id, client);
     }
 
     private void sync(){
