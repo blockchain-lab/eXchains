@@ -6,6 +6,7 @@ import java.util.Map;
 public class LaurenSophieAPXAlgorithm {
     // Version 0.1
     // This version only regulates once per upcoming time slot. For now it will not do any balancing in the current timeslot
+    private Double expenses;
 
     private Integer myID;
     private LinkedList<ClientReport> CR;
@@ -23,6 +24,7 @@ public class LaurenSophieAPXAlgorithm {
         this.RR = new HashMap<Integer, RegulationReport>();
         this.consumptionArray = new SortedUberArray();
         this.productionnArray = new SortedUberArray();
+        this.expenses = 0.0;
     }
 
     private Double preImbalance(){
@@ -42,7 +44,7 @@ public class LaurenSophieAPXAlgorithm {
 
     private void PopulateUberArray(Double imbalance){
         if(imbalance<0){ //Shortage detected
-            System.out.println("Shortage detected");
+            //System.out.println("Shortage detected");
             for (ClientReport currentReport:CR) {
                 for (HashMap.Entry<Integer, Double> currentFlexibility: currentReport.getConsFlexibility().entrySet()){
                     if(currentFlexibility.getKey()<0 && currentFlexibility.getKey() >= -pricePoint){
@@ -56,7 +58,7 @@ public class LaurenSophieAPXAlgorithm {
                 }
             }
         }else{
-            System.out.println("SurPlus detected!");
+            //System.out.println("SurPlus detected!");
             for (ClientReport currentReport:CR) {
                 for (HashMap.Entry<Integer, Double> currentFlexibility: currentReport.getConsFlexibility().entrySet()){
                     if(currentFlexibility.getKey()>0 && currentFlexibility.getKey() >= pricePoint){
@@ -81,11 +83,8 @@ public class LaurenSophieAPXAlgorithm {
         pricePoint = PricePoint(preImbalance);
         PopulateUberArray(preImbalance);
         postImbalance = Balancing(preImbalance);
-        Double price = 0.0;
-        for (HashMap.Entry<Integer,RegulationReport> temp: RR.entrySet()){
-            price += 0.0001 * temp.getValue().getPricePoint() * (Math.abs(temp.getValue().getConsRegulationAmount()) * Math.abs(temp.getValue().getProdRegulationAmount()));
-        }
-        System.out.println("Pre-Balancing: " + preImbalance + " Post-balancing: " + postImbalance + " for: €" + price);
+
+        System.out.println("Pre-Balancing: " + preImbalance + " Post-balancing: " + postImbalance + " for: €" + expenses);
         return RR;
     }
 
@@ -101,6 +100,7 @@ public class LaurenSophieAPXAlgorithm {
         Double postImbalance = imbalance;
         Double smallestCapacity;
         Integer numberOfClients;
+        Integer currentPrice;
         if (productionnArray.isEmpty() && consumptionArray.isEmpty()){
             return postImbalance; //No need to try balancing when there is no available capacity
         }
@@ -109,6 +109,8 @@ public class LaurenSophieAPXAlgorithm {
             if (productionnArray.getLowestPrice() <= consumptionArray.getLowestPrice()) {
                 smallestCapacity = productionnArray.getLowestCapacity();
                 numberOfClients = productionnArray.getNumberOfCheapestClients();
+                currentPrice = productionnArray.getLowestPrice();
+
                 //if smallest capacity is more than enough, readjust smallest capacity.
                 if (-postImbalance < smallestCapacity * numberOfClients) {
                     smallestCapacity = (-postImbalance) / numberOfClients;
@@ -121,6 +123,8 @@ public class LaurenSophieAPXAlgorithm {
             } else {
                 smallestCapacity = consumptionArray.getLowestCapacity();
                 numberOfClients = consumptionArray.getNumberOfCheapestClients();
+                currentPrice = consumptionArray.getLowestPrice();
+
                 //if smallest capacity is more than enough, readjust smallest capacity.
                 if (-postImbalance < smallestCapacity * numberOfClients) {
                     smallestCapacity = (-postImbalance) / numberOfClients;
@@ -139,6 +143,8 @@ public class LaurenSophieAPXAlgorithm {
             if (productionnArray.getLowestPrice() <= consumptionArray.getLowestPrice()) {
                 smallestCapacity = productionnArray.getLowestCapacity();
                 numberOfClients = productionnArray.getNumberOfCheapestClients();
+                currentPrice = productionnArray.getLowestPrice();
+
                 //if smallest capacity is more than enough, readjust smallest capacity.
                 if (postImbalance < smallestCapacity * numberOfClients) {
                     smallestCapacity = postImbalance / numberOfClients;
@@ -151,6 +157,8 @@ public class LaurenSophieAPXAlgorithm {
             } else {
                 smallestCapacity = consumptionArray.getLowestCapacity();
                 numberOfClients = consumptionArray.getNumberOfCheapestClients();
+                currentPrice = consumptionArray.getLowestPrice();
+
                 //if smallest capacity is more than enough, readjust smallest capacity.
                 if (postImbalance < smallestCapacity * numberOfClients) {
                     smallestCapacity = postImbalance / numberOfClients;
@@ -161,11 +169,14 @@ public class LaurenSophieAPXAlgorithm {
                 }
             }
 
+
+
             postImbalance -=  (smallestCapacity * numberOfClients);
             if (postImbalance>0) { //this is done because small rounding errors may results a small surplus and we don't want infinit balancing
                 postImbalance = Balancing(postImbalance);
             }
         }
+        this.expenses += (smallestCapacity * numberOfClients) * currentPrice;
         return postImbalance;
     }
 

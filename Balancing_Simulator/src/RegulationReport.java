@@ -10,7 +10,6 @@ public class RegulationReport {
         return pricePoint;
     }
 
-
     private Integer uuid;
 
     public Double getConsRegulationAmount() {
@@ -24,7 +23,6 @@ public class RegulationReport {
     private Double consRegulationAmount;
     private Double ProdRegulationAmount;
     private Integer pricePoint;
-
 
     public RegulationReport(Integer uuid, Double consRegulationAmount, Double ProdRegulationAmount, Integer pricePoint) {
         this.uuid = uuid;
