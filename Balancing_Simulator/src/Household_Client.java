@@ -64,6 +64,12 @@ public class Household_Client extends Thread{
                 csvReader.readNext();
             }
 
+            //TODO andere start tijd
+            // start on 11:00
+//            for (int i = 0; i < 60*11; i++) {
+//                csvReader.readNext();
+//            }
+
             // each loop we send:
             Double production = 0.0;
             Double consumption = 0.0;
@@ -106,6 +112,8 @@ public class Household_Client extends Thread{
                 predictedCons.put("t1", preConsumption);
                 predictedProd.put("t1", preProduction);
 
+                //System.out.println("Household " + ID + " preConsumption: " + preConsumption + ", preProduction: " + preProduction);
+
                 //TODO put something in offeredFlexibility
 
                 int P1P = rn.nextInt(900)+100;    // 100 - 1000
@@ -145,8 +153,8 @@ public class Household_Client extends Thread{
                 // make pretty
                 synchronized (Main.graph){
                     e.addAttribute("ui.class", "active");
-                    e.addAttribute("ui.label",  ((int)(consumption/5)) + "W / " + ((int)(production/5)) + "W");
-                    n.addAttribute("ui.label",  ((int)(consumption/5)) + "/" + ((int)(production/5)) + " W");
+                    e.addAttribute("ui.label",  ((int)(consumption/5)) + "Wh / " + ((int)(production/5)) + "Wh");
+                    n.addAttribute("ui.label",  ((int)(consumption/5)) + "/" + ((int)(production/5)) + " Wh");
                 }
                 delay(1000);
 
