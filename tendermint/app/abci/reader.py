@@ -2,7 +2,7 @@
 # Simple read() method around a bytearray
 
 
-class BytesBuffer():
+class BytesBuffer:
 
     def __init__(self, b):
         self.buf = b
@@ -37,7 +37,7 @@ class BytesBuffer():
 # Buffer bytes off a tcp connection and read them off in chunks
 
 
-class ConnReader():
+class ConnReader:
 
     def __init__(self, conn):
         self.conn = conn

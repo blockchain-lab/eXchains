@@ -5,34 +5,35 @@ import logging
 
 from .wire import decode_varint, encode
 from .reader import BytesBuffer
-from .msg import RequestDecoder, message_types
-from .types_pb2 import Request, RequestInfo
-
+from .types_pb2 import Request, ResponseFlush, Response
+from google.protobuf.internal.encoder import _VarintBytes
+from google.protobuf.internal.decoder import _DecodeVarint32
+from pprint import pprint
 # hold the asyncronous state of a connection
 # ie. we may not get enough bytes on one read to decode the message
 
 logger = logging.getLogger(__name__)
 
-class Connection():
-
-    def __init__(self, fd, app):
-        self.fd = fd
+class Connection:
+    def __init__(self, fd: socket, app):
+        self.fd: socket = fd
         self.app = app
         self.recBuf = BytesBuffer(bytearray())
         self.resBuf = BytesBuffer(bytearray())
         self.msgLength = 0
-        self.decoder = RequestDecoder(self.recBuf)
         self.inProgress = False  # are we in the middle of a message
 
-    def recv(this):
-        data = this.fd.recv(1024)
+    def recv(self):
+        # if socket.readable():
+        data = self.fd.recv(1024)
         if not data:  # what about len(data) == 0
             raise IOError("dead connection")
-        this.recBuf.write(data)
+
+        self.recBuf.write(data)
+
 
 # ABCI server responds to messges by calling methods on the app
-
-class ABCIServer():
+class ABCIServer:
 
     def __init__(self, app, port=5410):
         self.app = app
@@ -54,6 +55,9 @@ class ABCIServer():
         self.read_list = [self.listener]
         self.write_list = []
 
+        self.loopId = 1
+
+
     def handle_new_connection(self, r):
         new_fd, new_addr = r.accept()
         new_fd.setblocking(0)  # non-blocking
@@ -69,15 +73,16 @@ class ABCIServer():
         r.close()
         print("connection closed")
 
-    def handle_recv(self, r):
+    def handle_recv(self, r: socket):
         #  app, recBuf, resBuf, conn
         conn = self.appMap[r]
+        self.loopId += 1
         while True:
             try:
-                print("recv loop")
+                print("recv loop", self.loopId)
                 # check if we need more data first
                 if conn.inProgress:
-                    if (conn.msgLength == 0 or conn.recBuf.size() < conn.msgLength):
+                    if conn.msgLength == 0 or conn.recBuf.size() < conn.msgLength:
                         conn.recv()
                 else:
                     if conn.recBuf.size() == 0:
@@ -91,85 +96,32 @@ class ABCIServer():
                     if conn.recBuf.size() < 1 + ll:
                         # we don't have enough bytes to read the length yet
                         return
-                    print("decoding msg length")
+                    # print("decoding msg length")
                     conn.msgLength = decode_varint(conn.recBuf)
 
                 # see if we have enough to decode the message
                 if conn.recBuf.size() < conn.msgLength:
                     return
 
-
-
-
-
-                # now we can decode the message
-
-                # first read the request type and get the particular msg
-                # decoder
                 buf = conn.recBuf.read(conn.msgLength)
+                req: Request = Request.FromString(buf)
 
-                req = Request.FromString(buf)
-                # sadly does not work
-                # if (isinstance(req, RequestInfo)):
-                # 	print('info version:', req.version)
-                print(req)
-                return
-
-                typeByte = int(typeByte[0])
-                resTypeByte = typeByte + 0x10
-                req_type = message_types[typeByte]
-
-                if req_type == "flush":
-                    # messages are length prefixed
-                    conn.resBuf.write(encode(1))
-                    conn.resBuf.write([resTypeByte])
-                    conn.fd.send(conn.resBuf.buf)
-                    conn.msgLength = 0
-                    conn.inProgress = False
-                    conn.resBuf = BytesBuffer(bytearray())
-                    return
-
-                decoder = getattr(conn.decoder, req_type)
-
-                print("decoding args")
-                req_args = decoder()
-                print("got args", req_args)
-
-                # done decoding message
                 conn.msgLength = 0
                 conn.inProgress = False
 
-                req_f = getattr(conn.app, req_type)
-                if req_args is None:
-                    res = req_f()
-                elif isinstance(req_args, tuple):
-                    res = req_f(*req_args)
-                else:
-                    res = req_f(req_args)
+                print(req)
+                res = None
+                if req.HasField('info'):
+                    res = self.app.info(req.info)
 
-                if isinstance(res, tuple):
-                    res, ret_code = res
-                else:
-                    ret_code = res
-                    res = None
+                if req.HasField('flush'):
+                    self.app.flush(req.flush)
+                    self.flush(conn)
+                    break
 
-                print("called", req_type, "ret code:", ret_code, 'res:', res)
-                if ret_code != 0:
-                    print("non-zero retcode:", ret_code)
+                if res is not None:
+                    self.write_response(conn, res)
 
-                if req_type in ("echo", "info"):  # these dont return a ret code
-                    enc = encode(res)
-                    # messages are length prefixed
-                    conn.resBuf.write(encode(len(enc) + 1))
-                    conn.resBuf.write([resTypeByte])
-                    conn.resBuf.write(enc)
-                else:
-                    enc, encRet = encode(res), encode(ret_code)
-                    # messages are length prefixed
-                    conn.resBuf.write(encode(len(enc) + len(encRet) + 1))
-                    conn.resBuf.write([resTypeByte])
-                    conn.resBuf.write(encRet)
-                    conn.resBuf.write(enc)
             except IOError as e:
                 print("IOError on reading from connection:", e)
                 self.handle_conn_closed(r)
@@ -178,6 +130,21 @@ class ABCIServer():
                 logger.exception("error reading from connection")
                 self.handle_conn_closed(r)
                 return
+
+    def flush(self, conn):
+        # res = Response()
+        # res.flush
+        # self.write_response(conn, res)
+        conn.fd.send(conn.resBuf.buf)
+        conn.resBuf = BytesBuffer(bytearray())
+
+    def write_response(self, conn, res):
+        # data = res.SerializeToString()
+        print('writing', res.ByteSize(), res.SerializeToString())
+        # if len(data) == 0:
+        #     return
+        conn.resBuf.write(_VarintBytes(res.ByteSize()))
+        conn.resBuf.write(res.SerializeToString())
 
     def main_loop(self):
         while not self.shutdown:

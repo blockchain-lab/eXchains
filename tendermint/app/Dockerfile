@@ -16,6 +16,10 @@ add . /app/
 # RUN yarn --frozen-lockfile && \
 	# yarn cache clean
 
-ENTRYPOINT ["python3"]
-cmd ["app.py"]
+#nodemon --exec "python -v" ./app.py
+
+ENTRYPOINT ["python"]
+CMD ["app.py"]
+#ENTRYPOINT ["nodemon"]
+#cmd ["--exec", "python", "app.py"]
 # CMD ["manage.py", "runserver", "0.0.0.0:8000"]
