@@ -17,8 +17,8 @@ public class Main {
     private static List<Household_Client> Households = new LinkedList<>();
     private static List<Blockchain> blockchains = new LinkedList<>();
 
-    public static final int HousesPerCluster = 100; //max 100 clusters due to (XYY, where X is cluster id, YY is node id)
-    public static final int NumberOfClusters = 2; //
+    public static final int HousesPerCluster = 10; //max 100 clusters due to (XYY, where X is cluster id, YY is node id)
+    public static final int NumberOfClusters = 5; //
 
     public static final int TimeSlotMin = 5;
 
@@ -162,7 +162,7 @@ public class Main {
 
 
                     // build Client report
-                    ClientReport report = new ClientReport(j, production, consumption, predictedCons, predictedProd, consFlexibility, prodFlexibility);
+                    ClientReport report = new ClientReport(j, production, consumption, predictedCons, predictedProd, new HashMap<>(consFlexibility), new HashMap<>(prodFlexibility));
                     reports.get(i).add(report);
                     // End of copy
                 }
@@ -193,7 +193,7 @@ public class Main {
                 L1.put(Entry.getKey(), Entry.getValue());
             }
         }
-        return L1;
+        return new HashMap<>(L1);
     }
 
     static public ClientReport SumReports(int clusterId, LinkedList<ClientReport> reportList){
@@ -210,8 +210,8 @@ public class Main {
             preConsumption += report.getPredictedCons().get("t1");
             preProduction += report.getPredictedProd().get("t1");
 
-            consFlexibility = sumOfferdFlex(new HashMap<>(consFlexibility), report.getConsFlexibility());
-            prodFlexibility = sumOfferdFlex(new HashMap<>(prodFlexibility), report.getProdFlexibility());
+            consFlexibility = new HashMap<>(sumOfferdFlex(new HashMap<>(consFlexibility), report.getConsFlexibility()));
+            prodFlexibility = new HashMap<>(sumOfferdFlex(new HashMap<>(prodFlexibility), report.getProdFlexibility()));
 
             consumption += report.getConsumption();
             production += report.getProduction();
