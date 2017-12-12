@@ -23,7 +23,7 @@ module.exports.Connection = class Connection extends require('events') {
 		if (buf.length > 0) {
 			this.receiveBuffer = Buffer.concat([this.receiveBuffer, buf]);
 		}
-		console.log(this.receiveBuffer);
+		// console.log(this.receiveBuffer);
 		
 		if (this.waitingResult) {
 			return;
@@ -42,7 +42,7 @@ module.exports.Connection = class Connection extends require('events') {
 		this.socket.pause();
 		this.waitingResult = true;
 
-		console.log(header, packet);
+		// console.log(header, packet);
 		var response = this.messageHandler(packet);
 		if (response instanceof Promise) {
 			response.then(result => {
@@ -68,7 +68,7 @@ module.exports.Connection = class Connection extends require('events') {
 			return;
 		}
 		let header = this.encodeLength(packet.length);
-		console.log(packet.length, header, packet);
+		// console.log(packet.length, header, packet);
 		this.transmitBuffer = Buffer.concat([this.transmitBuffer, header, packet]);
 		if (this.transmitBuffer.length >= maxWriteBufferLength) {
 			this.flush();
