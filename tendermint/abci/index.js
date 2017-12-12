@@ -45,7 +45,7 @@ async function start() {
 		console.log('a user connected');
 		socket.emit('messages', application.messages);
 		socket.on('message', function(msg) {
-			request.get(`http://tendermint:46657/broadcast_tx_async?tx=${JSON.stringify(msg)}`, (err, res, body) => {
+			request.get(`http://tendermint0:46657/broadcast_tx_async?tx=${JSON.stringify(msg)}`, (err, res, body) => {
 				console.log('message posted', body);
 			});
 			console.log('message:', msg);
