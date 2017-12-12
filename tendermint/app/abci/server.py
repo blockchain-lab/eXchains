@@ -111,16 +111,35 @@ class ABCIServer:
 
 				print(req)
 				res = None
-				if req.HasField('info'):
-					res = self.app.info(req.info)
-
+				if req.HasField('echo'):
+					res = self.app.onEcho(req.echo)
 				if req.HasField('flush'):
-					self.app.flush(req.flush)
-					self.flush(conn)
-					break
+					res = self.app.onFlush(req.flush)
+				if req.HasField('info'):
+					res = self.app.onInfo(req.info)
+				if req.HasField('set_option'):
+					res = self.app.onSetOption(req.set_option)
+				if req.HasField('deliver_tx'):
+					res = self.app.onDeliverTx(req.deliver_tx)
+				if req.HasField('check_tx'):
+					res = self.app.onCheckTx(req.check_tx)
+				if req.HasField('commit'):
+					res = self.app.onCommit(req.commit)
+				if req.HasField('query'):
+					res = self.app.onQuery(req.query)
+				if req.HasField('init_chain'):
+					res = self.app.onInitChain(req.init_chain)
+				if req.HasField('begin_block'):
+					res = self.app.onBeginBlock(req.begin_block)
+				if req.HasField('end_block'):
+					res = self.app.onEndBlock(req.end_block)
 
 				if res is not None:
 					self.write_response(conn, res)
+
+				if res.HasField('flush'):
+					self.flush(conn)
+					return
 
 			except IOError as e:
 				print("IOError on reading from connection:", e)
@@ -132,19 +151,13 @@ class ABCIServer:
 				return
 
 	def flush(self, conn):
-		res = Response()
-		res.flush.SetInParent()
-		self.write_response(conn, res)
 		conn.fd.send(conn.resBuf.buf)
 		conn.resBuf = BytesBuffer(bytearray())
 
 	def write_response(self, conn, res):
-		# data = res.SerializeToString()
-		print('writing', res.ByteSize(), encode_varint(res.ByteSize()), res.SerializeToString())
-		# if len(data) == 0:
-		#     return
-		packet = res.SerializeToString()
+		print('Write', res.ByteSize(), encode_varint(res.ByteSize()), res.SerializeToString())
 		header = encode_varint(res.ByteSize())
+		packet = res.SerializeToString()
 		conn.resBuf.write(header)
 		conn.resBuf.write(packet)
 
