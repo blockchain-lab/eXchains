@@ -1,14 +1,17 @@
 version: '3.0'
 services:
-  app0:
-    build: app
+  abci0:
+    build: abci
+    ports:
+      - 80:80
+      
   tendermint0:
     image: tendermint/tendermint:0.12.0
     volumes:
       - ./.data/cluster/mach0:/tendermint
       - tendermint0:/tendermint/data
     depends_on:
-      - app0
+      - abci0
     ports:
       - 46656:46656
       - 46657:46657
@@ -19,15 +22,15 @@ services:
       - --consensus.create_empty_blocks=false
       - --proxy_app=dummy
 
-  app1:
-    build: app
+  abci1:
+    build: abci
   tendermint1:
     image: tendermint/tendermint:0.12.0
     volumes:
       - ./.data/cluster/mach1:/tendermint
       - tendermint1:/tendermint/data
     depends_on:
-      - app1
+      - abci1
     entrypoint:
       - tendermint
       - node
@@ -35,15 +38,15 @@ services:
       - --consensus.create_empty_blocks=false
       - --proxy_app=dummy
 
-  app2:
-    build: app
+  abci2:
+    build: abci
   tendermint2:
     image: tendermint/tendermint:0.12.0
     volumes:
       - ./.data/cluster/mach2:/tendermint
       - tendermint2:/tendermint/data
     depends_on:
-      - app0
+      - abci0
     entrypoint:
       - tendermint
       - node
@@ -51,15 +54,15 @@ services:
       - --consensus.create_empty_blocks=false
       - --proxy_app=dummy
 
-  app3:
-    build: app
+  abci3:
+    build: abci
   tendermint3:
     image: tendermint/tendermint:0.12.0
     volumes:
       - ./.data/cluster/mach3:/tendermint
       - tendermint3:/tendermint/data
     depends_on:
-      - app0
+      - abci0
     entrypoint:
       - tendermint
       - node
@@ -67,15 +70,15 @@ services:
       - --consensus.create_empty_blocks=false
       - --proxy_app=dummy
 
-  app4:
-    build: app
+  abci4:
+    build: abci
   tendermint4:
     image: tendermint/tendermint:0.12.0
     volumes:
       - ./.data/cluster/mach4:/tendermint
       - tendermint4:/tendermint/data
     depends_on:
-      - app0
+      - abci0
     entrypoint:
       - tendermint
       - node
