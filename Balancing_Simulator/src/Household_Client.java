@@ -21,28 +21,6 @@ public class Household_Client extends Thread{
     double prodRegulationAmount = 0;
 
 
-    public Household_Client(int id, int ParentID, Blockchain parent){
-        ID = id;
-        this.blockchain = parent;
-        parent.connect(id, this);
-
-        synchronized (Main.graph) {
-            n = Main.graph.addNode("H" + ID);
-            n.addAttribute("ui.class", "H");
-
-            int totaalHouseholds = Main.HousesPerCluster * Main.NumberOfCusters;
-
-            double x = (id*90)/totaalHouseholds + (10/(Main.NumberOfCusters-1))*(id/Main.HousesPerCluster);
-            x = (id * 900)/totaalHouseholds + (100/(Main.NumberOfCusters-1))*(id/Main.HousesPerCluster);
-
-
-            n.setAttribute("xy", x , 0);
-
-            Node BlockchainNode = Main.graph.getNode("B" + ParentID);
-            e = Main.graph.addEdge("HE" + ID, n, BlockchainNode);
-            e.addAttribute("ui.class", "off");
-        }
-    }
 
     public void run() {
         System.out.println("Household " + ID + " started");
@@ -150,23 +128,7 @@ public class Household_Client extends Thread{
                 consumption = preConsumption;
                 production = preProduction;
 
-                // make pretty
-                synchronized (Main.graph){
-                    e.addAttribute("ui.class", "active");
-                    e.addAttribute("ui.label",  ((int)(consumption/5)) + "Wh / " + ((int)(production/5)) + "Wh");
-                    n.addAttribute("ui.label",  ((int)(consumption/5)) + "/" + ((int)(production/5)) + " Wh");
-                }
-                delay(1000);
 
-                //send report to blockchain
-                blockchain.sendClientReport(report);
-
-                delay(500);
-                synchronized (Main.graph){
-                    e.addAttribute("ui.class", "off");
-                }
-
-                // wait before next loop
                 delay(1000*Main.simSpeed);
             }
         } catch (IOException e) {
@@ -184,13 +146,7 @@ public class Household_Client extends Thread{
     }
 
     private void sync(){
-        try {
-            Main.gate.await();
-        } catch (InterruptedException e1) {
-            e1.printStackTrace();
-        } catch (BrokenBarrierException e1) {
-            e1.printStackTrace();
-        }
+
     }
 
     private void delay(int millis){
