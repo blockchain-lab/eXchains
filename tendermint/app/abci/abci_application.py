@@ -12,10 +12,6 @@ class ABCIApplication:
         res = Response()
         res.info.data = ""
         res.info.version = "1.0.0"
-        res.info.last_block_height = self.blockHeight
-        res.info.last_block_app_hash = self.blockHash
-        # res = Response()
-        # res.info = info
         return res
 
     def flush(self, msg: RequestFlush):
