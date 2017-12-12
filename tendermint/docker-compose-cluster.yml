@@ -5,7 +5,7 @@ services:
     ports:
       - 80:80
       
-  tendermint0:
+  tendermint:
     image: tendermint/tendermint:0.12.0
     volumes:
       - ./.data/cluster/mach0:/tendermint
@@ -18,9 +18,9 @@ services:
     entrypoint:
       - tendermint
       - node
-      - --p2p.seeds=tendermint1:46656
-      - --consensus.create_empty_blocks=false
-      - --proxy_app=dummy
+      - --p2p.seeds=tendermint1:46656,tendermint2:46656,tendermint3:46656,tendermint4:46656
+      # - --consensus.create_empty_blocks=false
+      - --proxy_app=abci0:46658
 
   abci1:
     build: abci
@@ -34,9 +34,9 @@ services:
     entrypoint:
       - tendermint
       - node
-      - --p2p.seeds=tendermint2:46656
-      - --consensus.create_empty_blocks=false
-      - --proxy_app=dummy
+      # - --p2p.seeds=tendermint2:46656
+      # - --consensus.create_empty_blocks=false
+      - --proxy_app=abci1:46658
 
   abci2:
     build: abci
@@ -50,9 +50,9 @@ services:
     entrypoint:
       - tendermint
       - node
-      - --p2p.seeds=tendermint3:46656
-      - --consensus.create_empty_blocks=false
-      - --proxy_app=dummy
+      # - --p2p.seeds=tendermint3:46656
+      # - --consensus.create_empty_blocks=false
+      - --proxy_app=abci2:46658
 
   abci3:
     build: abci
@@ -66,9 +66,9 @@ services:
     entrypoint:
       - tendermint
       - node
-      - --p2p.seeds=tendermint4:46656
-      - --consensus.create_empty_blocks=false
-      - --proxy_app=dummy
+      # - --p2p.seeds=tendermint4:46656
+      # - --consensus.create_empty_blocks=false
+      - --proxy_app=abci3:46658
 
   abci4:
     build: abci
@@ -82,9 +82,9 @@ services:
     entrypoint:
       - tendermint
       - node
-      - --p2p.seeds=tendermint0:46656
-      - --consensus.create_empty_blocks=false
-      - --proxy_app=dummy
+      # - --p2p.seeds=tendermint:46656
+      # - --consensus.create_empty_blocks=false
+      - --proxy_app=abci4:46658
       
 volumes:
   tendermint0:

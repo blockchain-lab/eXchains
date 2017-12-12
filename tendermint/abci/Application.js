@@ -113,8 +113,7 @@ module.exports.Application = class Application {
 		return this.createResponse({
 			deliverTx: {
 				code: this.proto.CodeType.OK,
-				// bytes: [],
-				log: 'Nothing done'
+				bytes: deliver.tx
 			}
 		});
 	}
@@ -131,8 +130,7 @@ module.exports.Application = class Application {
 		return this.createResponse({
 			checkTx: {
 				code: this.proto.CodeType.OK,
-				// bytes: [],
-				log: 'Nothing done'
+				bytes: check.tx
 			}
 		});
 	}
