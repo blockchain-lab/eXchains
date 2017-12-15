@@ -107,6 +107,8 @@ class ABCIServer:
 				conn.msgLength = 0
 				conn.inProgress = False
 
+				print("")
+				print("------------")
 				print(req)
 				res = None
 				if req.HasField('echo'):
@@ -134,6 +136,9 @@ class ABCIServer:
 
 				if res is not None:
 					self.write_response(conn, res)
+
+				print("------------")
+				print("")
 
 				if res.HasField('flush'):
 					self.flush(conn)

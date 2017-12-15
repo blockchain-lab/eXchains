@@ -5,8 +5,8 @@ from .types_pb2 import Response, RequestEcho, RequestFlush, RequestInfo, Request
 class ABCIApplication:
 
 	def __init__(self):
-		self.blockHash = b''
-		self.blockHeight = 0
+		self.last_block_app_hash = b''
+		self.last_block_height = 0
 
 	def on_echo(self, msg: RequestEcho):
 		print('onEcho(message=' + msg.message + ')')
@@ -25,6 +25,8 @@ class ABCIApplication:
 		res = Response()
 		res.info.data = ""
 		res.info.version = "1.0.0"
+		res.info.last_block_height = self.last_block_height
+		res.info.last_block_app_hash = self.last_block_app_hash
 		return res
 
 	def on_set_option(self, msg: RequestSetOption):
@@ -69,10 +71,15 @@ class ABCIApplication:
 		print('onBeginBlock(...)')
 		res = Response()
 		res.begin_block.SetInParent()
+		# make sure we don't want to define something else here ;)
+		self.last_block_app_hash = msg.hash
+
 		return res
 
 	def on_end_block(self, msg: RequestEndBlock):
-		print('onEndBlock(...)')
+		print('onEndBlock(height=' + str(msg.height) + ')')
 		res = Response()
 		res.end_block.SetInParent()
+
+		self.last_block_height = msg.height
 		return res
