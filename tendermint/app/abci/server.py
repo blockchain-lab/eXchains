@@ -5,14 +5,13 @@ import logging
 
 from .wire import decode_varint, encode_varint, encode
 from .reader import BytesBuffer
-from .types_pb2 import Request, ResponseFlush, Response
-from google.protobuf.internal.encoder import _VarintBytes
-from google.protobuf.internal.decoder import _DecodeVarint32
-from pprint import pprint
+from .types_pb2 import Request
+
 # hold the asyncronous state of a connection
 # ie. we may not get enough bytes on one read to decode the message
 
 logger = logging.getLogger(__name__)
+
 
 class Connection:
 	def __init__(self, fd: socket, app):
@@ -56,7 +55,6 @@ class ABCIServer:
 		self.write_list = []
 
 		self.loopId = 1
-
 
 	def handle_new_connection(self, r):
 		new_fd, new_addr = r.accept()
@@ -112,27 +110,27 @@ class ABCIServer:
 				print(req)
 				res = None
 				if req.HasField('echo'):
-					res = self.app.onEcho(req.echo)
+					res = self.app.on_echo(req.echo)
 				if req.HasField('flush'):
-					res = self.app.onFlush(req.flush)
+					res = self.app.on_flush(req.flush)
 				if req.HasField('info'):
-					res = self.app.onInfo(req.info)
+					res = self.app.on_info(req.info)
 				if req.HasField('set_option'):
-					res = self.app.onSetOption(req.set_option)
+					res = self.app.on_set_option(req.set_option)
 				if req.HasField('deliver_tx'):
-					res = self.app.onDeliverTx(req.deliver_tx)
+					res = self.app.on_deliver_tx(req.deliver_tx)
 				if req.HasField('check_tx'):
-					res = self.app.onCheckTx(req.check_tx)
+					res = self.app.on_check_tx(req.check_tx)
 				if req.HasField('commit'):
-					res = self.app.onCommit(req.commit)
+					res = self.app.on_commit(req.commit)
 				if req.HasField('query'):
-					res = self.app.onQuery(req.query)
+					res = self.app.on_query(req.query)
 				if req.HasField('init_chain'):
-					res = self.app.onInitChain(req.init_chain)
+					res = self.app.on_init_chain(req.init_chain)
 				if req.HasField('begin_block'):
-					res = self.app.onBeginBlock(req.begin_block)
+					res = self.app.on_begin_block(req.begin_block)
 				if req.HasField('end_block'):
-					res = self.app.onEndBlock(req.end_block)
+					res = self.app.on_end_block(req.end_block)
 
 				if res is not None:
 					self.write_response(conn, res)
@@ -170,7 +168,7 @@ class ABCIServer:
 				if (r == self.listener):
 					try:
 						self.handle_new_connection(r)
-						# undo adding to read list ...
+					# undo adding to read list ...
 					except NameError as e:
 						print("Could not connect due to NameError:", e)
 					except TypeError as e:
