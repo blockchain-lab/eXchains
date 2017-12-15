@@ -9,7 +9,8 @@ import uuid
 class Client:
 	def __init__(self, address='localhost', port=46657):
 		self.uuid = uuid.uuid4()
-		open('uuid', 'wb').write(self.uuid.bytes)
+		# optional storage of the uuid
+		# open('uuid', 'wb').write(self.uuid.bytes)
 
 		self.address = address
 		self.port = port
@@ -26,14 +27,14 @@ class Client:
 		pass
 
 	def run(self):
-		counter = 0
+		counter = 1
 		try:
 			while True:
 				msg = {}
 				msg['UUID'] = self.uuid
 				msg['Timestamp'] = int(time.time())
-				msg['Consumption'] = self.data[counter][3]
-				msg['Production'] = self.data[counter][4]
+				msg['Consumption'] = self.data[counter].split(';')[3]
+				msg['Production'] = self.data[counter].split(';')[4]
 
 				# kinda ugly way to generate stuff to sign
 				payload = bytes(str(msg['UUID']) + str(msg['Timestamp']) + str(msg['Consumption']) + str(msg['Production']), encoding='UTF-8')
@@ -46,7 +47,7 @@ class Client:
 				# signature verification, should be on server side only
 				try:
 					self.public_key.verify(msg['Signature'], payload, encoding="base64")
-					print('Signature ok')
+					print(payload)
 				except ecdsa.BadSignatureError as e:
 					print('NOPE')
 				
