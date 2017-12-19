@@ -6,3 +6,4 @@ MarkupSafe==1.0
 protobuf==3.5.0.post1
 six==1.11.0
 Werkzeug==0.12.2
+ed25519
