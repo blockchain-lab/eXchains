@@ -4,13 +4,42 @@ from abci.types_pb2 import RequestCheckTx, Response, EncodingError, OK, Unauthor
 from abci.server import ABCIServer
 from abci.abci_application import ABCIApplication
 from transaction_pb2 import Transaction
+import ed25519
 
 
 class EnergyMarketApplication(ABCIApplication):
 
 	def __init__(self):
 		super().__init__()
-		self.contracts = {}
+		self.state = {
+			"contracts": {}
+		}
+		self.pending_state = {
+			"contracts": {}
+		}
+
+	def check_signature(self, public_key, transaction_type, transaction):
+		payload = None
+		signature = transaction.signature
+		if transaction_type == 'new_contract':
+			payload = transaction.uuid + int(transaction.timestamp).to_bytes(8, 'big') + transaction.public_key
+
+		if transaction_type == 'usage':
+			payload = transaction.contract_uuid + \
+				int(transaction.timestamp).to_bytes(8, 'big') + \
+				int(transaction.consumption).to_bytes(8, 'big') + \
+				int(transaction.production).to_bytes(8, 'big')
+
+		print(payload, transaction)
+		if payload is None:
+			return False
+
+		verify = ed25519.VerifyingKey(public_key)
+		try:
+			verify.verify(signature, payload)
+		except AssertionError:
+			return False
+		return True
 
 	def on_check_tx(self, msg: RequestCheckTx):
 		tx = msg.tx
@@ -25,45 +54,44 @@ class EnergyMarketApplication(ABCIApplication):
 		print(transaction)
 
 		if transaction.HasField('new_contract'):
-			if transaction.new_contract.uuid in self.contracts:
+			if transaction.new_contract.uuid in self.pending_state["contracts"]:
 				res = Response()
 				res.check_tx.code = Unauthorized
 				return res
-			# todo: verify signature
-			# todo: verify contractor_signature
-			# self.contract[transaction.new_contract.uuid] = transaction.new_contract.public_key
-		if transaction.HasField('usage'):
-			if transaction.usage.contract_uuid not in self.contracts:
+
+			if not self.check_signature(transaction.new_contract.public_key, 'new_contract', transaction.new_contract):
 				res = Response()
 				res.check_tx.code = Unauthorized
 				return res
-			# todo: verify signature
+
+			self.pending_state["contracts"][transaction.new_contract.uuid] = {
+				"public_key": transaction.new_contract.public_key,
+				"consumption": 0,
+				"production": 0
+			}
+
+		# todo: verify contractor_signature
+		elif transaction.HasField('usage'):
+			if transaction.usage.contract_uuid not in self.pending_state["contracts"]:
+				res = Response()
+				res.check_tx.code = Unauthorized
+				return res
+
+			if not self.check_signature(self.pending_state["contracts"][transaction.usage.contract_uuid]["public_key"], 'usage', transaction.usage):
+				res = Response()
+				res.check_tx.code = Unauthorized
+				return res
+			self.pending_state["contracts"][transaction.usage.contract_uuid]["consumption"] += transaction.usage.consumption
+			self.pending_state["contracts"][transaction.usage.contract_uuid]["production"] += transaction.usage.production
+		else:
+			res = Response()
+			res.check_tx.code = EncodingError
+			return res
 
 		res = Response()
 		res.check_tx.code = OK
 		return res
 
-	# message
-	# Transaction
-	# {
-	# 	oneof
-	# value
-	# {
-	# 	TransactionUsage
-	# usage = 1;
-	# TransactionNewContract
-	# new_contract = 2;
-	# TransactionCloseContract
-	# close_contract = 3;
-	#
-	# TransactionStartBalancing
-	# balance_start = 4;
-	# TransactionBalance
-	# balance = 5;
-	# TransactionEndBalancing
-	# balance_end = 6;
-	# }
-	# }
 	def on_deliver_tx(self, msg: RequestDeliverTx):
 		tx = msg.tx
 		try:
@@ -76,7 +104,7 @@ class EnergyMarketApplication(ABCIApplication):
 		print(transaction)
 
 		if transaction.HasField('new_contract'):
-			self.contracts[transaction.new_contract.uuid] = {
+			self.state["contracts"][transaction.new_contract.uuid] = {
 				"public_key": transaction.new_contract.public_key,
 				"consumption": 0,
 				"production": 0
@@ -84,12 +112,16 @@ class EnergyMarketApplication(ABCIApplication):
 
 		# self.contract[transaction.new_contract.uuid] = transaction.new_contract.public_key
 		if transaction.HasField('usage'):
-			self.contracts[transaction.usage.contract_uuid]["consumption"] += transaction.usage.consumption
-			self.contracts[transaction.usage.contract_uuid]["production"] += transaction.usage.production
+			self.state["contracts"][transaction.usage.contract_uuid]["consumption"] += transaction.usage.consumption
+			self.state["contracts"][transaction.usage.contract_uuid]["production"] += transaction.usage.production
 
 		res = Response()
 		res.deliver_tx.code = OK
 		return res
+
+	def on_end_block(self, msg):
+		self.pending_state = self.state.copy()
+		return super().on_end_block(msg)
 
 
 if __name__ == '__main__':

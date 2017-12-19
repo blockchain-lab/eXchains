@@ -7,6 +7,9 @@ message TransactionUsage {
     uint64 timestamp = 2;
     uint64 consumption = 3;
     uint64 production = 4;
+    /*
+       concat(contract_uuid, timestamp.to_bytes(8, big_endian), consumption.to_bytes(8, big_endian), production.to_bytes(8, big_endian))
+    */
     bytes signature = 5;
 }
 
@@ -14,6 +17,9 @@ message TransactionNewContract {
     bytes uuid = 1;
     uint64 timestamp = 2;
     bytes public_key = 3;
+    /*
+       concat(uuid, timestamp.to_bytes(8, big_endian), public_key)
+    */
     bytes signature = 4;
     bytes contractor_signature = 5;
 }
@@ -21,6 +27,7 @@ message TransactionNewContract {
 message TransactionCloseContract {
     bytes uuid = 1;
     uint64 timestamp = 2;
+
     bytes signature = 3;
 }
 

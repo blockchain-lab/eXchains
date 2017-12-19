@@ -23,7 +23,7 @@
 			for(var i = 0; i < 16; i ++) {
 				buf[i] = (Math.random() * 256) | 0;
 			}
-			buf[6] = buf[6] & 0x0F | 0x40; // 0b0010xxxx
+			buf[6] = buf[6] & 0x0F | 0x40; // 0b0100xxxx
 			buf[8] = buf[8] & 0x3F | 0x80; // 0b10xxxxxx
 			return buf;
 		}
