@@ -10,6 +10,7 @@ import json
 
 class Client:
 	def __init__(self, address='localhost', port=46657, data_file='data.csv', time_interval=900):
+		'''Initialize client with provided parameters, generate keys'''
 		self.uuid = uuid.uuid4()
 		# optional storage of the uuid
 		# open('uuid', 'wb').write(self.uuid.bytes)
@@ -37,9 +38,9 @@ class Client:
 		msg.new_contract.signature = self.priv_key.sign(payload)
 		data = msg.SerializeToString()
 
-		self.sendRequest(data)
+		self.send_request(data)
 
-	def sendRequest(self, binarystring):
+	def send_request(self, binarystring):
 		url = 'http://{}:{}/'.format(self.address, self.port)  # Set destination URL here
 		
 		request = Request(url, json.dumps({
@@ -53,6 +54,7 @@ class Client:
 		print(result)
 
 	def run(self):
+		'''Main loop of the client, sends data retrieved from the file to the ABCI server'''
 		self.register_to_abci()
 		counter = 1
 		try:
@@ -68,16 +70,17 @@ class Client:
 						  msg.usage.production.to_bytes(8, byteorder='big')
 				msg.usage.signature = self.priv_key.sign(payload)
 				data = msg.SerializeToString()
-				self.sendRequest(data)
+				self.send_request(data)
 				
 				if self.time_interval == 0:
 					input()
 				else:
 					time.sleep(self.time_interval)
+
 				counter += 1
 		except KeyboardInterrupt:
 			print('\nExiting\n')
 
 if __name__ == '__main__':
-	client = Client()
+	client = Client(time_interval=0)
 	client.run()
