@@ -1,3 +1,5 @@
+import MatchMaker
+
 class ClientReport(object):
     def __init__(self, uuid, timestamp, defaultConsPrice, defaultProdsPrice, consumption, production, predictedCons, predictedProd, consFlex, prodFlex):
         self.uuid = uuid
@@ -13,3 +15,51 @@ class ClientReport(object):
 
     def printMessage(self):
         print("Message UUID: {}, timestamp: {}, defaultConsPrice: {}, defaultProdsPrice: {}, consumption: {}, production: {}, predictedCons: {}, predictedProd: {}, consFlex: {}, prodFlex: {}".format(self.uuid, self.timestamp, self.defaultConsPrice, self.defaultProdsPrice, self.consumption, self.production, self.predictedCons, self.predictedProd, self.consFlex, self.prodFlex))
+
+    def reportToAskOrders(self):
+        askOrders = []
+        orderID = 0
+
+        askOrders.append(MatchMaker.Ask(self.uuid, orderID, self.predictedCons["t+1"], self.defaultConsPrice))
+        orderID += 1
+
+        maxFlex = self.predictedCons["t+1"];
+
+        for price, volume in self.consFlex.items():
+            if volume > 0:
+                askOrders.append(MatchMaker.Ask(self.uuid, orderID, volume, price))
+                orderID += 1
+
+        for price, volume in self.ProdFlex.items():
+            if volume < 0:
+                maxFlex += volume
+                if maxFlex < 0:
+                    break
+                askOrders.append(MatchMaker.Ask(self.uuid, orderID, volume, price))
+                orderID += 1
+
+        return askOrders
+
+    def reportToBidOrders(self):
+        bidOrders = []
+        orderID = 0
+
+        bidOrders.append(MatchMaker.Ask(self.uuid, orderID, self.predictedProd["t+1"], self.defaultProdsPrice))
+        orderID += 1
+
+        maxFlex = self.predictedProd["t+1"];
+
+        for price, volume in self.prodFlex.items():
+            if volume > 0:
+                bidOrders.append(MatchMaker.Ask(self.uuid, orderID, volume, price))
+                orderID += 1
+
+        for price, volume in self.consFlex.items():
+            if volume < 0:
+                maxFlex += volume
+                if maxFlex < 0:
+                    break
+                bidOrders.append(MatchMaker.Ask(self.uuid, orderID, volume, price))
+                orderID += 1
+
+        return bidOrders

@@ -1,10 +1,7 @@
-import BalancingAlgorithm as Balancing
 import CSVparser
 import ClientReport
 import datetime
-import csv
 import time
-from array import *
 
 
 numClients = 5
@@ -33,7 +30,11 @@ while True:
             consumptionSum += int(float(row[3].replace(",", "."))*powSignificance)
             productionSum += int(float(row[4].replace(",", "."))*powSignificance)
 
-        report = ClientReport.ClientReport(0, str(datetime.datetime.now()), 5, 5, consumptionSum, productionSum, {"t+x": 232.43},  {"t+x": 232.43}, {"12.00": 300}, {"11.00": 100})
+        report = ClientReport.ClientReport(0, str(datetime.datetime.now()), 5, 5, consumptionSum, productionSum, {"t+1": 1, "t+2": 2},  {"t+1": 1, "t+2": 2}, {"12.00": 300}, {"11.00": 100})
+
+        print(report.reportToAskOrders())
+        print(report.reportToBidOrders())
+
         report.printMessage()
         consumptionSum = 0
         productionSum = 0

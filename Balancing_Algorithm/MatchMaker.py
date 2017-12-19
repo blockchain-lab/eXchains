@@ -19,7 +19,7 @@ class Bid:
 class Ask:
     uuid = 0
     orderId = 0
-    volume =0
+    volume = 0
     price = 0
 
     def __init__(self, uuid, orderid, volume, price):
