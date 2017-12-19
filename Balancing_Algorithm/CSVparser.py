@@ -1,4 +1,4 @@
-class CVSparer(object):
+class CVSparer:
 
     clientPointers = []
 
