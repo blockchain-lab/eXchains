@@ -10,13 +10,14 @@ class EnergyMarketApplication(ABCIApplication):
 
 	def __init__(self):
 		super().__init__()
-		self.contract = {}
+		self.contracts = {}
 
 	def on_check_tx(self, msg: RequestCheckTx):
 		tx = msg.tx
 		try:
 			transaction = Transaction.FromString(tx)
-		except:
+		except Exception as e:
+			print('check_tx decode error:', e)
 			res = Response()
 			res.check_tx.code = EncodingError
 			return res
@@ -24,7 +25,7 @@ class EnergyMarketApplication(ABCIApplication):
 		print(transaction)
 
 		if transaction.HasField('new_contract'):
-			if self.contract[transaction.new_contract.uuid] is not None:
+			if transaction.new_contract.uuid in self.contracts:
 				res = Response()
 				res.check_tx.code = Unauthorized
 				return res
@@ -32,7 +33,7 @@ class EnergyMarketApplication(ABCIApplication):
 			# todo: verify contractor_signature
 			# self.contract[transaction.new_contract.uuid] = transaction.new_contract.public_key
 		if transaction.HasField('usage'):
-			if self.contract[transaction.contract_uuid] is None:
+			if transaction.usage.contract_uuid not in self.contracts:
 				res = Response()
 				res.check_tx.code = Unauthorized
 				return res
@@ -75,7 +76,7 @@ class EnergyMarketApplication(ABCIApplication):
 		print(transaction)
 
 		if transaction.HasField('new_contract'):
-			self.contract[transaction.new_contract.uuid] = {
+			self.contracts[transaction.new_contract.uuid] = {
 				"public_key": transaction.new_contract.public_key,
 				"consumption": 0,
 				"production": 0
@@ -83,8 +84,8 @@ class EnergyMarketApplication(ABCIApplication):
 
 		# self.contract[transaction.new_contract.uuid] = transaction.new_contract.public_key
 		if transaction.HasField('usage'):
-			self.contract[transaction.usage.contract_uuid]["consumption"] += transaction.usage.consumption
-			self.contract[transaction.usage.contract_uuid]["production"] += transaction.usage.production
+			self.contracts[transaction.usage.contract_uuid]["consumption"] += transaction.usage.consumption
+			self.contracts[transaction.usage.contract_uuid]["production"] += transaction.usage.production
 
 		res = Response()
 		res.deliver_tx.code = OK

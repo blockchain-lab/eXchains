@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Web</title>
+	<script src="//cdn.rawgit.com/dcodeIO/protobuf.js/6.8.3/dist/protobuf.min.js"></script>
+	<script type="text/javascript" >
+		socket = new WebSocket("ws://localhost:46657/websocket");
+		var pending = {}, nextId = 1, Transaction;
+		socket.addEventListener('message', function(event) {
+			var data = JSON.parse(event.data);
+			console.log(data);
+			if (Boolean(pending[data.id])) {
+				pending[data.id](data.result);
+				delete pending[data.id];
+			}
+		});
+		function bufferToBase64(buf) {
+			return btoa(String.fromCharCode.apply(null, buf))
+		}
+		function genUUID() {
+			// xx xx xx xx - xx xx - 4x xx - yx xx-xxxxxxxxxxxx
+			var buf = new Uint8Array(16);
+			for(var i = 0; i < 16; i ++) {
+				buf[i] = (Math.random() * 256) | 0;
+			}
+			buf[6] = buf[6] & 0x0F | 0x40; // 0b0010xxxx
+			buf[8] = buf[8] & 0x3F | 0x80; // 0b10xxxxxx
+			return buf;
+		}
+		function createTransaction(data) {
+			var t = Transaction.encode(data).finish();
+			return bufferToBase64(t);
+		}
+		function doRequest(req, callback) {
+			if (socket.readyState == 0) {
+				socket.addEventListener('open', function() {
+					doRequest(req, callback)
+				});
+			} else {
+				let id = "request_" + String(nextId++);
+				pending[id] = callback;
+				req = {
+					method: req.method,
+					params: req.params,
+					jsonrpc: "2.0",
+					id: id
+				}
+				socket.send(JSON.stringify(req));
+			}
+		};
+		protobuf.load("transaction.proto", function(err, root) {
+			Transaction = root.lookupType('Transaction');
+			// doRequest({
+			// 	method: 'subscribe',
+			// 	params: [btoa("new_block")]
+			// }, function(data) {
+			// 	// console.log(data);
+			// });
+			// doRequest({
+			// 	method: 'subscribe',
+			// 	params: [btoa("tx")]
+			// }, function(data) {
+			// 	doRequest({
+			// 		method: 'broadcast_tx_sync',
+			// 		params: [createTransaction({
+			// 			newContract: {
+			// 				uuid: genUUID(),
+			// 				timestamp: Date.now(),
+			// 				publicKey: new Uint8Array([0,1,2,3,4,5])
+			// 			}
+			// 		})]
+			// 	}, function(data) {
+
+			// 	});
+			// });
+		});
+		
+	</script>
+</head>
+<body>
+
+</body>
+</html>
