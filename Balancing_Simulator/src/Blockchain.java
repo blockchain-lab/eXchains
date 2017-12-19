@@ -28,108 +28,73 @@ public class Blockchain extends Thread {
         Level = level;
         algorithm = new LaurenSophieAPXAlgorithm(id);
 
-        synchronized (Main.graph) {
-            n = Main.graph.addNode("B" + ID);
-            if(level == 0){
 
-                parent.connect(id, this);
-
-                double x = (1000/Main.NumberOfCusters)*(ID)+(850/Main.NumberOfCusters)/2;
-
-                n.setAttribute("xy",  x, 200);
-                n.addAttribute("ui.label", "0/0 Kwh");
-                n.addAttribute("ui.class", "B");
-
-                Node BlockchainNode = Main.graph.getNode("B" + ParentID);
-                e = Main.graph.addEdge("BE" + ID, n, BlockchainNode);
-
-            }else if(level == 1){
-                n.setAttribute("xy", 475, 350);
-                n.addAttribute("ui.label", "0/0 Kwh");
-                n.addAttribute("ui.class", "B");
-            }
-        }
     }
 
     public void run() {
         System.out.println("Blockchain " + ID + " started");
     }
 
-    public void sendClientReport(ClientReport transaction){
-        synchronized (ClientReports){
-            ClientReports.add(transaction);
-        }
-
-        //if all messages from clients are recieved
-        if(ClientReports.size() == numberOfChilds){
-
-            // each loop we send:
-            Double production = 0.0;
-            Double consumption = 0.0;
-            HashMap<String, Double> predictedCons = new HashMap<>();
-            HashMap<String, Double> predictedProd = new HashMap<>();
-            HashMap<Integer, Double> consFlexibility = new HashMap<>();
-            HashMap<Integer, Double> prodFlexibility = new HashMap<>();
-            Double preProduction = 0.0;
-            Double preConsumption = 0.0;
-
-
-            for (ClientReport report:ClientReports) {
-                preConsumption += report.getPredictedCons().get("t1");
-                preProduction += report.getPredictedProd().get("t1");
-
-                consFlexibility = sumOfferdFlex(consFlexibility, report.getConsFlexibility());
-                prodFlexibility = sumOfferdFlex(prodFlexibility, report.getProdFlexibility());
-
-                consumption += report.getConsumption();
-                production += report.getProduction();
-            }
-
-            predictedCons.put("t1", preConsumption);
-            predictedProd.put("t1", preProduction);
-
-            ClientReport transactionOut = new ClientReport(ID, production, consumption, predictedCons, predictedProd, consFlexibility, prodFlexibility);
-
-
-            // if first level above clients
-            if(Level == 0){
-                synchronized (Main.graph) {
-                    e.addAttribute("ui.class", "active");
-                    e.addAttribute("ui.label",  ((int)(consumption/5)) + "W / " + ((int)(production/5)) + "W");
-                    n.addAttribute("ui.label",  ((int)(consumption/5)) + " / " + ((int)(production/5)) + " W");
-                }
-                delay(1000);
-
-                // send transaction up
-                Parent.sendClientReport(transactionOut);
-
-                delay(500);
-                synchronized (Main.graph) {
-                    e.addAttribute("ui.class", "off");
-                }
-
-            // if second and final level above clients
-            }else if (Level == 1){
-
-                algorithm.initialize(ClientReports);
-                ClientReports = new LinkedList<>();
-
-                HashMap<Integer, RegulationReport> regulationReports = algorithm.Balance();
-
-                //send Regulation reports down
-                for (HashMap.Entry<Integer, RegulationReport> entry: regulationReports.entrySet()) {
-                    ((Blockchain) clients.get(entry.getKey())).sendRegulationReport(entry.getValue());
-                }
-
-                // update view
-                synchronized (Main.graph) {
-                    n.addAttribute("ui.label",  ((int)(consumption/5)) + " / " + ((int)(production/5)) + " W");
-                }
-            }
-
-        }
-
-    }
+//    public void sendClientReport(ClientReport transaction){
+//        synchronized (ClientReports){
+//            ClientReports.add(transaction);
+//        }
+//
+//        //if all messages from clients are recieved
+//        if(ClientReports.size() == numberOfChilds){
+//
+//            // each loop we send:
+//            Double production = 0.0;
+//            Double consumption = 0.0;
+//            HashMap<String, Double> predictedCons = new HashMap<>();
+//            HashMap<String, Double> predictedProd = new HashMap<>();
+//            HashMap<Integer, Double> consFlexibility = new HashMap<>();
+//            HashMap<Integer, Double> prodFlexibility = new HashMap<>();
+//            Double preProduction = 0.0;
+//            Double preConsumption = 0.0;
+//
+//
+//            for (ClientReport report:ClientReports) {
+//                preConsumption += report.getPredictedCons().get("t1");
+//                preProduction += report.getPredictedProd().get("t1");
+//
+//                consFlexibility = sumOfferdFlex(consFlexibility, report.getConsFlexibility());
+//                prodFlexibility = sumOfferdFlex(prodFlexibility, report.getProdFlexibility());
+//
+//                consumption += report.getConsumption();
+//                production += report.getProduction();
+//            }
+//
+//            predictedCons.put("t1", preConsumption);
+//            predictedProd.put("t1", preProduction);
+//
+//            ClientReport transactionOut = new ClientReport(ID, production, consumption, predictedCons, predictedProd, consFlexibility, prodFlexibility);
+//
+//
+//            // if first level above clients
+//            if(Level == 0){
+//
+//
+//            // if second and final level above clients
+//            }else if (Level == 1){
+//
+//                algorithm.initialize(ClientReports);
+//                ClientReports = new LinkedList<>();
+//
+//                HashMap<Integer, RegulationReport> regulationReports = algorithm.Balance();
+//
+//                //send Regulation reports down
+//                for (HashMap.Entry<Integer, RegulationReport> entry: regulationReports.entrySet()) {
+//                    ((Blockchain) clients.get(entry.getKey())).sendRegulationReport(entry.getValue());
+//                }
+//
+//                // update view
+//
+//            }
+//
+//        }
+//
+//    }
 
     public void sendRegulationReport(RegulationReport report){
 

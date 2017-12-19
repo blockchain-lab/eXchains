@@ -11,6 +11,11 @@ public class LaurenSophieAPXAlgorithm {
     private Integer myID;
     private LinkedList<ClientReport> CR;
     private HashMap<Integer, RegulationReport> RR;
+
+    public Integer getPricePoint() {
+        return pricePoint;
+    }
+
     private Integer pricePoint; //In Centicents
     private SortedUberArray consumptionArray;
     private SortedUberArray productionnArray;
@@ -88,7 +93,7 @@ public class LaurenSophieAPXAlgorithm {
         Double postImbalance = 0.0;
         PopulateUberArray(preImbalance);
         postImbalance = Balancing(preImbalance);
-        System.out.println(myID + ": Pre-Balancing: " + preImbalance + " Post-balancing: " + postImbalance + " at: " + this.pricePoint);
+        System.out.println(myID + ": Pre-Balancing: " + preImbalance + " Post-balancing: " + postImbalance + " at: €" + expenses/1000);
         return RR;
     }
     private Double Balancing(Double imbalance){
