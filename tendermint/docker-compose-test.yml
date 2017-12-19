@@ -1,0 +1,38 @@
+version: '3.0'
+services:
+  tendermint_init:
+    image: tendermint/tendermint:0.12.0
+    volumes:
+      - tendermint:/tendermint
+    entrypoint:
+      - tendermint
+      - init
+
+  tendermint:
+    image: tendermint/tendermint:0.12.0
+    volumes:
+      - tendermint:/tendermint
+    ports:
+      - 46656:46656
+      - 46657:46657
+    # depends_on:
+      # - tendermint_init
+    entrypoint:
+      - tendermint
+      - node
+      - --consensus.create_empty_blocks=false
+      - --proxy_app=app:46658
+
+  app:
+    build: app
+    # depends_on:
+      # - tendermint
+  web:
+    build: web
+    ports:
+      - 80:80
+    volumes:
+      - ./web/public:/app/public
+      
+volumes:
+  tendermint:
