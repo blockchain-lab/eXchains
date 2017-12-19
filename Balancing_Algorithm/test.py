@@ -8,10 +8,10 @@ kooplijst = [koop, verkoop, koop]
 
 book.addorder(kooplijst)
 
-asklist = book.getbidlist(book)
+asklist = book.getbidlist
 
-print(asklist)
-#print(kooplijst)
+#print(asklist)
+print(kooplijst)
 
 
 

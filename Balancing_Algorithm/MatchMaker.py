@@ -12,7 +12,7 @@ class OrderBook:
         elif isinstance(order, list):
             for orders in order[:]:
                 print("Oooeh addind a thing from the list")
-                self.addorder(self, orders)
+                self.addorder(orders)
 
     def getbidlist(self):
         return self.askList
@@ -35,6 +35,7 @@ class Ask:
 
     def __repr__(self):
         return "\nuuid: {}, orderid: {}, volume: {}, price: {}".format(self.uuid, self.orderId, self.volume, self.price)
+
 
 class Bid:
     uuid: int
