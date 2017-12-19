@@ -1,1 +1,10 @@
+<<<<<<< HEAD
 node_modules
+=======
+db.sqlite3
+__pycache__
+**/__pycache__
+venv
+.idea/workspace.xml
+.idea/misc.xml
+>>>>>>> Balancing_Simulator
