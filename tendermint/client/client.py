@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-from urllib import request
+from urllib.parse import urlencode
+from urllib.request import Request, urlopen
 
 import sys
 import ed25519 as ecdsa
@@ -7,6 +8,7 @@ import time
 import uuid
 import transaction_pb2 as tx
 import base64
+import json
 
 class Client:
 	def __init__(self, address='localhost', port=46657):
@@ -29,6 +31,20 @@ class Client:
 		pass
 
 
+	def sendRequest(self, binarystring):
+
+
+		url = 'http://{}:{}/'.format(self.address, self.port)  # Set destination URL here
+		post_fields = {'foo': 'bar'}  # Set POST fields here
+
+		request = Request(url, json.dumps({
+			"method": 'broadcast_tx_sync',
+			"params": [base64.b64encode(binarystring).decode('ascii')],
+			"jsonrpc": "2.0",
+			"id": "not_important"
+		}).encode())
+		result = urlopen(request).read().decode()
+		print(result)
 
 	def run(self):
 		counter = 1
@@ -43,8 +59,9 @@ class Client:
 
 		print(base64.urlsafe_b64encode(data).decode('ascii'), data)
 		# request.urlopen()
-		with request.urlopen('http://{}:{}/broadcast_tx_async?tx="{}"'.format(self.address, self.port, base64.urlsafe_b64encode(data).decode('ascii'))) as response:
-			print(response.read(300))
+		self.sendRequest(data)
+		# with request.urlopen('http://{}:{}/broadcast_tx_async?tx="{}"'.format(self.address, self.port, base64.urlsafe_b64encode(data).decode('ascii'))) as response:
+		# 	print(response.read(300))
 
 		try:
 			while True:
@@ -84,9 +101,10 @@ class Client:
 
 				data = msg.SerializeToString()
 
+				self.sendRequest(data)
 				# sending, must be changed
-				with request.urlopen('http://{}:{}/broadcast_tx_async?tx="{}"'.format(self.address, self.port, )) as response:
-					print(response.read(300))
+				# with request.urlopen('http://{}:{}/broadcast_tx_async?tx="{}"'.format(self.address, self.port, )) as response:
+				# 	print(response.read(300))
 				
 				# signature verification, should be on server side only
 				#try:
