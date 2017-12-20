@@ -104,8 +104,8 @@ class Transaction:
 class Matcher:
     def match(self,orderbook: OrderBook):
         # todo: First sort for timestamp, then for price and volume in reverse (Works because of sort-stability)
-        ask_list = sorted(orderbook.getasklist(), key=operator.attrgetter('price', 'volume', 'timestamp'), reverse=True)
-        bid_list = sorted(orderbook.getbidlist(), key=operator.attrgetter('price', 'volume', 'timestamp'), reverse=False)
+        ask_list = sorted(orderbook.getasklist(), key=operator.attrgetter('price', 'volume', 'timestamp', 'uuid' , 'order_id'), reverse=True)
+        bid_list = sorted(orderbook.getbidlist(), key=operator.attrgetter('price', 'volume', 'timestamp',  'uuid' , 'order_id'), reverse=False)
         orderbook.clear() # remove all orders from the orderbook, untouched or partially filled orders will put back later
 
         if len(ask_list)==0 or len(bid_list)==0:
@@ -148,7 +148,7 @@ class Matcher:
                 remaining_big_volume = ask_volume
                 remaining_small_volume = bid_volume
 
-            price = (sub_ask_list[0].price + sub_bid_list[0].price)/2
+            price = round((sub_ask_list[0].price + sub_bid_list[0].price)/2)
 
             # spread out the smaller volume pro rata over the bigger amount
             for entry in bigger_list:
