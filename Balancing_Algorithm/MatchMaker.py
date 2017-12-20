@@ -106,44 +106,17 @@ class Matcher:
         # todo: First sort for timestamp, then for price and volume in reverse (Works because of sort-stability)
         ask_list = sorted(orderbook.getasklist(), key=operator.attrgetter('price', 'volume', 'timestamp'), reverse=True)
         bid_list = sorted(orderbook.getbidlist(), key=operator.attrgetter('price', 'volume', 'timestamp'), reverse=False)
-
         orderbook.clear() # remove all orders from the orderbook, untouched or partially filled orders will put back later
-
-
-        ask_overlap = []
-        bid_overlap = []
 
         if len(ask_list)==0 or len(bid_list)==0:
             return []
-
-        # max_ask = ask_list[0].price
-        # min_bid = bid_list[0].price
-        #
-        # while len(ask_list)!=0 and ask_list[0].price >= min_bid:
-        #     ask_overlap.append(ask_list.pop(0))
-        #
-        # while len(bid_list)!=0 and bid_list[0].price <= max_ask:
-        #     bid_overlap.append(bid_list.pop(0))
-
 
         sub_ask_list = []
         sub_bid_list = []
         trade_list = []
         place_back_buffer = []
 
-
-
-
-        i=0
         while len(ask_list) != 0 and len(bid_list) != 0 and ask_list[0].price >= bid_list[0].price:
-            i += 1
-            print("Matching in round {}".format(i))
-            # plan du campagne:
-                # Check for multiple of the same ask price and determine total volume
-                # Check for multiple of the same bid price and determine the total volume
-                # spread out the smallest over the biggest
-                # repeat
-
             ask_volume = 0
             sub_ask_list.clear()
             current_ask_price = ask_list[0].price
@@ -164,7 +137,6 @@ class Matcher:
                 # orderbook.remove_order(order)     # Remove them from the orderbook, and bid _list untouched and
                 bid_list.remove(order)            # partially fulfilled orders will be placed back later
 
-
             if bid_volume > ask_volume:
                 bigger_list = sub_bid_list
                 smaller_list = sub_ask_list
@@ -179,8 +151,6 @@ class Matcher:
             price = (sub_ask_list[0].price + sub_bid_list[0].price)/2
 
             # spread out the smaller volume pro rata over the bigger amount
-
-            place_back_buffer.clear();
             for entry in bigger_list:
                 if isinstance(entry, Ask):
                     order_type = OrderType.ASK
@@ -198,12 +168,13 @@ class Matcher:
                 else:
                     place_back_buffer.append(entry)
 
-            # If there are any unfullfilled orders
+            # If there are any unfullfilled orders, and clear, so it's empty for the next round
             if len(place_back_buffer) != 0:
                 if isinstance(place_back_buffer[0], Ask):   # They're either all asks or all bids
                     ask_list = sorted(place_back_buffer, key=operator.attrgetter('price', 'volume', 'timestamp'), reverse=True) + ask_list
                 else:
                     bid_list = sorted(place_back_buffer, key=operator.attrgetter('price', 'volume', 'timestamp'), reverse=False) + bid_list
+                place_back_buffer.clear()
 
             for entry in smaller_list:
                 if isinstance(entry, Ask):
@@ -212,9 +183,6 @@ class Matcher:
                     order_type = OrderType.BID
 
                 trade_list.append(Transaction(entry.uuid, entry.order_id, order_type, entry.volume, price))
-                smaller_list.remove(entry)
-
-
 
 
             # remaing_small_volume = small_volume
@@ -231,27 +199,6 @@ class Matcher:
             # for all entries in smaller list:
             #     create tread entry
             #     smaller_list.pop(entry)
-
-
-                    # Not gonna implement top orders yet
-
-            # if (previousprice!=ask_list[0].price and previousprice != bid_list[0].price):
-            #     volume = min(ask_list[0].volume, bid_list[0].volume)
-            #     print("New matching round, price will be: {}".format((ask_list[0].price+bid_list[0].price)/2))
-            #     print(bid_list[0])
-            #     print(ask_list[0])
-            #     if ask_list[0].volume == volume:
-            #         ask_list.pop(0)
-            #     else:
-            #         ask_list[0].volume -= volume
-            #         print(ask_list[0])
-            #
-            #     if bid_list[0].volume == volume:
-            #         ask_list.pop(0)
-            #     else:
-            #         bid_list[0].volume -= volume
-            #         print(bid_list[0])
-
 
         print("No matches can be made anymore")
         orderbook.add_order(ask_list)
