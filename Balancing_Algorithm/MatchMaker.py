@@ -28,6 +28,10 @@ class OrderBook:
             for orders in order[:]:
                 self.remove_order(orders)
 
+    def clear(self):
+        self.askList.clear()
+        self.bidList.clear()
+
 
     def getbidlist(self):
         return self.bidList
@@ -103,20 +107,23 @@ class Matcher:
         ask_list = sorted(orderbook.getasklist(), key=operator.attrgetter('price', 'volume', 'timestamp'), reverse=True)
         bid_list = sorted(orderbook.getbidlist(), key=operator.attrgetter('price', 'volume', 'timestamp'), reverse=False)
 
+        orderbook.clear() # remove all orders from the orderbook, untouched or partially filled orders will put back later
+
+
         ask_overlap = []
         bid_overlap = []
 
         if len(ask_list)==0 or len(bid_list)==0:
             return []
 
-        max_ask = ask_list[0].price
-        min_bid = bid_list[0].price
-
-        while len(ask_list)!=0 and ask_list[0].price >= min_bid:
-            ask_overlap.append(ask_list.pop(0))
-
-        while len(bid_list)!=0 and bid_list[0].price <= max_ask:
-            bid_overlap.append(bid_list.pop(0))
+        # max_ask = ask_list[0].price
+        # min_bid = bid_list[0].price
+        #
+        # while len(ask_list)!=0 and ask_list[0].price >= min_bid:
+        #     ask_overlap.append(ask_list.pop(0))
+        #
+        # while len(bid_list)!=0 and bid_list[0].price <= max_ask:
+        #     bid_overlap.append(bid_list.pop(0))
 
 
         sub_ask_list = []
@@ -144,7 +151,7 @@ class Matcher:
                 order = ask_list[0]
                 ask_volume += order.volume
                 sub_ask_list.append(order)        # Create a sub list with all the orders that have the same price
-                orderbook.remove_order(order)     # Remove them from the orderbook, and ask _list untouched and
+                # orderbook.remove_order(order)     # Remove them from the orderbook, and ask _list untouched and
                 ask_list.remove(order)            # partially fulfilled orders will be placed back later
 
             bid_volume = 0
@@ -154,7 +161,7 @@ class Matcher:
                 order = bid_list[0]
                 bid_volume += order.volume
                 sub_bid_list.append(order)        # Create a sub list with all the order that overlap in price
-                orderbook.remove_order(order)     # Remove them from the orderbook, and bid _list untouched and
+                # orderbook.remove_order(order)     # Remove them from the orderbook, and bid _list untouched and
                 bid_list.remove(order)            # partially fulfilled orders will be placed back later
 
 

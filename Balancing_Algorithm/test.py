@@ -2,14 +2,15 @@ import MatchMaker
 import operator
 
 book = MatchMaker.OrderBook()
-koop = MatchMaker.Ask(1,0,20,70,1)
+
+koop = MatchMaker.Ask(1,0,67,70,1)
 
 koop1 = MatchMaker.Ask(2,0,50,50,1)
 koop2 = MatchMaker.Ask(3,0,40,35,1)
 koop3 = MatchMaker.Ask(4,0,45,35,1)
 
 
-verkoop = MatchMaker.Bid(0,1,70,29,1)
+verkoop = MatchMaker.Bid(0,1,20,29,1)
 verkoop1 = MatchMaker.Bid(0,2,47,31,1)
 
 verkoop2 = MatchMaker.Bid(0,3,43,32,1)
