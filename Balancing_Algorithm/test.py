@@ -22,11 +22,13 @@ kooplijst = [koop, koop1, koop2, koop3, verkoop, verkoop1, verkoop2, verkoop3]
 
 book.add_order(kooplijst)
 
-engine = MatchMaker.Matcher()
+engine = MatchMaker.Matcher(123)
 
 print("Order book:", book.getasklist() + book.getbidlist())
 print("Trade book:", engine.match(book))
 print("Order book:", book.getasklist() + book.getbidlist())
+new_book = engine.merge(book)
+print("Merged Order", new_book.getasklist(), new_book.getbidlist())
 
 
 

@@ -1,9 +1,11 @@
 from enum import Enum
 import operator
 
+
 class OrderBook:
-    askList = []
-    bidList = []
+    def __init__(self):
+        self.askList = []
+        self.bidList = []
 
     def add_order(self, order):
         if isinstance(order, Ask):
@@ -32,19 +34,14 @@ class OrderBook:
         self.askList.clear()
         self.bidList.clear()
 
-
     def getbidlist(self):
         return self.bidList
 
     def getasklist(self):
         return self.askList
 
-class Ask:
-    uuid = 0
-    order_id = 0
-    volume = 0
-    price = 0
 
+class Ask:
     def __init__(self, uuid, order_id, volume, price, timestamp):
         self.uuid = uuid
         self.order_id = order_id
@@ -70,6 +67,14 @@ class Bid:
         return "\nB(uuid: {}, orderid: {}, volume: {}, price: {}, timeStamp: {})".format(self.uuid, self.order_id,
                                                                                     self.volume, self.price,
                                                                                     self.timestamp)
+
+
+class CrossReference:
+    def __init__(self, uuid, order_id):
+        self.uuid = uuid
+        self.order_id = order_id
+        self.orders = []
+
 
 
 class Trades:
@@ -101,19 +106,28 @@ class Transaction:
         return "\nT(uuid: {}, order id: {}, Type: {}, Volume: {}, Price: {})".format(self.uuid, self.order_id, self.order_type, self.volume,
                                                                 self.price)
 
+
 class Matcher:
+    def __init__(self, uuid, order_id_start=0):
+        self.uuid = uuid
+        self.order_id = order_id_start
+        self.trade_list = []
+        self.cross_reference_list = []
+
     def match(self,orderbook: OrderBook):
         # todo: First sort for timestamp, then for price and volume in reverse (Works because of sort-stability)
         ask_list = sorted(orderbook.getasklist(), key=operator.attrgetter('price', 'volume', 'timestamp', 'uuid' , 'order_id'), reverse=True)
         bid_list = sorted(orderbook.getbidlist(), key=operator.attrgetter('price', 'volume', 'timestamp',  'uuid' , 'order_id'), reverse=False)
         orderbook.clear() # remove all orders from the orderbook, untouched or partially filled orders will put back later
+        self.trade_list.clear()
+
 
         if len(ask_list)==0 or len(bid_list)==0:
             return []
 
         sub_ask_list = []
         sub_bid_list = []
-        trade_list = []
+
         place_back_buffer = []
 
         while len(ask_list) != 0 and len(bid_list) != 0 and ask_list[0].price >= bid_list[0].price:
@@ -162,7 +176,7 @@ class Matcher:
                 remaining_big_volume -= entry.volume
                 remaining_small_volume -= trading_volume
                 entry.volume -= trading_volume
-                trade_list.append(Transaction(entry.uuid, entry.order_id, order_type, trading_volume, price))
+                self.trade_list.append(Transaction(entry.uuid, entry.order_id, order_type, trading_volume, price))
                 if entry.volume == 0:
                     bigger_list.remove(entry)   # If an order is fullfilled get rid of it
                 else:
@@ -181,26 +195,50 @@ class Matcher:
                     order_type = OrderType.ASK
                 else:
                     order_type = OrderType.BID
-
-                trade_list.append(Transaction(entry.uuid, entry.order_id, order_type, entry.volume, price))
-
-
-            # remaing_small_volume = small_volume
-            # remaing_big_volume = big_volume
-            # price = (small_price + big_price) / 2
-            #
-            # for all entries in the bigger list:
-            #     trading_volume = round(entry.volume / remaining_big_volume)*remaining_small_volume
-            #     remaining_big_volume -= entry.volume
-            #     remaining_small_volume -= trading_volume
-            #     entry.volume -= trading_volume
-            #     create trade entry
-            #     if (entry.volume == 0) orderbook.pop(entry)
-            # for all entries in smaller list:
-            #     create tread entry
-            #     smaller_list.pop(entry)
+                self.trade_list.append(Transaction(entry.uuid, entry.order_id, order_type, entry.volume, price))
 
         print("No matches can be made anymore")
         orderbook.add_order(ask_list)
         orderbook.add_order(bid_list)
-        return trade_list
+        return self.trade_list
+
+    def merge(self,orderbook: OrderBook):
+        merged_orders = OrderBook()
+
+        ask_list = orderbook.getasklist()
+        bid_list = orderbook.getbidlist()
+        while len(ask_list) != 0:
+
+            volume = 0
+            current_price = ask_list[0].price
+            i = 0
+            cross_reference = CrossReference(self.uuid, self.order_id)
+            while i < len(ask_list):
+                if ask_list[i].price == current_price:
+                    cross_reference.orders.append((ask_list[i].uuid, ask_list[i].order_id))
+                    volume += ask_list[i].volume
+                    ask_list.pop(i)
+                else:
+                    i += i
+            merged_orders.add_order(Ask(self.uuid, self.order_id, volume, current_price, 2))
+            self.cross_reference_list.append(cross_reference)
+            self.order_id += 1
+
+        while len(bid_list) != 0:
+
+            volume = 0
+            current_price = bid_list[0].price
+            i = 0
+            cross_reference = CrossReference(self.uuid, self.order_id)
+            while i < len(bid_list):
+                if bid_list[i].price == current_price:
+                    cross_reference.orders.append((bid_list[i].uuid, bid_list[i].order_id))
+                    volume += bid_list[i].volume
+                    bid_list.pop(i)
+                else:
+                    i += i
+            merged_orders.add_order(Bid(self.uuid,self.order_id, volume,current_price, 2))
+            self.cross_reference_list.append(cross_reference)
+            self.order_id += 1
+
+        return merged_orders
