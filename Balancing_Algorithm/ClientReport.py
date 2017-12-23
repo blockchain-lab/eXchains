@@ -28,6 +28,7 @@ class ClientReport:
         askOrders.append(MatchMaker.Ask(self.uuid, orderID, self.predictedCons["t+1"], self.defaultConsPrice, self.timestamp))
         orderID += 1
 
+
         maxFlex = self.predictedCons["t+1"];
 
         for price, volume in self.consFlex.items():

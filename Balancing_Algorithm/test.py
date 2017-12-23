@@ -14,22 +14,38 @@ def oneLayerClusterTest():
     cluster = blockchain.blockchain(0, numClients, None)
 
     while True:
-        for i in range(0, numClients):
-            uuid = 0  # ClientReport ID
-            timestamp = str(datetime.datetime.now())  # Time stamp
-            defaultConsPrice = 10  # Default consumption price
-            defaultProdsPrice = 1  # Default production price
-            consumption = 1000  # Actual consumption last block
-            production = 100  # Actual production last block
-            predictedCons = {"t+1": 1000, "t+2": 1000}  # Consumption prediction for coming blocks
-            predictedProd = {"t+1": 100, "t+2": 1000}  # Production prediction for coming blocks
-            consFlex = {5: 100, 3: 50, 4: -100}  # Consumption flexibility options for coming block
-            prodFlex = {6: 200, 7: -100}  # Production flexibility options for coming block
+        # TODO fout in match. resulting Trade book: heeft een bid waar geen ask bij hoort.
+        # TODO heb er al veel tijd ingestoken maar kan niet vinden waar het fout gaat
+        uuid = 0  # ClientReport ID
+        timestamp = str(datetime.datetime.now())  # Time stamp
+        defaultConsPrice = 10  # Default consumption price
+        defaultProdsPrice = 1  # Default production price
+        consumption = 1000  # Actual consumption last block
+        production = 100  # Actual production last block
+        predictedCons = {"t+1": 200, "t+2": 0}  # Consumption prediction for coming blocks
+        predictedProd = {"t+1": 10, "t+2": 0}  # Production prediction for coming blocks
+        consFlex = {8: 1000}  # Consumption flexibility options for coming block
+        prodFlex = {}  # Production flexibility options for coming block
 
-            report = ClientReport.ClientReport(uuid, timestamp, defaultConsPrice, defaultProdsPrice, consumption,
-                                               production, predictedCons, predictedProd, consFlex, prodFlex)
+        report = ClientReport.ClientReport(uuid, timestamp, defaultConsPrice, defaultProdsPrice, consumption,
+                                           production, predictedCons, predictedProd, consFlex, prodFlex)
+        cluster.addClientreport(report)
 
-            cluster.addClientreport(report)
+
+        uuid = 1  # ClientReport ID
+        timestamp = str(datetime.datetime.now())  # Time stamp
+        defaultConsPrice = 10  # Default consumption price
+        defaultProdsPrice = 1  # Default production price
+        consumption = 1000  # Actual consumption last block
+        production = 100  # Actual production last block
+        predictedCons = {"t+1": 10, "t+2": 0}  # Consumption prediction for coming blocks
+        predictedProd = {"t+1": 200, "t+2": 0}  # Production prediction for coming blocks
+        consFlex = {}  # Consumption flexibility options for coming block
+        prodFlex = {2: 500}  # Production flexibility options for coming block
+
+        report = ClientReport.ClientReport(uuid, timestamp, defaultConsPrice, defaultProdsPrice, consumption,
+                                           production, predictedCons, predictedProd, consFlex, prodFlex)
+        cluster.addClientreport(report)
         time.sleep(secPerBlock)
 
 

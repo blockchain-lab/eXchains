@@ -1,6 +1,8 @@
 from enum import Enum
 import operator
 
+import datetime
+
 
 class OrderBook:
     def __init__(self):
@@ -122,7 +124,6 @@ class Matcher:
         orderbook.clear() # remove all orders from the orderbook, untouched or partially filled orders will put back later
         self.trade_list.clear()
 
-
         if len(ask_list)==0 or len(bid_list)==0:
             return []
 
@@ -165,14 +166,19 @@ class Matcher:
 
             price = round((sub_ask_list[0].price + sub_bid_list[0].price)/2)
 
-            # spread out the smaller volume pro rata over the bigger amount
+
             for entry in bigger_list:
                 if isinstance(entry, Ask):
                     order_type = OrderType.ASK
                 else:
                     order_type = OrderType.BID
 
-                trading_volume = round(entry.volume / remaining_big_volume * remaining_small_volume)
+                if (remaining_big_volume * remaining_small_volume) == 0:
+                    trading_volume = 0
+                    # bigger_list.remove(entry)
+                    # continue
+                else:
+                    trading_volume = round(entry.volume / remaining_big_volume * remaining_small_volume)
 
                 remaining_big_volume -= entry.volume
                 remaining_small_volume -= trading_volume
@@ -221,7 +227,7 @@ class Matcher:
                     ask_list.pop(i)
                 else:
                     i += 1
-            merged_orders.add_order(Ask(self.uuid, self.order_id, volume, current_price, 2))
+            merged_orders.add_order(Ask(self.uuid, self.order_id, volume, current_price, str(datetime.datetime.now())))
             self.cross_reference_list.append(cross_reference)
             self.order_id += 1
 
