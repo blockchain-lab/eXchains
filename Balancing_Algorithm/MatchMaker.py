@@ -83,10 +83,12 @@ class Trades:
     def addtransaction(self, transaction):
         self.transactions.append(transaction)
 
-    def printtrades(self):
+    def __repr__(self):
+        result = ""
         for transaction in self.transactions:
-            print("ID: {}, Type: {}, Energy: {}, Price: {}".format(transaction.ID, transaction.type, transaction.energy,
+            result.join("\nID: {}, Type: {}, Energy: {}, Price: {}\n".format(transaction.ID, transaction.type, transaction.energy,
                                                                    transaction.price))
+        return result
 
 
 class OrderType(Enum):
