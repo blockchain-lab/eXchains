@@ -1,7 +1,7 @@
 import MatchMaker
 
 
-class ClientReport(object):
+class ClientReport:
     def __init__(self, uuid, timestamp, defaultConsPrice, defaultProdsPrice, consumption, production, predictedCons,
                  predictedProd, consFlex, prodFlex):
         self.uuid = uuid

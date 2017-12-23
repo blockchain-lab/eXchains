@@ -1,10 +1,37 @@
 import MatchMaker
 import operator
+import blockchain
 
 import CSVparser
 import ClientReport
 import datetime
 import time
+
+def oneLayerClusterTest():
+    numClients = 2
+    secPerBlock = 10
+
+    cluster = blockchain.blockchain(0, numClients, None)
+
+    while True:
+        for i in range(0, numClients):
+            uuid = 0  # ClientReport ID
+            timestamp = str(datetime.datetime.now())  # Time stamp
+            defaultConsPrice = 10  # Default consumption price
+            defaultProdsPrice = 1  # Default production price
+            consumption = 1000  # Actual consumption last block
+            production = 100  # Actual production last block
+            predictedCons = {"t+1": 1000, "t+2": 1000}  # Consumption prediction for coming blocks
+            predictedProd = {"t+1": 100, "t+2": 1000}  # Production prediction for coming blocks
+            consFlex = {5: 100, 3: 50, 4: -100}  # Consumption flexibility options for coming block
+            prodFlex = {6: 200, 7: -100}  # Production flexibility options for coming block
+
+            report = ClientReport.ClientReport(uuid, timestamp, defaultConsPrice, defaultProdsPrice, consumption,
+                                               production, predictedCons, predictedProd, consFlex, prodFlex)
+
+            cluster.addClientreport(report)
+        time.sleep(secPerBlock)
+
 
 def clientToOrdersTest():
 
@@ -23,6 +50,7 @@ def clientToOrdersTest():
     report = ClientReport.ClientReport(uuid, timestamp, defaultConsPrice, defaultProdsPrice, consumption, production, predictedCons, predictedProd, consFlex, prodFlex)
     askOrders = report.reportToAskOrders()
     bidOrders = report.reportToBidOrders()
+
     print(report)
     print(askOrders)
     print(bidOrders)
@@ -98,4 +126,4 @@ def matchMakingTest():
     print("Merged Order", new_book.getasklist(), new_book.getbidlist())
 
 
-clientToOrdersTest()
+oneLayerClusterTest()

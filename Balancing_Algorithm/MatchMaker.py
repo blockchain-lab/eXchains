@@ -76,7 +76,6 @@ class CrossReference:
         self.orders = []
 
 
-
 class Trades:
     transactions = []
 
@@ -221,7 +220,7 @@ class Matcher:
                     volume += ask_list[i].volume
                     ask_list.pop(i)
                 else:
-                    i += i
+                    i += 1
             merged_orders.add_order(Ask(self.uuid, self.order_id, volume, current_price, 2))
             self.cross_reference_list.append(cross_reference)
             self.order_id += 1
