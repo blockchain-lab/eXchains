@@ -1,5 +1,6 @@
 from enum import Enum
 import operator
+import datetime
 
 
 class OrderBook:
@@ -76,17 +77,18 @@ class CrossReference:
         self.orders = []
 
 
-
 class Trades:
     transactions = []
 
     def addtransaction(self, transaction):
         self.transactions.append(transaction)
 
-    def printtrades(self):
+    def __repr__(self):
+        result = ""
         for transaction in self.transactions:
-            print("ID: {}, Type: {}, Energy: {}, Price: {}".format(transaction.ID, transaction.type, transaction.energy,
+            result.join("\nID: {}, Type: {}, Energy: {}, Price: {}\n".format(transaction.ID, transaction.type, transaction.energy,
                                                                    transaction.price))
+        return result
 
 
 class OrderType(Enum):
@@ -120,7 +122,6 @@ class Matcher:
         bid_list = sorted(orderbook.getbidlist(), key=operator.attrgetter('price', 'volume', 'timestamp',  'uuid' , 'order_id'), reverse=False)
         orderbook.clear() # remove all orders from the orderbook, untouched or partially filled orders will put back later
         self.trade_list.clear()
-
 
         if len(ask_list)==0 or len(bid_list)==0:
             return []
@@ -222,7 +223,7 @@ class Matcher:
                     ask_list.pop(i)
                 else:
                     i += 1
-            merged_orders.add_order(Ask(self.uuid, self.order_id, volume, current_price, 2))
+            merged_orders.add_order(Ask(self.uuid, self.order_id, volume, current_price, str(datetime.datetime.now())))
             self.cross_reference_list.append(cross_reference)
             self.order_id += 1
 
