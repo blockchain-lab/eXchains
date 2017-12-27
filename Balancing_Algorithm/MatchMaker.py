@@ -131,25 +131,24 @@ class Matcher:
         place_back_buffer = []
 
         while len(ask_list) != 0 and len(bid_list) != 0 and ask_list[0].price >= bid_list[0].price:
+            # Create 2 lists if there are multiple orders at the same price (one for bid, one for ask)
             ask_volume = 0
             sub_ask_list.clear()
             current_ask_price = ask_list[0].price
             while len(ask_list) > 0 and ask_list[0].price == current_ask_price:
                 order = ask_list[0]
-                ask_volume += order.volume
-                sub_ask_list.append(order)        # Create a sub list with all the orders that have the same price
-                # orderbook.remove_order(order)     # Remove them from the orderbook, and ask _list untouched and
-                ask_list.remove(order)            # partially fulfilled orders will be placed back later
+                ask_volume += order.volume      # Keep track of the total ask volume for this price
+                sub_ask_list.append(order)      # Create a sub list with all the orders that have the same price
+                ask_list.remove(order)          # Temporary remove from the ask list (Placed back if not full filled)
 
             bid_volume = 0
             sub_bid_list.clear()
             current_bid_price = bid_list[0].price
             while len(bid_list) > 0 and bid_list[0].price == current_bid_price:
                 order = bid_list[0]
-                bid_volume += order.volume
-                sub_bid_list.append(order)        # Create a sub list with all the order that overlap in price
-                # orderbook.remove_order(order)     # Remove them from the orderbook, and bid _list untouched and
-                bid_list.remove(order)            # partially fulfilled orders will be placed back later
+                bid_volume += order.volume      # keep track of the total bid volume for this price
+                sub_bid_list.append(order)      # Create a sub list with all the order that overlap in price
+                bid_list.remove(order)          # Temporary remove from the ask list (Placed back if not full filled)
 
             if bid_volume > ask_volume:
                 bigger_list = sub_bid_list
@@ -165,7 +164,9 @@ class Matcher:
             price = round((sub_ask_list[0].price + sub_bid_list[0].price)/2)
 
             # spread out the smaller volume pro rata over the bigger amount
-            for entry in bigger_list:
+            # todo: rewrite this to a while loop since python can't handel for each loops where elements are deleted.
+            while len(bigger_list) > 0:
+                entry = bigger_list[0]
                 if isinstance(entry, Ask):
                     order_type = OrderType.ASK
                 else:
@@ -177,10 +178,11 @@ class Matcher:
                 remaining_small_volume -= trading_volume
                 entry.volume -= trading_volume
                 self.trade_list.append(Transaction(entry.uuid, entry.order_id, order_type, trading_volume, price))
-                if entry.volume == 0:
-                    bigger_list.remove(entry)   # If an order is fullfilled get rid of it
-                else:
+
+                if entry.volume != 0:
                     place_back_buffer.append(entry)
+                bigger_list.pop(0)  # If an order is full filled get rid of it
+
 
             # If there are any unfullfilled orders, and clear, so it's empty for the next round
             if len(place_back_buffer) != 0:
@@ -202,7 +204,7 @@ class Matcher:
         orderbook.add_order(bid_list)
         return self.trade_list
 
-    def merge(self,orderbook: OrderBook):
+    def merge(self, orderbook: OrderBook):
         merged_orders = OrderBook()
 
         ask_list = orderbook.getasklist()
@@ -219,7 +221,7 @@ class Matcher:
                     volume += ask_list[i].volume
                     ask_list.pop(i)
                 else:
-                    i += i
+                    i += 1
             merged_orders.add_order(Ask(self.uuid, self.order_id, volume, current_price, 2))
             self.cross_reference_list.append(cross_reference)
             self.order_id += 1
@@ -236,7 +238,7 @@ class Matcher:
                     volume += bid_list[i].volume
                     bid_list.pop(i)
                 else:
-                    i += i
+                    i += 1
             merged_orders.add_order(Bid(self.uuid,self.order_id, volume,current_price, 2))
             self.cross_reference_list.append(cross_reference)
             self.order_id += 1
