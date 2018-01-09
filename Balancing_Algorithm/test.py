@@ -7,6 +7,46 @@ import ClientReport
 import datetime
 import time
 
+
+def twoLayerClusterTest():
+    numLayerTwoClusters = 2
+    layerOneGroupSize = 2
+    secPerBlock = 10
+
+    clusters = []
+
+    MainCluster = blockchain.blockchain(0, numLayerTwoClusters, None)
+
+    for i in range(0, numLayerTwoClusters):
+        clusters.append(blockchain.blockchain(i+1, layerOneGroupSize, MainCluster))
+
+    # while True:
+    for i in range(0, numLayerTwoClusters):
+        cluster = clusters[i]
+        for j in range(0, layerOneGroupSize):
+            uuid = i*layerOneGroupSize + j  # ClientReport ID
+            timestamp = str(datetime.datetime.now())  # Time stamp
+            defaultConsPrice = 10  # Default consumption price
+            defaultProdsPrice = 1  # Default production price
+            consumption = 1000  # Actual consumption last block
+            production = 100  # Actual production last block
+            predictedCons = {"t+1": 200, "t+2": 0}  # Consumption prediction for coming blocks
+            predictedProd = {"t+1": 10, "t+2": 0}  # Production prediction for coming blocks
+            consFlex = {8: 1000}  # Consumption flexibility options for coming block
+            prodFlex = {}  # Production flexibility options for coming block
+
+            report = ClientReport.ClientReport(uuid, timestamp, defaultConsPrice, defaultProdsPrice, consumption,
+                                               production, predictedCons, predictedProd, consFlex, prodFlex)
+            cluster.addClientreport(report)
+
+        new_book = cluster.endOffRound()
+        MainCluster.addOrderBook(new_book)
+    MainCluster.endOffRound()
+
+    time.sleep(secPerBlock)
+
+
+
 def oneLayerClusterTest():
     numClients = 2
     secPerBlock = 10
@@ -14,8 +54,6 @@ def oneLayerClusterTest():
     cluster = blockchain.blockchain(0, numClients, None)
 
     while True:
-        # TODO fout in match. resulting Trade book: heeft een bid waar geen ask bij hoort.
-        # TODO heb er al veel tijd ingestoken maar kan niet vinden waar het fout gaat
         uuid = 0  # ClientReport ID
         timestamp = str(datetime.datetime.now())  # Time stamp
         defaultConsPrice = 10  # Default consumption price
@@ -50,8 +88,6 @@ def oneLayerClusterTest():
 
 
 def clientToOrdersTest():
-
-
     uuid = 0                                    # ClientReport ID
     timestamp = str(datetime.datetime.now())    # Time stamp
     defaultConsPrice = 10                       # Default consumption price
@@ -142,4 +178,4 @@ def matchMakingTest():
     print("Merged Order", new_book.getasklist(), new_book.getbidlist())
 
 
-oneLayerClusterTest()
+twoLayerClusterTest()

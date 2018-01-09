@@ -120,11 +120,14 @@ class Matcher:
         # todo: First sort for timestamp, then for price and volume in reverse (Works because of sort-stability)
         ask_list = sorted(orderbook.getasklist(), key=operator.attrgetter('price', 'volume', 'timestamp', 'uuid' , 'order_id'), reverse=True)
         bid_list = sorted(orderbook.getbidlist(), key=operator.attrgetter('price', 'volume', 'timestamp',  'uuid' , 'order_id'), reverse=False)
-        orderbook.clear() # remove all orders from the orderbook, untouched or partially filled orders will put back later
-        self.trade_list.clear()
 
         if len(ask_list)==0 or len(bid_list)==0:
             return []
+
+        orderbook.clear() # remove all orders from the orderbook, untouched or partially filled orders will put back later
+        self.trade_list.clear()
+
+
 
         sub_ask_list = []
         sub_bid_list = []
