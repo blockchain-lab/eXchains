@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import List
 import operator
 import datetime
 
@@ -206,6 +207,10 @@ class Matcher:
         return self.trade_list
 
     def merge(self, orderbook: OrderBook):
+        # This function will create a new order book with the remaining orders. It will combine multiple orders of the
+        # same price and keep track of the corresponding original order and uuid. All the orders in the order book will
+        # be linked to the cluster id and then returned so they can be passed on to a higher level.
+
         merged_orders = OrderBook()
 
         ask_list = orderbook.getasklist()
@@ -215,7 +220,9 @@ class Matcher:
             volume = 0
             current_price = ask_list[0].price
             i = 0
+
             cross_reference = CrossReference(self.uuid, self.order_id)
+
             while i < len(ask_list):
                 if ask_list[i].price == current_price:
                     cross_reference.orders.append((ask_list[i].uuid, ask_list[i].order_id))
@@ -245,3 +252,11 @@ class Matcher:
             self.order_id += 1
 
         return merged_orders
+
+    def unmerge(self, trades: List[Transaction]):
+        # This functions accepts a list of trades from a higher cluster and then link the trades made by a higher level
+        # to the remaining open orders in its own order book. This is done by using the self.cross_reference_list, Which
+        # contains a uuid and order id (that was send to the higher cluster) among with a list of the order id's of the
+        # original id's it used to create the new order.
+        while len(trades) != 0:
+
