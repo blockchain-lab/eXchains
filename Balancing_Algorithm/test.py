@@ -30,9 +30,15 @@ def twoLayerClusterTest():
             defaultProdsPrice = 1  # Default production price
             consumption = 1000  # Actual consumption last block
             production = 100  # Actual production last block
-            predictedCons = {"t+1": 200, "t+2": 0}  # Consumption prediction for coming blocks
-            predictedProd = {"t+1": 10, "t+2": 0}  # Production prediction for coming blocks
-            consFlex = {8: 1000}  # Consumption flexibility options for coming block
+            if i == 0:
+                predictedCons = {"t+1": 200, "t+2": 0}  # Consumption prediction for coming blocks
+                predictedProd = {"t+1": 10, "t+2": 0}  # Production prediction for coming blocks
+            else:
+                predictedCons = {"t+1": 10, "t+2": 0}  # Consumption prediction for coming blocks
+                predictedProd = {"t+1": 200, "t+2": 0}  # Production prediction for coming blocks
+
+
+            consFlex = {}  # Consumption flexibility options for coming block
             prodFlex = {}  # Production flexibility options for coming block
 
             report = ClientReport.ClientReport(uuid, timestamp, defaultConsPrice, defaultProdsPrice, consumption,
