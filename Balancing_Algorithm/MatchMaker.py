@@ -273,18 +273,21 @@ class Matcher:
 
         return merged_orders
 
-    def unmerge(self, trades: List[Transaction]):
+    def unmerge(self, orderbook: OrderBook, trades: List[Transaction]):
         # This functions accepts a list of trades from a higher cluster and then link the trades made by a higher level
         # to the remaining open orders in its own order book. This is done by using the self.cross_reference_list, Which
         # contains a uuid and order id (that was send to the higher cluster) among with a list of the order id's of the
         # original id's it used to create the new order.
+
         while len(trades) != 0:
             while len(self.cross_reference_list):
-                # Find the merged order matching the trade
-                if trades[0].order_id == self.cross_reference_list[0].order_id :
-                    # spread out the trade over the orders
-                    # cross_reference_list
-                    while ()
+                0 == 0  # random crap to shut up the style guidelines
+                # Find the merged order matching the trade in self.cross_reference_list
+                # self.cross_reference_list[0].orders is a list consisting of dupples of uuid and order id
+                # 1) Take all the mentioned orders from the list -> sum the volume
+                # 2) Do the pro rata splitting out and create trades.
+                # 3) check for none-zero volumes and add them back as orders.
+
 
 
 
