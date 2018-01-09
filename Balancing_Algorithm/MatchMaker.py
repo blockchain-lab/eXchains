@@ -3,6 +3,27 @@ from typing import List
 import operator
 import datetime
 
+# This module's purpose is to perform matchmaking between asks and bids. The algorithm first matches the highers buyer
+# With the lowest seller. If there are multiple buyer/sellers at the same price point the order or matched in decreasing
+# volume. The reason for this is to reward behavior that generates flexibility, if people are willing to buy for higher
+# and sell for lower there is a bigger chance on matches being made. When there is an sur plus of asks or bids, the
+# client offering for the price that generates the most flexibility will get priority as they are contributing to more
+# matches being made.
+
+# Use of this module
+# 1) Create an instance of the orderbook class
+# 2) Add orders to the order book
+# 3) create an instance of the Matcher class
+# 4) run matcher.match(orderbook)
+
+# optional (only if orders will be passed upwards):
+# 5) use matcher.merge(orderbook) to create a new orderbook
+# 6) pass these orders to another level and repeat from step 1
+# 7) use the trades made from the higher level with the unmerge function to match remaining orders with extra-cluster trades
+# 8) match.unmerge(trade_list_from_higher_level)
+
+# For a new round clear everything and start again from step 1
+
 
 class OrderBook:
     def __init__(self):
@@ -166,7 +187,6 @@ class Matcher:
             price = round((sub_ask_list[0].price + sub_bid_list[0].price)/2)
 
             # spread out the smaller volume pro rata over the bigger amount
-            # todo: rewrite this to a while loop since python can't handel for each loops where elements are deleted.
             while len(bigger_list) > 0:
                 entry = bigger_list[0]
                 if isinstance(entry, Ask):
@@ -259,4 +279,12 @@ class Matcher:
         # contains a uuid and order id (that was send to the higher cluster) among with a list of the order id's of the
         # original id's it used to create the new order.
         while len(trades) != 0:
+            while len(self.cross_reference_list):
+                # Find the merged order matching the trade
+                if trades[0].order_id == self.cross_reference_list[0].order_id :
+                    # spread out the trade over the orders
+                    # cross_reference_list
+                    while ()
+
+
 
