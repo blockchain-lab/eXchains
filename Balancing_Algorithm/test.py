@@ -9,16 +9,21 @@ import time
 
 
 def twoLayerClusterTest():
+    # Testing two layer / three cluster model without downward data movement
+
     numLayerTwoClusters = 2
     layerOneGroupSize = 2
     secPerBlock = 10
 
     clusters = []
 
-    MainCluster = blockchain.blockchain(0, numLayerTwoClusters, None)
+    MainCluster = blockchain.blockchain(0, None)
 
     for i in range(0, numLayerTwoClusters):
-        clusters.append(blockchain.blockchain(i+1, layerOneGroupSize, MainCluster))
+        clusters.append(blockchain.blockchain(i+1, MainCluster))
+        clusters[i].introduceClient(None)
+        clusters[i].introduceClient(None)
+        MainCluster.introduceClient(clusters[i])
 
     # while True:
     for i in range(0, numLayerTwoClusters):
@@ -37,7 +42,6 @@ def twoLayerClusterTest():
                 predictedCons = {"t+1": 10, "t+2": 0}  # Consumption prediction for coming blocks
                 predictedProd = {"t+1": 200, "t+2": 0}  # Production prediction for coming blocks
 
-
             consFlex = {}  # Consumption flexibility options for coming block
             prodFlex = {}  # Production flexibility options for coming block
 
@@ -45,19 +49,17 @@ def twoLayerClusterTest():
                                                production, predictedCons, predictedProd, consFlex, prodFlex)
             cluster.addClientreport(report)
 
-        new_book = cluster.endOffRound()
-        MainCluster.addOrderBook(new_book)
-    MainCluster.endOffRound()
-
     time.sleep(secPerBlock)
 
 
 
 def oneLayerClusterTest():
+    # Testing balancing in multiround single layer/cluster
+
     numClients = 2
     secPerBlock = 10
 
-    cluster = blockchain.blockchain(0, numClients, None)
+    cluster = blockchain.blockchain(0, None)
 
     while True:
         uuid = 0  # ClientReport ID
@@ -94,6 +96,8 @@ def oneLayerClusterTest():
 
 
 def clientToOrdersTest():
+    # test that rebuilds ClientReports to orderlists
+
     uuid = 0                                    # ClientReport ID
     timestamp = str(datetime.datetime.now())    # Time stamp
     defaultConsPrice = 10                       # Default consumption price
@@ -115,6 +119,8 @@ def clientToOrdersTest():
 
 
 def realDataTest():
+    # test that read data out of simulatedData file and builds ClientReports
+
     numClients = 5
     clientOffset = 1440
     dayOffset = 720
@@ -156,17 +162,17 @@ def realDataTest():
 
 
 def matchMakingTest():
+    # simple test that builds an aks and bid list and matches the orders.
+
     book = MatchMaker.OrderBook()
 
     koop = MatchMaker.Ask(1, 0, 61, 70, 1)
-
     koop1 = MatchMaker.Ask(2, 0, 50, 50, 1)
     koop2 = MatchMaker.Ask(3, 0, 40, 35, 1)
     koop3 = MatchMaker.Ask(4, 0, 45, 35, 1)
 
     verkoop = MatchMaker.Bid(0, 1, 20, 29, 1)
     verkoop1 = MatchMaker.Bid(0, 2, 47, 31, 1)
-
     verkoop2 = MatchMaker.Bid(0, 3, 43, 32, 1)
     verkoop3 = MatchMaker.Bid(0, 4, 33, 31, 1)
 
@@ -179,7 +185,7 @@ def matchMakingTest():
 
     print("Order book:", book.getasklist() + book.getbidlist())
     print("Trade book:", engine.match(book))
-    print("Order book:", book.getasklist() + book.getbidlist())
+    print("Remaining Order book:", book.getasklist() + book.getbidlist())
     new_book = engine.merge(book)
     print("Merged Order", new_book.getasklist(), new_book.getbidlist())
 
