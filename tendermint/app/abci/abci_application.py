@@ -1,5 +1,5 @@
 from .types_pb2 import Response, RequestEcho, RequestFlush, RequestInfo, RequestSetOption, RequestDeliverTx, \
-	RequestCheckTx, RequestCommit, RequestQuery, RequestInitChain, RequestBeginBlock, RequestEndBlock, OK
+	RequestCheckTx, RequestCommit, RequestQuery, RequestInitChain, RequestBeginBlock, RequestEndBlock
 
 
 class ABCIApplication:
@@ -38,27 +38,27 @@ class ABCIApplication:
 	def on_deliver_tx(self, msg: RequestDeliverTx):
 		print('onDeliverTx(tx=', msg.tx, ')')
 		res = Response()
-		res.deliver_tx.code = OK
+		res.deliver_tx.code = 0
 		# res.deliver_tx.SetInParent()
 		return res
 
 	def on_check_tx(self, msg: RequestCheckTx):
 		print('onCheckTx(tx=', msg.tx, ')')
 		res = Response()
-		res.check_tx.code = OK
+		res.check_tx.code = 0
 		# res.check_tx.SetInParent()
 		return res
 
 	def on_commit(self, msg: RequestCommit):
 		print('onCommit()')
 		res = Response()
-		res.commit.code = OK
+		res.commit.code = 0
 		return res
 
 	def on_query(self, msg: RequestQuery):
 		print('onQuery(...)')
 		res = Response()
-		res.query.code = OK
+		res.query.code = 0
 		return res
 
 	def on_init_chain(self, msg: RequestInitChain):

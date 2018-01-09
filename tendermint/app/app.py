@@ -1,6 +1,6 @@
 import sys
 
-from abci.types_pb2 import RequestCheckTx, Response, EncodingError, OK, Unauthorized, RequestDeliverTx
+from abci.types_pb2 import RequestCheckTx, Response, RequestDeliverTx
 from abci.server import ABCIServer
 from abci.abci_application import ABCIApplication
 from transaction_pb2 import Transaction
@@ -20,6 +20,9 @@ class EnergyMarketApplication(ABCIApplication):
 
 	def check_signature(self, public_key, transaction_type, transaction):
 		payload = None
+		# if !transaction.HasField('signature'):
+		# 	return False
+
 		signature = transaction.signature
 		if transaction_type == 'new_contract':
 			payload = transaction.uuid + int(transaction.timestamp).to_bytes(8, 'big') + transaction.public_key
@@ -33,9 +36,9 @@ class EnergyMarketApplication(ABCIApplication):
 		print(payload, transaction)
 		if payload is None:
 			return False
-
-		verify = ed25519.VerifyingKey(public_key)
+		
 		try:
+			verify = ed25519.VerifyingKey(public_key)
 			verify.verify(signature, payload)
 		except AssertionError:
 			return False
@@ -48,7 +51,7 @@ class EnergyMarketApplication(ABCIApplication):
 		except Exception as e:
 			print('check_tx decode error:', e)
 			res = Response()
-			res.check_tx.code = EncodingError
+			res.check_tx.code = 400
 			return res
 
 		print(transaction)
@@ -56,12 +59,12 @@ class EnergyMarketApplication(ABCIApplication):
 		if transaction.HasField('new_contract'):
 			if transaction.new_contract.uuid in self.pending_state["contracts"]:
 				res = Response()
-				res.check_tx.code = Unauthorized
+				res.check_tx.code = 401
 				return res
 
 			if not self.check_signature(transaction.new_contract.public_key, 'new_contract', transaction.new_contract):
 				res = Response()
-				res.check_tx.code = Unauthorized
+				res.check_tx.code = 401
 				return res
 
 			self.pending_state["contracts"][transaction.new_contract.uuid] = {
@@ -74,22 +77,22 @@ class EnergyMarketApplication(ABCIApplication):
 		elif transaction.HasField('usage'):
 			if transaction.usage.contract_uuid not in self.pending_state["contracts"]:
 				res = Response()
-				res.check_tx.code = Unauthorized
+				res.check_tx.code = 401
 				return res
 
 			if not self.check_signature(self.pending_state["contracts"][transaction.usage.contract_uuid]["public_key"], 'usage', transaction.usage):
 				res = Response()
-				res.check_tx.code = Unauthorized
+				res.check_tx.code = 401
 				return res
 			self.pending_state["contracts"][transaction.usage.contract_uuid]["consumption"] += transaction.usage.consumption
 			self.pending_state["contracts"][transaction.usage.contract_uuid]["production"] += transaction.usage.production
 		else:
 			res = Response()
-			res.check_tx.code = EncodingError
+			res.check_tx.code = 400
 			return res
 
 		res = Response()
-		res.check_tx.code = OK
+		res.check_tx.code = 0
 		return res
 
 	def on_deliver_tx(self, msg: RequestDeliverTx):
@@ -98,7 +101,7 @@ class EnergyMarketApplication(ABCIApplication):
 			transaction = Transaction.FromString(tx)
 		except:
 			res = Response()
-			res.deliver_tx.code = EncodingError
+			res.deliver_tx.code = 400
 			return res
 
 		print(transaction)
@@ -116,7 +119,7 @@ class EnergyMarketApplication(ABCIApplication):
 			self.state["contracts"][transaction.usage.contract_uuid]["production"] += transaction.usage.production
 
 		res = Response()
-		res.deliver_tx.code = OK
+		res.deliver_tx.code = 0
 		return res
 
 	def on_end_block(self, msg):

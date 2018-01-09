@@ -5,17 +5,28 @@
 	<script src="//cdn.rawgit.com/dcodeIO/protobuf.js/6.8.3/dist/protobuf.min.js"></script>
 	<script type="text/javascript" >
 		socket = new WebSocket("ws://localhost:46657/websocket");
-		var pending = {}, nextId = 1, Transaction;
+		var pending = {}, listeners = {}, nextId = 1, Transaction;
 		socket.addEventListener('message', function(event) {
 			var data = JSON.parse(event.data);
-			console.log(data);
+			console.log(JSON.stringify(data));
 			if (Boolean(pending[data.id])) {
 				pending[data.id](data.result);
 				delete pending[data.id];
 			}
+			if (Boolean(listeners[data.id])) {
+				listeners[data.id](data.result);
+			}
 		});
 		function bufferToBase64(buf) {
 			return btoa(String.fromCharCode.apply(null, buf))
+		}
+		function base64ToBuffer(base64str) {
+			var rawStr = atob(base64str),
+				buff = new Uint8Array(rawStr.length);
+			for (var i = 0; i < rawStr.length; i += 1) {
+				buff[i] = rawStr.charCodeAt(i);
+			}
+			return buff;
 		}
 		function genUUID() {
 			// xx xx xx xx - xx xx - 4x xx - yx xx-xxxxxxxxxxxx
@@ -31,10 +42,10 @@
 			var t = Transaction.encode(data).finish();
 			return bufferToBase64(t);
 		}
-		function doRequest(req, callback) {
+		function doRequest(req, callback, event_listener) {
 			if (socket.readyState == 0) {
 				socket.addEventListener('open', function() {
-					doRequest(req, callback)
+					doRequest(req, callback, event_listener);
 				});
 			} else {
 				let id = "request_" + String(nextId++);
@@ -44,35 +55,42 @@
 					params: req.params,
 					jsonrpc: "2.0",
 					id: id
+				};
+				if (event_listener && req.method === 'subscribe') {
+					listeners[id + "#event"] = event_listener;
 				}
+				console.log(JSON.stringify(req));
 				socket.send(JSON.stringify(req));
 			}
 		};
 		protobuf.load("transaction.proto", function(err, root) {
 			Transaction = root.lookupType('Transaction');
 			// doRequest({
-			// 	method: 'subscribe',
-			// 	params: [btoa("new_block")]
+			// 	method: 'broadcast_tx_sync',
+			// 	params: [createTransaction({
+			// 		newContract: {
+			// 			uuid: genUUID(),
+			// 			timestamp: Date.now(),
+			// 			publicKey: new Uint8Array([0,1,2,3,4,5])
+			// 		}
+			// 	})]
 			// }, function(data) {
-			// 	// console.log(data);
-			// });
-			// doRequest({
-			// 	method: 'subscribe',
-			// 	params: [btoa("tx")]
-			// }, function(data) {
-			// 	doRequest({
-			// 		method: 'broadcast_tx_sync',
-			// 		params: [createTransaction({
-			// 			newContract: {
-			// 				uuid: genUUID(),
-			// 				timestamp: Date.now(),
-			// 				publicKey: new Uint8Array([0,1,2,3,4,5])
-			// 			}
-			// 		})]
-			// 	}, function(data) {
 
-			// 	});
 			// });
+			doRequest({
+				method: 'subscribe',
+				params: {
+					query: "tm.event='Tx'"
+				}
+			}, function(data) {
+				console.log(data);
+			}, function(event) {
+				console.log('event =', event);
+				var rawTx = event.data.data.tx;
+				console.log('rawTx =', rawTx);
+				var transaction = Transaction.decode(base64ToBuffer(rawTx));
+				console.log(transaction);
+			});
 		});
 		
 	</script>

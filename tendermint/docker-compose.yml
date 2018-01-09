@@ -1,7 +1,7 @@
 version: '3.0'
 services:
   tendermint_init:
-    image: tendermint/tendermint:0.12.0
+    image: josephverburg/tendermint:0.14.0
     volumes:
       - tendermint:/tendermint
     entrypoint:
@@ -9,7 +9,7 @@ services:
       - init
 
   tendermint:
-    image: tendermint/tendermint:0.12.0
+    image: josephverburg/tendermint:0.14.0
     volumes:
       - tendermint:/tendermint
     ports:
