@@ -1,16 +1,23 @@
 syntax = "proto3";
 package transaction;
 
-
 message TransactionUsage {
     bytes contract_uuid = 1;
     uint64 timestamp = 2;
     uint64 consumption = 3;
     uint64 production = 4;
+    
+    map<string, uint64> prediction_consumption = 5;
+    map<string, uint64> prediction_production = 6;
+    
+    map<int64, uint64> consumption_flexibility = 7;
+    map<int64, uint64> production_flexibility = 8;
+
     /*
        concat(contract_uuid, timestamp.to_bytes(8, big_endian), consumption.to_bytes(8, big_endian), production.to_bytes(8, big_endian))
     */
-    bytes signature = 5;
+
+    bytes signature = 9;
 }
 
 message TransactionNewContract {
