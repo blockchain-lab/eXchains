@@ -208,5 +208,5 @@ def matchMakingTest():
     print("Merged Order", new_book.getasklist(), new_book.getbidlist())
 
 
-realDataTest()
-# twoLayerClusterTest()
+# realDataTest()
+twoLayerClusterTest()

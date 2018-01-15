@@ -247,7 +247,8 @@ class Matcher:
 
             while i < len(ask_list):
                 if ask_list[i].price == current_price:
-                    cross_reference.orders.append((ask_list[i].uuid, ask_list[i].order_id))
+                    # cross_reference.orders.append((ask_list[i].uuid, ask_list[i].order_id))
+                    cross_reference.orders.append((ask_list[i]))
                     volume += ask_list[i].volume
                     ask_list.pop(i)
                 else:
@@ -264,7 +265,8 @@ class Matcher:
             cross_reference = CrossReference(self.order_id)
             while i < len(bid_list):
                 if bid_list[i].price == current_price:
-                    cross_reference.orders.append((bid_list[i].uuid, bid_list[i].order_id))
+                    # cross_reference.orders.append((bid_list[i].uuid, bid_list[i].order_id))
+                    cross_reference.orders.append((bid_list[i]))
                     volume += bid_list[i].volume
                     bid_list.pop(i)
                 else:
@@ -280,7 +282,7 @@ class Matcher:
         # to the remaining open orders in its own order book. This is done by using the self.cross_reference_list, Which
         # contains a uuid and order id (that was send to the higher cluster) among with a list of the order id's of the
         # original id's it used to create the new order.
-
+        new_trade_list = []
         if len(trades) <= 0 or len(self.cross_reference_list) <= 0:
             return
 
@@ -313,7 +315,7 @@ class Matcher:
                         total_order_volume -= order.volume
                         total_trade_volume -= trading_volume
                         order.volume -= trading_volume
-                        self.trade_list.append(Transaction(order.uuid, order.order_id, order_type, trading_volume, trades[0].price))
+                        new_trade_list.append(Transaction(order.uuid, order.order_id, order_type, trading_volume, trades[0].price))
 
                         if order.volume != 0:   # If the order is not empty, add it to the order book again
                             orderbook.add_order(order)
@@ -328,6 +330,7 @@ class Matcher:
             # 2) Do the pro rata splitting out and create trades.
             # 3) check for none-zero volumes and add them back as orders.
 
+        return self.trade_list
 
 
 
