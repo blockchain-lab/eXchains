@@ -16,7 +16,7 @@ import datetime
 # 3) create an instance of the Matcher class
 # 4) run matcher.match(orderbook) (returns list with trades that could be made)
 
-# optional (only if orders will be passed upwards):
+# optional (only if orders will be passed upwards else proceed to 9):
 # 5) use matcher.merge(orderbook) (Returns new orderbook with mergerd order)
 # 6) pass these orders to another level and repeat from step 1
 # 7) use the trades from a higher level with the unmerge function to match remaining orders with extra-cluster trades
