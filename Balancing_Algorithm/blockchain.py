@@ -4,18 +4,27 @@ import MatchMaker
 
 class blockchain:
 
-    def __init__(self, uuid, parrent):
+    def __init__(self, uuid, parent):
         self.uuid = uuid
         self.clients = {}
-        self.parrent = parrent
+        self.parrent = parent
         self.orderBook = MatchMaker.OrderBook()
         self.reportsRecieved = 0
         self.round = 0
         self.clientCount = 0
 
     def feedback(self, orderbook):
-        print("Cluster {} got back this list {}".format(self.uuid , orderbook))
-        #TODO verdeel terug gekomen oders over clients
+        print("\nCluster {} got back this list {}".format(self.uuid , orderbook))
+        #TODO unmerged/ merge met tradebook
+
+        # for uuid, client in self.clients.items():
+        #     transactions = []
+        #     for trade in tradeBook:
+        #         if trade.uuid == uuid:
+        #             transactions.append(trade)
+        #     client.feedback(transactions)
+
+
 
     def endOffRound(self):
         matcher = MatchMaker.Matcher(self.uuid)
@@ -30,7 +39,7 @@ class blockchain:
         new_book = matcher.merge(self.orderBook)
         print("Merged Order", new_book.getasklist(), new_book.getbidlist())
 
-        # if top cluster start sending
+        # if top cluster start sending data down
         if self.parrent is None:
             for uuid, client in self.clients.items():
                 transactions = []

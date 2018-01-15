@@ -1,6 +1,7 @@
 import MatchMaker
 import operator
 import blockchain
+from random import randint
 
 import CSVparser
 import ClientReport
@@ -127,7 +128,7 @@ def realDataTest():
 
     minPerBlock = 5
     secPerBlock = 2
-    powSignificance = 1000
+    powSignificance = 1
     powUnit = "Kwh"
 
     parser = CSVparser.CVSparer('SimulationData.csv', numClients)
@@ -138,6 +139,8 @@ def realDataTest():
 
     consumptionSum = 0
     productionSum = 0
+    prevConsumptionSum = 0
+    prevProductionSum = 0
 
     while True:
         for clientID in range(0, numClients):
@@ -146,14 +149,29 @@ def realDataTest():
                 consumptionSum += int(float(row[3].replace(",", ".")) * powSignificance)
                 productionSum += int(float(row[4].replace(",", ".")) * powSignificance)
 
-            report = ClientReport.ClientReport(0, str(datetime.datetime.now()), 5, 5, consumptionSum, productionSum,
-                                               {"t+1": 1, "t+2": 2}, {"t+1": 1, "t+2": 2}, {"12.00": 300},
-                                               {"11.00": 100})
+            uuid = 0                                   # ClientReport ID
+            timestamp = str(datetime.datetime.now())   # Time stamp
+            defaultConsPrice = 10                      # Default consumption price
+            defaultProdsPrice = 1                      # Default production price
+            consumption = prevConsumptionSum           # Actual consumption last block
+            production = prevProductionSum             # Actual production last block
+            predictedCons = {"t+1": consumptionSum}    # Consumption prediction for coming blocks
+            predictedProd = {"t+1": productionSum}     # Production prediction for coming blocks
+
+
+            consFlex = {randint(6, 9): 100, randint(3, 5): 50, randint(2, 9): -100} # Consumption flexibility options for coming block
+            prodFlex = {randint(2, 5): 200, randint(2, 9): -100}                    # Production flexibility options for coming block
+
+            report = ClientReport.ClientReport(uuid, timestamp, defaultConsPrice, defaultProdsPrice, consumption,
+                                               production, predictedCons, predictedProd, consFlex, prodFlex)
 
             print(report.reportToAskOrders())
             print(report.reportToBidOrders())
 
-            report.printMessage()
+            print(report)
+            prevConsumptionSum = consumptionSum
+            prevProductionSum = productionSum
+
             consumptionSum = 0
             productionSum = 0
 
@@ -190,4 +208,5 @@ def matchMakingTest():
     print("Merged Order", new_book.getasklist(), new_book.getbidlist())
 
 
-twoLayerClusterTest()
+realDataTest()
+# twoLayerClusterTest()
