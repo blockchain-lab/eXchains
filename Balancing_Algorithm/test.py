@@ -18,10 +18,10 @@ def twoLayerClusterTest():
 
     clusters = []
 
-    MainCluster = blockchain.blockchain(0, None)
+    MainCluster = blockchain.blockchain(100, None)
 
     for i in range(0, numLayerTwoClusters):
-        clusters.append(blockchain.blockchain(i+1, MainCluster))
+        clusters.append(blockchain.blockchain((i+1)*10, MainCluster))
         clusters[i].introduceClient(None)
         clusters[i].introduceClient(None)
         MainCluster.introduceClient(clusters[i])
