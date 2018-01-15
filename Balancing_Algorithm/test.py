@@ -218,7 +218,7 @@ def realDataTest():
     minPerBlock = 5
     secPerBlock = 2
     powSignificance = 1
-    powUnit = "Kwh"
+    powUnit = "wh"
 
     parser = CSVparser.CVSparer('SimulationData.csv', numClients)
 
