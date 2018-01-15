@@ -24,7 +24,8 @@ class EnergyMarketApplication(ABCIApplication):
 		self.port = port
 		# in seconds
 		self.balancing_interval = 20
-		
+		self.debug.protocol = False;
+
 		self.state = {
 			"contracts": {}
 		}

@@ -19,7 +19,7 @@ add . /app/
 #nodemon --exec "python -v" ./app.py
 
 ENTRYPOINT ["python"]
-CMD ["app.py"]
+CMD ["src/app.py"]
 #ENTRYPOINT ["nodemon"]
 #cmd ["--exec", "python", "app.py"]
 # CMD ["manage.py", "runserver", "0.0.0.0:8000"]
