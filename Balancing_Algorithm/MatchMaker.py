@@ -313,7 +313,7 @@ class Matcher:
                         else:
                             order_type = OrderType.BID
 
-                        trading_volume = round(total_order_volume / total_order_volume * total_trade_volume)
+                        trading_volume = round(order.volume / total_order_volume * total_trade_volume)
 
                         total_order_volume -= order.volume
                         total_trade_volume -= trading_volume
@@ -327,15 +327,13 @@ class Matcher:
 
             trades.pop(0)   # Delete the entry: if found it was handled else it was an invalid entry
 
-            return new_trade_list
+        return new_trade_list
 
             # Find the merged order matching the trade in self.cross_reference_list
             # self.cross_reference_list[0].orders is a list consisting of dupples of uuid and order id
             # 1) Take all the mentioned orders from the list -> sum the volume
             # 2) Do the pro rata splitting out and create trades.
             # 3) check for none-zero volumes and add them back as orders.
-
-        return self.trade_list
 
 
 
