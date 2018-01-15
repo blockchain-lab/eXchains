@@ -287,6 +287,8 @@ class Matcher:
             return
 
         while len(trades) != 0:
+            # Todo: add a log entry/error handler when there is a merged-trade not linked to an merged-order
+            new_trade_list = []
             for CRL_entry in self.cross_reference_list:
 
                 if CRL_entry.order_id == trades[0].order_id:
@@ -295,13 +297,14 @@ class Matcher:
 
                     order_list = []
 
-                    # Calculate order volume and create lsit to spread amongst
+                    # Calculate order volume and create an order list
                     for order in CRL_entry.orders:
                         # Move all eligible orders from order book to local list (move back if not completely fulfilled)
                         total_order_volume += order.volume
                         order_list.append(order)
                         orderbook.remove_order(order)
 
+                    # Go over all orders that match this trade and spread pro rata
                     while len(order_list) > 0:
                         order = order_list[0]
 
@@ -310,7 +313,7 @@ class Matcher:
                         else:
                             order_type = OrderType.BID
 
-                        trading_volume = round(total_order_volume / total_order_volume * total_trade_volume)
+                        trading_volume = round(order.volume / total_order_volume * total_trade_volume)
 
                         total_order_volume -= order.volume
                         total_trade_volume -= trading_volume
@@ -324,13 +327,13 @@ class Matcher:
 
             trades.pop(0)   # Delete the entry: if found it was handled else it was an invalid entry
 
+        return new_trade_list
+
             # Find the merged order matching the trade in self.cross_reference_list
             # self.cross_reference_list[0].orders is a list consisting of dupples of uuid and order id
             # 1) Take all the mentioned orders from the list -> sum the volume
             # 2) Do the pro rata splitting out and create trades.
             # 3) check for none-zero volumes and add them back as orders.
-
-        return self.trade_list
 
 
 
