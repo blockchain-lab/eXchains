@@ -93,8 +93,7 @@ class Bid:
 
 
 class CrossReference:
-    def __init__(self, uuid, order_id):
-        self.uuid = uuid
+    def __init__(self, order_id):
         self.order_id = order_id
         self.orders = []
 
@@ -241,7 +240,7 @@ class Matcher:
             current_price = ask_list[0].price
             i = 0
 
-            cross_reference = CrossReference(self.uuid, self.order_id)
+            cross_reference = CrossReference(self.order_id)
 
             while i < len(ask_list):
                 if ask_list[i].price == current_price:
@@ -259,7 +258,7 @@ class Matcher:
             volume = 0
             current_price = bid_list[0].price
             i = 0
-            cross_reference = CrossReference(self.uuid, self.order_id)
+            cross_reference = CrossReference(self.order_id)
             while i < len(bid_list):
                 if bid_list[i].price == current_price:
                     cross_reference.orders.append((bid_list[i].uuid, bid_list[i].order_id))
@@ -279,8 +278,20 @@ class Matcher:
         # contains a uuid and order id (that was send to the higher cluster) among with a list of the order id's of the
         # original id's it used to create the new order.
 
+        if len(trades) <= 0 or len(self.cross_reference_list):
+            return
+
         while len(trades) != 0:
-            while len(self.cross_reference_list):
+            for CRL_entry in self.cross_reference_list:
+
+                for order in CRL_entry.orders:
+                    0 ==0
+
+                trades.pop(0)   #Delete the entry: if found it was handled else it was an invalid entry
+
+
+
+
                 0 == 0  # random crap to shut up the style guidelines
                 # Find the merged order matching the trade in self.cross_reference_list
                 # self.cross_reference_list[0].orders is a list consisting of dupples of uuid and order id
