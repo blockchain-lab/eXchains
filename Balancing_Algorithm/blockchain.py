@@ -4,33 +4,50 @@ import MatchMaker
 
 class blockchain:
 
-    def __init__(self, uuid, parrent):
+    def __init__(self, uuid, parent):
         self.uuid = uuid
         self.clients = {}
-        self.parrent = parrent
+        self.parrent = parent
         self.orderBook = MatchMaker.OrderBook()
         self.reportsRecieved = 0
         self.round = 0
         self.clientCount = 0
 
-    def feedback(self, orderbook):
-        print("Cluster {} got back this list {}".format(self.uuid , orderbook))
-        #TODO verdeel terug gekomen oders over clients
+        self.matcher = MatchMaker.Matcher(self.uuid)
+
+    def feedback(self, transactions):
+        print("\nCluster {} got back this list {}".format(self.uuid , transactions))
+
+        trade_list = self.matcher.unmerge(self.orderBook, transactions)
+
+        print(trade_list)
+
+        # for uuid, client in self.clients.items():
+        #     transactions = []
+        #     for trade in transactions:
+        #         if trade.uuid == uuid:
+        #             transactions.append(trade)
+        #     client.feedback(transactions)
+
+        self.orderBook = MatchMaker.OrderBook()
+        self.reportsRecieved = 0
+        self.round += 1
+
 
     def endOffRound(self):
-        matcher = MatchMaker.Matcher(self.uuid)
+
 
         print("\n#### END OF ROUND {}  FOR CLUSTER {} ####".format(self.round, self.uuid))
         print("Order book:", self.orderBook.getasklist() + self.orderBook.getbidlist())
 
-        tradeBook = matcher.match(self.orderBook)
+        tradeBook = self.matcher.match(self.orderBook)
         print("Trade book:", tradeBook)
 
         print("Remaining Order book:", self.orderBook.getasklist() + self.orderBook.getbidlist())
-        new_book = matcher.merge(self.orderBook)
+        new_book = self.matcher.merge(self.orderBook)
         print("Merged Order", new_book.getasklist(), new_book.getbidlist())
 
-        # if top cluster start sending
+        # if top cluster start sending data down
         if self.parrent is None:
             for uuid, client in self.clients.items():
                 transactions = []
@@ -43,9 +60,6 @@ class blockchain:
         else:
             self.parrent.addOrderBook(new_book)
 
-        self.orderBook = MatchMaker.OrderBook()
-        self.reportsRecieved = 0
-        self.round += 1
 
         return new_book
 
