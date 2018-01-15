@@ -285,6 +285,7 @@ class Matcher:
 
         while len(trades) != 0:
             # Todo: add a log entry/error handler when there is a merged-trade not linked to an merged-order
+            new_trade_list = []
             for CRL_entry in self.cross_reference_list:
 
                 if trades[0].order_id == CRL_entry.order_id:
@@ -314,7 +315,7 @@ class Matcher:
                         total_order_volume -= order.volume
                         total_trade_volume -= trading_volume
                         order.volume -= trading_volume
-                        self.trade_list.append(Transaction(order.uuid, order.order_id, order_type, trading_volume, trades[0].price))
+                        new_trade_list.append(Transaction(order.uuid, order.order_id, order_type, trading_volume, trades[0].price))
 
                         if order.volume != 0:   # If the order is not empty, add it to the order book again
                             orderbook.add_order(order)
@@ -323,7 +324,7 @@ class Matcher:
 
             trades.pop(0)   # Delete the entry: if found it was handled else it was an invalid entry
 
-            return orderbook
+            return new_trade_list
 
             # Find the merged order matching the trade in self.cross_reference_list
             # self.cross_reference_list[0].orders is a list consisting of dupples of uuid and order id
