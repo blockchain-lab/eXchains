@@ -8,6 +8,93 @@ import ClientReport
 import datetime
 import time
 
+def realDataTestMultiLayer():
+    # test that read data out of simulatedData file and builds ClientReports
+
+    numClientsPerCluster = 2
+    BlockchainGroupSize = 2
+
+    clusters = []
+
+    numBlockchainLayers = 3
+    MainCluster = blockchain.blockchain(1*10**numBlockchainLayers, None)
+
+    chain = MainCluster
+    for i in range(0, BlockchainGroupSize):
+        chain_I = blockchain.blockchain((10**(numBlockchainLayers-1)) + i, chain)
+        chain.introduceClient(chain_I)
+        for j in range(0, BlockchainGroupSize):
+            chain_J = blockchain.blockchain((10 ** (numBlockchainLayers - 2)) + j+BlockchainGroupSize*i, chain_I)
+            chain_I.introduceClient(chain_J)
+            clusters.append(chain_J)
+            for k in range(0, BlockchainGroupSize):
+                chain_K = blockchain.blockchain((10 ** (numBlockchainLayers - 3)) + k+BlockchainGroupSize*(j+BlockchainGroupSize*i), chain_J)
+                chain_K.introduceClient(None)
+                chain_J.introduceClient(chain_K)
+
+    clientOffset = 1440
+    dayOffset = 720
+
+    minPerBlock = 5
+    secPerBlock = 2
+    powSignificance = 1
+    powUnit = "Kwh"
+
+
+    numLayer1Clusters = len(clusters)
+    numClients = numClientsPerCluster * numLayer1Clusters
+    print("numClients:", numClients, "numLayer1Clusters:", numLayer1Clusters)
+
+    parser = CSVparser.CVSparer('SimulationData.csv', numClients)
+
+    for i in range(0, numClients):
+        parser.skipRows(i, dayOffset)
+        parser.skipRows(i, i * clientOffset)
+
+    consumptionSum = 0
+    productionSum = 0
+    prevConsumptionSum = 0
+    prevProductionSum = 0
+
+    # while True:
+    for clientID in range(0, numClients):
+        for min in range(0, minPerBlock):
+            row = parser.getNextRow(clientID)
+            consumptionSum += int(float(row[3].replace(",", ".")) * powSignificance)
+            productionSum += int(float(row[4].replace(",", ".")) * powSignificance)
+
+        uuid = clientID                            # ClientReport ID
+        timestamp = str(datetime.datetime.now())   # Time stamp
+        defaultConsPrice = 10                      # Default consumption price
+        defaultProdsPrice = 1                      # Default production price
+        consumption = prevConsumptionSum           # Actual consumption last block
+        production = prevProductionSum             # Actual production last block
+        predictedCons = {"t+1": consumptionSum}    # Consumption prediction for coming blocks
+        predictedProd = {"t+1": productionSum}     # Production prediction for coming blocks
+
+
+        consFlex = {randint(6, 9): 100, randint(3, 5): 50, randint(2, 9): -100} # Consumption flexibility options for coming block
+        prodFlex = {randint(2, 5): 200, randint(2, 9): -100}                    # Production flexibility options for coming block
+
+        report = ClientReport.ClientReport(uuid, timestamp, defaultConsPrice, defaultProdsPrice, consumption,
+                                           production, predictedCons, predictedProd, consFlex, prodFlex)
+
+        print("Client:", clientID, "reporting to cluster:", clusters[int(clientID / numClientsPerCluster)].uuid)
+        clusters[int(clientID / numClientsPerCluster)].addClientreport(report)
+
+        # 0 1 0
+        # 2 3 1
+        # 4 5 2
+        # 6 7 3
+
+        prevConsumptionSum = consumptionSum
+        prevProductionSum = productionSum
+
+        consumptionSum = 0
+        productionSum = 0
+
+        # print("\n")
+        # time.sleep(secPerBlock)
 
 def twoLayerClusterTest():
     # Testing two layer / three cluster model without downward data movement
@@ -211,4 +298,5 @@ def matchMakingTest():
 
 
 # realDataTest()
-twoLayerClusterTest()
+# twoLayerClusterTest()
+realDataTestMultiLayer()

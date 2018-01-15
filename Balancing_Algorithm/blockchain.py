@@ -12,22 +12,24 @@ class blockchain:
         self.reportsRecieved = 0
         self.round = 0
         self.clientCount = 0
+        self.tradeBook = []
 
         self.matcher = MatchMaker.Matcher(self.uuid)
 
     def feedback(self, transactions):
-        print("\nCluster {} got back this list {}".format(self.uuid , transactions))
-
         trade_list = self.matcher.unmerge(self.orderBook, transactions)
+        print("\nCluster {} got back from above unmerged: {}".format(self.uuid, trade_list))
+        print("and internal trade list", self.tradeBook)
 
-        print(trade_list)
-
-        # for uuid, client in self.clients.items():
-        #     transactions = []
-        #     for trade in transactions:
-        #         if trade.uuid == uuid:
-        #             transactions.append(trade)
-        #     client.feedback(transactions)
+        for uuid, client in self.clients.items():
+            transactions = []
+            for trade in trade_list:
+                if trade.uuid == uuid:
+                    transactions.append(trade)
+            for trade in self.tradeBook:
+                if trade.uuid == uuid:
+                    transactions.append(trade)
+            client.feedback(transactions)
 
         self.orderBook = MatchMaker.OrderBook()
         self.reportsRecieved = 0
@@ -39,9 +41,9 @@ class blockchain:
 
         print("\n#### END OF ROUND {}  FOR CLUSTER {} ####".format(self.round, self.uuid))
         print("Order book:", self.orderBook.getasklist() + self.orderBook.getbidlist())
-
-        tradeBook = self.matcher.match(self.orderBook)
-        print("Trade book:", tradeBook)
+        self.tradeBook.clear()
+        self.tradeBook = self.matcher.match(self.orderBook)
+        print("Trade book:", self.tradeBook)
 
         print("Remaining Order book:", self.orderBook.getasklist() + self.orderBook.getbidlist())
         new_book = self.matcher.merge(self.orderBook)
@@ -51,7 +53,8 @@ class blockchain:
         if self.parrent is None:
             for uuid, client in self.clients.items():
                 transactions = []
-                for trade in tradeBook:
+                for trade in self.tradeBook:
+                    print("Client UUID:", uuid, "trade.uuid:", trade.uuid)
                     if trade.uuid == uuid:
                         transactions.append(trade)
                 client.feedback(transactions)
@@ -59,7 +62,6 @@ class blockchain:
         # if not top cluster send new book up
         else:
             self.parrent.addOrderBook(new_book)
-
 
         return new_book
 
@@ -84,6 +86,7 @@ class blockchain:
     def introduceClient(self, client):
         self.clientCount = self.clientCount + 1
         if client is None:
+            pass
             self.clients[self.clientCount] = blockchain(self.clientCount, None)
         else:
             self.clients[client.uuid] = client

@@ -284,7 +284,7 @@ class Matcher:
         # original id's it used to create the new order.
         new_trade_list = []
         if len(trades) <= 0 or len(self.cross_reference_list) <= 0:
-            return
+            return []
 
         while len(trades) != 0:
             # Todo: add a log entry/error handler when there is a merged-trade not linked to an merged-order
