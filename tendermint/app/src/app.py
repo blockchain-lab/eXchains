@@ -12,7 +12,12 @@ class EnergyMarketApplication(ABCIApplication):
 	def __init__(self):
 		super().__init__()
 
-		self.debug.protocol = False;
+		self.debug.update({
+			"protocol": False,
+			"signing": False,
+			"check_tx": True,
+			"deliver_tx": False
+		})
 
 		self.state = {
 			"contracts": {}
@@ -36,10 +41,12 @@ class EnergyMarketApplication(ABCIApplication):
 				int(transaction.consumption).to_bytes(8, 'big') + \
 				int(transaction.production).to_bytes(8, 'big')
 
-		print(payload, transaction)
+		if self.debug['signing']:
+			print(payload, transaction)
+
 		if payload is None:
 			return False
-		
+
 		try:
 			verify = ed25519.VerifyingKey(public_key)
 			verify.verify(signature, payload)
@@ -56,8 +63,8 @@ class EnergyMarketApplication(ABCIApplication):
 			res = Response()
 			res.check_tx.code = 400
 			return res
-
-		print(transaction)
+		if self.debug['check_tx']:
+			print(transaction)
 
 		if transaction.HasField('new_contract'):
 			if transaction.new_contract.uuid in self.pending_state["contracts"]:
@@ -107,7 +114,8 @@ class EnergyMarketApplication(ABCIApplication):
 			res.deliver_tx.code = 400
 			return res
 
-		print(transaction)
+		if self.debug['deliver_tx']:
+			print(transaction)
 
 		if transaction.HasField('new_contract'):
 			self.state["contracts"][transaction.new_contract.uuid] = {

@@ -8,20 +8,29 @@ class ABCIApplication:
 		self.last_block_app_hash = b''
 		self.last_block_height = 0
 
+		self.debug = {
+			"protocol": True,
+			"connection": True,
+			"messages": True
+		}
+
 	def on_echo(self, msg: RequestEcho):
-		print('onEcho(message=' + msg.message + ')')
+		if self.debug['messages']:
+			print('onEcho(message=' + msg.message + ')')
 		res = Response()
 		res.echo.message = msg.message
 		return res
 
 	def on_flush(self, msg: RequestFlush):
-		print('onFlush()')
+		if self.debug['protocol']:
+			print('onFlush()')
 		res = Response()
 		res.flush.SetInParent()
 		return res
 
 	def on_info(self, msg: RequestInfo):
-		print('onInfo(version=' + msg.version + ')')
+		if self.debug['messages']:
+			print('onInfo(version=' + msg.version + ')')
 		res = Response()
 		res.info.data = ""
 		res.info.version = "1.0.0"
@@ -30,45 +39,58 @@ class ABCIApplication:
 		return res
 
 	def on_set_option(self, msg: RequestSetOption):
-		print('onSetOption(key=' + msg.key + ',value=' + msg.value + ')')
+		if self.debug['messages']:
+			print('onSetOption(key=' + msg.key + ',value=' + msg.value + ')')
 		res = Response()
 		res.set_option.log = ''
 		return res
 
 	def on_deliver_tx(self, msg: RequestDeliverTx):
-		print('onDeliverTx(tx=', msg.tx, ')')
+		if self.debug['messages']:
+			print('onDeliverTx(tx=', msg.tx, ')')
 		res = Response()
 		res.deliver_tx.code = 0
 		# res.deliver_tx.SetInParent()
 		return res
 
 	def on_check_tx(self, msg: RequestCheckTx):
-		print('onCheckTx(tx=', msg.tx, ')')
+		if self.debug['messages']:
+			print('onCheckTx(tx=', msg.tx, ')')
 		res = Response()
 		res.check_tx.code = 0
 		# res.check_tx.SetInParent()
 		return res
 
 	def on_commit(self, msg: RequestCommit):
-		print('onCommit()')
+		if self.debug['messages']:
+			print('onCommit()')
 		res = Response()
 		res.commit.code = 0
 		return res
 
+	# message RequestQuery{
+	#   bytes data = 1;
+	#   string path = 2;
+	#   int64 height = 3;
+	#   bool prove = 4;
+	# }
 	def on_query(self, msg: RequestQuery):
-		print('onQuery(...)')
+		if self.debug['messages']:
+			print('onQuery(path=' + msg.path + ', data=' + str(msg.data) + ')')
 		res = Response()
 		res.query.code = 0
 		return res
 
 	def on_init_chain(self, msg: RequestInitChain):
-		print('onInitChain(...)')
+		if self.debug['messages']:
+			print('onInitChain(...)')
 		res = Response()
 		res.init_chain.SetInParent()
 		return res
 
 	def on_begin_block(self, msg: RequestBeginBlock):
-		print('onBeginBlock(...)')
+		if self.debug['messages']:
+			print('onBeginBlock(...)')
 		res = Response()
 		res.begin_block.SetInParent()
 		# make sure we don't want to define something else here ;)
@@ -77,7 +99,8 @@ class ABCIApplication:
 		return res
 
 	def on_end_block(self, msg: RequestEndBlock):
-		print('onEndBlock(height=' + str(msg.height) + ')')
+		if self.debug['messages']:
+			print('onEndBlock(height=' + str(msg.height) + ')')
 		res = Response()
 		res.end_block.SetInParent()
 

@@ -56,17 +56,12 @@ class ABCIServer:
 
 		self.loopId = 1
 
-		self.debug = {
-			"protocol": True,
-			"connection": True
-		}
-
 	def handle_new_connection(self, r):
 		new_fd, new_addr = r.accept()
 		new_fd.setblocking(0)  # non-blocking
 		self.read_list.append(new_fd)
 		self.write_list.append(new_fd)
-		if self.debug.connection:
+		if self.app.debug["connection"]:
 			print('new connection to', new_addr)
 
 		self.appMap[new_fd] = Connection(new_fd, self.app)
@@ -75,7 +70,7 @@ class ABCIServer:
 		self.read_list.remove(r)
 		self.write_list.remove(r)
 		r.close()
-		if self.debug.connection:
+		if self.app.debug["connection"]:
 			print("connection closed")
 
 	def handle_recv(self, r: socket):
@@ -84,7 +79,8 @@ class ABCIServer:
 		self.loopId += 1
 		while True:
 			try:
-				print("recv loop", self.loopId)
+				# if self.app.debug["connection"]:
+				# 	print("recv loop", self.loopId)
 				# check if we need more data first
 				if conn.inProgress:
 					if conn.msgLength == 0 or conn.recBuf.size() < conn.msgLength:
@@ -113,7 +109,7 @@ class ABCIServer:
 
 				conn.msgLength = 0
 				conn.inProgress = False
-				if self.debug.protocol:	
+				if self.app.debug["protocol"]:
 					print("")
 					print("------------")
 					print(req)
@@ -144,7 +140,7 @@ class ABCIServer:
 				if res is not None:
 					self.write_response(conn, res)
 
-				if self.debug.protocol:
+				if self.app.debug["protocol"]:
 					print("------------")
 					print("")
 
@@ -166,7 +162,8 @@ class ABCIServer:
 		conn.resBuf = BytesBuffer(bytearray())
 
 	def write_response(self, conn, res):
-		print('Write', res.ByteSize(), encode_varint(res.ByteSize()), res.SerializeToString())
+		if self.app.debug["protocol"]:
+			print('Write', res.ByteSize(), encode_varint(res.ByteSize()), res.SerializeToString())
 		header = encode_varint(res.ByteSize())
 		packet = res.SerializeToString()
 		conn.resBuf.write(header)
