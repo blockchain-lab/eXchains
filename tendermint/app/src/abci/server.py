@@ -56,12 +56,18 @@ class ABCIServer:
 
 		self.loopId = 1
 
+		self.debug = {
+			"protocol": True,
+			"connection": True
+		}
+
 	def handle_new_connection(self, r):
 		new_fd, new_addr = r.accept()
 		new_fd.setblocking(0)  # non-blocking
 		self.read_list.append(new_fd)
 		self.write_list.append(new_fd)
-		print('new connection to', new_addr)
+		if self.debug.connection:
+			print('new connection to', new_addr)
 
 		self.appMap[new_fd] = Connection(new_fd, self.app)
 
@@ -69,7 +75,8 @@ class ABCIServer:
 		self.read_list.remove(r)
 		self.write_list.remove(r)
 		r.close()
-		print("connection closed")
+		if self.debug.connection:
+			print("connection closed")
 
 	def handle_recv(self, r: socket):
 		#  app, recBuf, resBuf, conn
@@ -106,10 +113,10 @@ class ABCIServer:
 
 				conn.msgLength = 0
 				conn.inProgress = False
-
-				print("")
-				print("------------")
-				print(req)
+				if self.debug.protocol:	
+					print("")
+					print("------------")
+					print(req)
 				res = None
 				if req.HasField('echo'):
 					res = self.app.on_echo(req.echo)
@@ -137,8 +144,9 @@ class ABCIServer:
 				if res is not None:
 					self.write_response(conn, res)
 
-				print("------------")
-				print("")
+				if self.debug.protocol:
+					print("------------")
+					print("")
 
 				if res.HasField('flush'):
 					self.flush(conn)

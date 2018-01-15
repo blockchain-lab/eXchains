@@ -11,6 +11,9 @@ class EnergyMarketApplication(ABCIApplication):
 
 	def __init__(self):
 		super().__init__()
+
+		self.debug.protocol = False;
+
 		self.state = {
 			"contracts": {}
 		}
