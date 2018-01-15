@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='types.proto',
   package='types',
   syntax='proto3',
-  serialized_pb=_b('\n\x0btypes.proto\x12\x05types\"\xe4\x03\n\x07Request\x12\"\n\x04\x65\x63ho\x18\x01 \x01(\x0b\x32\x12.types.RequestEchoH\x00\x12$\n\x05\x66lush\x18\x02 \x01(\x0b\x32\x13.types.RequestFlushH\x00\x12\"\n\x04info\x18\x03 \x01(\x0b\x32\x12.types.RequestInfoH\x00\x12-\n\nset_option\x18\x04 \x01(\x0b\x32\x17.types.RequestSetOptionH\x00\x12-\n\ndeliver_tx\x18\x05 \x01(\x0b\x32\x17.types.RequestDeliverTxH\x00\x12)\n\x08\x63heck_tx\x18\x06 \x01(\x0b\x32\x15.types.RequestCheckTxH\x00\x12&\n\x06\x63ommit\x18\x07 \x01(\x0b\x32\x14.types.RequestCommitH\x00\x12$\n\x05query\x18\x08 \x01(\x0b\x32\x13.types.RequestQueryH\x00\x12-\n\ninit_chain\x18\t \x01(\x0b\x32\x17.types.RequestInitChainH\x00\x12/\n\x0b\x62\x65gin_block\x18\n \x01(\x0b\x32\x18.types.RequestBeginBlockH\x00\x12+\n\tend_block\x18\x0b \x01(\x0b\x32\x16.types.RequestEndBlockH\x00\x42\x07\n\x05value\"\x1e\n\x0bRequestEcho\x12\x0f\n\x07message\x18\x01 \x01(\t\"\x0e\n\x0cRequestFlush\"\x1e\n\x0bRequestInfo\x12\x0f\n\x07version\x18\x01 \x01(\t\".\n\x10RequestSetOption\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t\"\x1e\n\x10RequestDeliverTx\x12\n\n\x02tx\x18\x01 \x01(\x0c\"\x1c\n\x0eRequestCheckTx\x12\n\n\x02tx\x18\x01 \x01(\x0c\"I\n\x0cRequestQuery\x12\x0c\n\x04\x64\x61ta\x18\x01 \x01(\x0c\x12\x0c\n\x04path\x18\x02 \x01(\t\x12\x0e\n\x06height\x18\x03 \x01(\x03\x12\r\n\x05prove\x18\x04 \x01(\x08\"\x0f\n\rRequestCommit\"8\n\x10RequestInitChain\x12$\n\nvalidators\x18\x01 \x03(\x0b\x32\x10.types.Validator\"\x8a\x01\n\x11RequestBeginBlock\x12\x0c\n\x04hash\x18\x01 \x01(\x0c\x12\x1d\n\x06header\x18\x02 \x01(\x0b\x32\r.types.Header\x12\x19\n\x11\x61\x62sent_validators\x18\x03 \x03(\x05\x12-\n\x14\x62yzantine_validators\x18\x04 \x03(\x0b\x32\x0f.types.Evidence\"!\n\x0fRequestEndBlock\x12\x0e\n\x06height\x18\x01 \x01(\x03\"\x9f\x04\n\x08Response\x12-\n\texception\x18\x01 \x01(\x0b\x32\x18.types.ResponseExceptionH\x00\x12#\n\x04\x65\x63ho\x18\x02 \x01(\x0b\x32\x13.types.ResponseEchoH\x00\x12%\n\x05\x66lush\x18\x03 \x01(\x0b\x32\x14.types.ResponseFlushH\x00\x12#\n\x04info\x18\x04 \x01(\x0b\x32\x13.types.ResponseInfoH\x00\x12.\n\nset_option\x18\x05 \x01(\x0b\x32\x18.types.ResponseSetOptionH\x00\x12.\n\ndeliver_tx\x18\x06 \x01(\x0b\x32\x18.types.ResponseDeliverTxH\x00\x12*\n\x08\x63heck_tx\x18\x07 \x01(\x0b\x32\x16.types.ResponseCheckTxH\x00\x12\'\n\x06\x63ommit\x18\x08 \x01(\x0b\x32\x15.types.ResponseCommitH\x00\x12%\n\x05query\x18\t \x01(\x0b\x32\x14.types.ResponseQueryH\x00\x12.\n\ninit_chain\x18\n \x01(\x0b\x32\x18.types.ResponseInitChainH\x00\x12\x30\n\x0b\x62\x65gin_block\x18\x0b \x01(\x0b\x32\x19.types.ResponseBeginBlockH\x00\x12,\n\tend_block\x18\x0c \x01(\x0b\x32\x17.types.ResponseEndBlockH\x00\x42\x07\n\x05value\"\"\n\x11ResponseException\x12\r\n\x05\x65rror\x18\x01 \x01(\t\"\x1f\n\x0cResponseEcho\x12\x0f\n\x07message\x18\x01 \x01(\t\"\x0f\n\rResponseFlush\"e\n\x0cResponseInfo\x12\x0c\n\x04\x64\x61ta\x18\x01 \x01(\t\x12\x0f\n\x07version\x18\x02 \x01(\t\x12\x19\n\x11last_block_height\x18\x03 \x01(\x03\x12\x1b\n\x13last_block_app_hash\x18\x04 \x01(\x0c\".\n\x11ResponseSetOption\x12\x0c\n\x04\x63ode\x18\x01 \x01(\r\x12\x0b\n\x03log\x18\x02 \x01(\t\"Y\n\x11ResponseDeliverTx\x12\x0c\n\x04\x63ode\x18\x01 \x01(\r\x12\x0c\n\x04\x64\x61ta\x18\x02 \x01(\x0c\x12\x0b\n\x03log\x18\x03 \x01(\t\x12\x1b\n\x04tags\x18\x04 \x03(\x0b\x32\r.types.KVPair\"T\n\x0fResponseCheckTx\x12\x0c\n\x04\x63ode\x18\x01 \x01(\r\x12\x0c\n\x04\x64\x61ta\x18\x02 \x01(\x0c\x12\x0b\n\x03log\x18\x03 \x01(\t\x12\x0b\n\x03gas\x18\x04 \x01(\x03\x12\x0b\n\x03\x66\x65\x65\x18\x05 \x01(\x03\"t\n\rResponseQuery\x12\x0c\n\x04\x63ode\x18\x01 \x01(\r\x12\r\n\x05index\x18\x02 \x01(\x03\x12\x0b\n\x03key\x18\x03 \x01(\x0c\x12\r\n\x05value\x18\x04 \x01(\x0c\x12\r\n\x05proof\x18\x05 \x01(\x0c\x12\x0e\n\x06height\x18\x06 \x01(\x03\x12\x0b\n\x03log\x18\x07 \x01(\t\"9\n\x0eResponseCommit\x12\x0c\n\x04\x63ode\x18\x01 \x01(\r\x12\x0c\n\x04\x64\x61ta\x18\x02 \x01(\x0c\x12\x0b\n\x03log\x18\x03 \x01(\t\"\x13\n\x11ResponseInitChain\"\x14\n\x12ResponseBeginBlock\"3\n\x10ResponseEndBlock\x12\x1f\n\x05\x64iffs\x18\x01 \x03(\x0b\x32\x10.types.Validator\"\xc8\x01\n\x06Header\x12\x10\n\x08\x63hain_id\x18\x01 \x01(\t\x12\x0e\n\x06height\x18\x02 \x01(\x03\x12\x0c\n\x04time\x18\x03 \x01(\x03\x12\x0f\n\x07num_txs\x18\x04 \x01(\x05\x12%\n\rlast_block_id\x18\x05 \x01(\x0b\x32\x0e.types.BlockID\x12\x18\n\x10last_commit_hash\x18\x06 \x01(\x0c\x12\x11\n\tdata_hash\x18\x07 \x01(\x0c\x12\x17\n\x0fvalidators_hash\x18\x08 \x01(\x0c\x12\x10\n\x08\x61pp_hash\x18\t \x01(\x0c\"<\n\x07\x42lockID\x12\x0c\n\x04hash\x18\x01 \x01(\x0c\x12#\n\x05parts\x18\x02 \x01(\x0b\x32\x14.types.PartSetHeader\",\n\rPartSetHeader\x12\r\n\x05total\x18\x01 \x01(\x05\x12\x0c\n\x04hash\x18\x02 \x01(\x0c\"+\n\tValidator\x12\x0f\n\x07pub_key\x18\x01 \x01(\x0c\x12\r\n\x05power\x18\x02 \x01(\x03\"+\n\x08\x45vidence\x12\x0f\n\x07pub_key\x18\x01 \x01(\x0c\x12\x0e\n\x06height\x18\x02 \x01(\x03\"\x83\x01\n\x06KVPair\x12\x0b\n\x03key\x18\x01 \x01(\t\x12&\n\nvalue_type\x18\x02 \x01(\x0e\x32\x12.types.KVPair.Type\x12\x14\n\x0cvalue_string\x18\x03 \x01(\t\x12\x11\n\tvalue_int\x18\x04 \x01(\x03\"\x1b\n\x04Type\x12\n\n\x06STRING\x10\x00\x12\x07\n\x03INT\x10\x01\x32\x8c\x05\n\x0f\x41\x42\x43IApplication\x12/\n\x04\x45\x63ho\x12\x12.types.RequestEcho\x1a\x13.types.ResponseEcho\x12\x32\n\x05\x46lush\x12\x13.types.RequestFlush\x1a\x14.types.ResponseFlush\x12/\n\x04Info\x12\x12.types.RequestInfo\x1a\x13.types.ResponseInfo\x12>\n\tSetOption\x12\x17.types.RequestSetOption\x1a\x18.types.ResponseSetOption\x12>\n\tDeliverTx\x12\x17.types.RequestDeliverTx\x1a\x18.types.ResponseDeliverTx\x12\x38\n\x07\x43heckTx\x12\x15.types.RequestCheckTx\x1a\x16.types.ResponseCheckTx\x12\x32\n\x05Query\x12\x13.types.RequestQuery\x1a\x14.types.ResponseQuery\x12\x35\n\x06\x43ommit\x12\x14.types.RequestCommit\x1a\x15.types.ResponseCommit\x12>\n\tInitChain\x12\x17.types.RequestInitChain\x1a\x18.types.ResponseInitChain\x12\x41\n\nBeginBlock\x12\x18.types.RequestBeginBlock\x1a\x19.types.ResponseBeginBlock\x12;\n\x08\x45ndBlock\x12\x16.types.RequestEndBlock\x1a\x17.types.ResponseEndBlockb\x06proto3')
+  serialized_pb=_b('\n\x0btypes.proto\x12\x05types\"\xe4\x03\n\x07Request\x12\"\n\x04\x65\x63ho\x18\x02 \x01(\x0b\x32\x12.types.RequestEchoH\x00\x12$\n\x05\x66lush\x18\x03 \x01(\x0b\x32\x13.types.RequestFlushH\x00\x12\"\n\x04info\x18\x04 \x01(\x0b\x32\x12.types.RequestInfoH\x00\x12-\n\nset_option\x18\x05 \x01(\x0b\x32\x17.types.RequestSetOptionH\x00\x12-\n\ninit_chain\x18\x06 \x01(\x0b\x32\x17.types.RequestInitChainH\x00\x12$\n\x05query\x18\x07 \x01(\x0b\x32\x13.types.RequestQueryH\x00\x12/\n\x0b\x62\x65gin_block\x18\x08 \x01(\x0b\x32\x18.types.RequestBeginBlockH\x00\x12)\n\x08\x63heck_tx\x18\t \x01(\x0b\x32\x15.types.RequestCheckTxH\x00\x12-\n\ndeliver_tx\x18\x13 \x01(\x0b\x32\x17.types.RequestDeliverTxH\x00\x12+\n\tend_block\x18\x0b \x01(\x0b\x32\x16.types.RequestEndBlockH\x00\x12&\n\x06\x63ommit\x18\x0c \x01(\x0b\x32\x14.types.RequestCommitH\x00\x42\x07\n\x05value\"\x1e\n\x0bRequestEcho\x12\x0f\n\x07message\x18\x01 \x01(\t\"\x0e\n\x0cRequestFlush\"\x1e\n\x0bRequestInfo\x12\x0f\n\x07version\x18\x01 \x01(\t\".\n\x10RequestSetOption\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t\"8\n\x10RequestInitChain\x12$\n\nvalidators\x18\x01 \x03(\x0b\x32\x10.types.Validator\"I\n\x0cRequestQuery\x12\x0c\n\x04\x64\x61ta\x18\x01 \x01(\x0c\x12\x0c\n\x04path\x18\x02 \x01(\t\x12\x0e\n\x06height\x18\x03 \x01(\x03\x12\r\n\x05prove\x18\x04 \x01(\x08\"\x8a\x01\n\x11RequestBeginBlock\x12\x0c\n\x04hash\x18\x01 \x01(\x0c\x12\x1d\n\x06header\x18\x02 \x01(\x0b\x32\r.types.Header\x12\x19\n\x11\x61\x62sent_validators\x18\x03 \x03(\x05\x12-\n\x14\x62yzantine_validators\x18\x04 \x03(\x0b\x32\x0f.types.Evidence\"\x1c\n\x0eRequestCheckTx\x12\n\n\x02tx\x18\x01 \x01(\x0c\"\x1e\n\x10RequestDeliverTx\x12\n\n\x02tx\x18\x01 \x01(\x0c\"!\n\x0fRequestEndBlock\x12\x0e\n\x06height\x18\x01 \x01(\x03\"\x0f\n\rRequestCommit\"\x9f\x04\n\x08Response\x12-\n\texception\x18\x01 \x01(\x0b\x32\x18.types.ResponseExceptionH\x00\x12#\n\x04\x65\x63ho\x18\x02 \x01(\x0b\x32\x13.types.ResponseEchoH\x00\x12%\n\x05\x66lush\x18\x03 \x01(\x0b\x32\x14.types.ResponseFlushH\x00\x12#\n\x04info\x18\x04 \x01(\x0b\x32\x13.types.ResponseInfoH\x00\x12.\n\nset_option\x18\x05 \x01(\x0b\x32\x18.types.ResponseSetOptionH\x00\x12.\n\ninit_chain\x18\x06 \x01(\x0b\x32\x18.types.ResponseInitChainH\x00\x12%\n\x05query\x18\x07 \x01(\x0b\x32\x14.types.ResponseQueryH\x00\x12\x30\n\x0b\x62\x65gin_block\x18\x08 \x01(\x0b\x32\x19.types.ResponseBeginBlockH\x00\x12*\n\x08\x63heck_tx\x18\t \x01(\x0b\x32\x16.types.ResponseCheckTxH\x00\x12.\n\ndeliver_tx\x18\n \x01(\x0b\x32\x18.types.ResponseDeliverTxH\x00\x12,\n\tend_block\x18\x0b \x01(\x0b\x32\x17.types.ResponseEndBlockH\x00\x12\'\n\x06\x63ommit\x18\x0c \x01(\x0b\x32\x15.types.ResponseCommitH\x00\x42\x07\n\x05value\"\"\n\x11ResponseException\x12\r\n\x05\x65rror\x18\x01 \x01(\t\"\x1f\n\x0cResponseEcho\x12\x0f\n\x07message\x18\x01 \x01(\t\"\x0f\n\rResponseFlush\"e\n\x0cResponseInfo\x12\x0c\n\x04\x64\x61ta\x18\x01 \x01(\t\x12\x0f\n\x07version\x18\x02 \x01(\t\x12\x19\n\x11last_block_height\x18\x03 \x01(\x03\x12\x1b\n\x13last_block_app_hash\x18\x04 \x01(\x0c\".\n\x11ResponseSetOption\x12\x0c\n\x04\x63ode\x18\x01 \x01(\r\x12\x0b\n\x03log\x18\x02 \x01(\t\"\x13\n\x11ResponseInitChain\"t\n\rResponseQuery\x12\x0c\n\x04\x63ode\x18\x01 \x01(\r\x12\r\n\x05index\x18\x02 \x01(\x03\x12\x0b\n\x03key\x18\x03 \x01(\x0c\x12\r\n\x05value\x18\x04 \x01(\x0c\x12\r\n\x05proof\x18\x05 \x01(\x0c\x12\x0e\n\x06height\x18\x06 \x01(\x03\x12\x0b\n\x03log\x18\x07 \x01(\t\"\x14\n\x12ResponseBeginBlock\"T\n\x0fResponseCheckTx\x12\x0c\n\x04\x63ode\x18\x01 \x01(\r\x12\x0c\n\x04\x64\x61ta\x18\x02 \x01(\x0c\x12\x0b\n\x03log\x18\x03 \x01(\t\x12\x0b\n\x03gas\x18\x04 \x01(\x03\x12\x0b\n\x03\x66\x65\x65\x18\x05 \x01(\x03\"Y\n\x11ResponseDeliverTx\x12\x0c\n\x04\x63ode\x18\x01 \x01(\r\x12\x0c\n\x04\x64\x61ta\x18\x02 \x01(\x0c\x12\x0b\n\x03log\x18\x03 \x01(\t\x12\x1b\n\x04tags\x18\x04 \x03(\x0b\x32\r.types.KVPair\"x\n\x10ResponseEndBlock\x12+\n\x11validator_updates\x18\x01 \x03(\x0b\x32\x10.types.Validator\x12\x37\n\x17\x63onsensus_param_updates\x18\x02 \x01(\x0b\x32\x16.types.ConsensusParams\"9\n\x0eResponseCommit\x12\x0c\n\x04\x63ode\x18\x01 \x01(\r\x12\x0c\n\x04\x64\x61ta\x18\x02 \x01(\x0c\x12\x0b\n\x03log\x18\x03 \x01(\t\"\x81\x01\n\x0f\x43onsensusParams\x12$\n\nblock_size\x18\x01 \x01(\x0b\x32\x10.types.BlockSize\x12\x1e\n\x07tx_size\x18\x02 \x01(\x0b\x32\r.types.TxSize\x12(\n\x0c\x62lock_gossip\x18\x03 \x01(\x0b\x32\x12.types.BlockGossip\"@\n\tBlockSize\x12\x11\n\tmax_bytes\x18\x01 \x01(\x05\x12\x0f\n\x07max_txs\x18\x02 \x01(\x05\x12\x0f\n\x07max_gas\x18\x03 \x01(\x03\",\n\x06TxSize\x12\x11\n\tmax_bytes\x18\x01 \x01(\x05\x12\x0f\n\x07max_gas\x18\x02 \x01(\x03\",\n\x0b\x42lockGossip\x12\x1d\n\x15\x62lock_part_size_bytes\x18\x01 \x01(\x05\"\xc8\x01\n\x06Header\x12\x10\n\x08\x63hain_id\x18\x01 \x01(\t\x12\x0e\n\x06height\x18\x02 \x01(\x03\x12\x0c\n\x04time\x18\x03 \x01(\x03\x12\x0f\n\x07num_txs\x18\x04 \x01(\x05\x12%\n\rlast_block_id\x18\x05 \x01(\x0b\x32\x0e.types.BlockID\x12\x18\n\x10last_commit_hash\x18\x06 \x01(\x0c\x12\x11\n\tdata_hash\x18\x07 \x01(\x0c\x12\x17\n\x0fvalidators_hash\x18\x08 \x01(\x0c\x12\x10\n\x08\x61pp_hash\x18\t \x01(\x0c\"<\n\x07\x42lockID\x12\x0c\n\x04hash\x18\x01 \x01(\x0c\x12#\n\x05parts\x18\x02 \x01(\x0b\x32\x14.types.PartSetHeader\",\n\rPartSetHeader\x12\r\n\x05total\x18\x01 \x01(\x05\x12\x0c\n\x04hash\x18\x02 \x01(\x0c\"+\n\tValidator\x12\x0f\n\x07pub_key\x18\x01 \x01(\x0c\x12\r\n\x05power\x18\x02 \x01(\x03\"+\n\x08\x45vidence\x12\x0f\n\x07pub_key\x18\x01 \x01(\x0c\x12\x0e\n\x06height\x18\x02 \x01(\x03\"\x83\x01\n\x06KVPair\x12\x0b\n\x03key\x18\x01 \x01(\t\x12&\n\nvalue_type\x18\x02 \x01(\x0e\x32\x12.types.KVPair.Type\x12\x14\n\x0cvalue_string\x18\x03 \x01(\t\x12\x11\n\tvalue_int\x18\x04 \x01(\x03\"\x1b\n\x04Type\x12\n\n\x06STRING\x10\x00\x12\x07\n\x03INT\x10\x01\x32\x8c\x05\n\x0f\x41\x42\x43IApplication\x12/\n\x04\x45\x63ho\x12\x12.types.RequestEcho\x1a\x13.types.ResponseEcho\x12\x32\n\x05\x46lush\x12\x13.types.RequestFlush\x1a\x14.types.ResponseFlush\x12/\n\x04Info\x12\x12.types.RequestInfo\x1a\x13.types.ResponseInfo\x12>\n\tSetOption\x12\x17.types.RequestSetOption\x1a\x18.types.ResponseSetOption\x12>\n\tDeliverTx\x12\x17.types.RequestDeliverTx\x1a\x18.types.ResponseDeliverTx\x12\x38\n\x07\x43heckTx\x12\x15.types.RequestCheckTx\x1a\x16.types.ResponseCheckTx\x12\x32\n\x05Query\x12\x13.types.RequestQuery\x1a\x14.types.ResponseQuery\x12\x35\n\x06\x43ommit\x12\x14.types.RequestCommit\x1a\x15.types.ResponseCommit\x12>\n\tInitChain\x12\x17.types.RequestInitChain\x1a\x18.types.ResponseInitChain\x12\x41\n\nBeginBlock\x12\x18.types.RequestBeginBlock\x1a\x19.types.ResponseBeginBlock\x12;\n\x08\x45ndBlock\x12\x16.types.RequestEndBlock\x1a\x17.types.ResponseEndBlockb\x06proto3')
 )
 
 
@@ -41,8 +41,8 @@ _KVPAIR_TYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=2764,
-  serialized_end=2791,
+  serialized_start=3123,
+  serialized_end=3150,
 )
 _sym_db.RegisterEnumDescriptor(_KVPAIR_TYPE)
 
@@ -56,77 +56,77 @@ _REQUEST = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='echo', full_name='types.Request.echo', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='flush', full_name='types.Request.flush', index=1,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='info', full_name='types.Request.info', index=2,
+      name='flush', full_name='types.Request.flush', index=1,
       number=3, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='set_option', full_name='types.Request.set_option', index=3,
+      name='info', full_name='types.Request.info', index=2,
       number=4, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='deliver_tx', full_name='types.Request.deliver_tx', index=4,
+      name='set_option', full_name='types.Request.set_option', index=3,
       number=5, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='check_tx', full_name='types.Request.check_tx', index=5,
+      name='init_chain', full_name='types.Request.init_chain', index=4,
       number=6, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='commit', full_name='types.Request.commit', index=6,
+      name='query', full_name='types.Request.query', index=5,
       number=7, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='query', full_name='types.Request.query', index=7,
+      name='begin_block', full_name='types.Request.begin_block', index=6,
       number=8, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='init_chain', full_name='types.Request.init_chain', index=8,
+      name='check_tx', full_name='types.Request.check_tx', index=7,
       number=9, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='begin_block', full_name='types.Request.begin_block', index=9,
-      number=10, type=11, cpp_type=10, label=1,
+      name='deliver_tx', full_name='types.Request.deliver_tx', index=8,
+      number=19, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='end_block', full_name='types.Request.end_block', index=10,
+      name='end_block', full_name='types.Request.end_block', index=9,
       number=11, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='commit', full_name='types.Request.commit', index=10,
+      number=12, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -275,17 +275,17 @@ _REQUESTSETOPTION = _descriptor.Descriptor(
 )
 
 
-_REQUESTDELIVERTX = _descriptor.Descriptor(
-  name='RequestDeliverTx',
-  full_name='types.RequestDeliverTx',
+_REQUESTINITCHAIN = _descriptor.Descriptor(
+  name='RequestInitChain',
+  full_name='types.RequestInitChain',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='tx', full_name='types.RequestDeliverTx.tx', index=0,
-      number=1, type=12, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b(""),
+      name='validators', full_name='types.RequestInitChain.validators', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
@@ -302,38 +302,7 @@ _REQUESTDELIVERTX = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=637,
-  serialized_end=667,
-)
-
-
-_REQUESTCHECKTX = _descriptor.Descriptor(
-  name='RequestCheckTx',
-  full_name='types.RequestCheckTx',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='tx', full_name='types.RequestCheckTx.tx', index=0,
-      number=1, type=12, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b(""),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=669,
-  serialized_end=697,
+  serialized_end=693,
 )
 
 
@@ -384,63 +353,8 @@ _REQUESTQUERY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=699,
-  serialized_end=772,
-)
-
-
-_REQUESTCOMMIT = _descriptor.Descriptor(
-  name='RequestCommit',
-  full_name='types.RequestCommit',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=774,
-  serialized_end=789,
-)
-
-
-_REQUESTINITCHAIN = _descriptor.Descriptor(
-  name='RequestInitChain',
-  full_name='types.RequestInitChain',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='validators', full_name='types.RequestInitChain.validators', index=0,
-      number=1, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=791,
-  serialized_end=847,
+  serialized_start=695,
+  serialized_end=768,
 )
 
 
@@ -491,8 +405,70 @@ _REQUESTBEGINBLOCK = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=850,
-  serialized_end=988,
+  serialized_start=771,
+  serialized_end=909,
+)
+
+
+_REQUESTCHECKTX = _descriptor.Descriptor(
+  name='RequestCheckTx',
+  full_name='types.RequestCheckTx',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='tx', full_name='types.RequestCheckTx.tx', index=0,
+      number=1, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=911,
+  serialized_end=939,
+)
+
+
+_REQUESTDELIVERTX = _descriptor.Descriptor(
+  name='RequestDeliverTx',
+  full_name='types.RequestDeliverTx',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='tx', full_name='types.RequestDeliverTx.tx', index=0,
+      number=1, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=941,
+  serialized_end=971,
 )
 
 
@@ -522,7 +498,31 @@ _REQUESTENDBLOCK = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=990,
+  serialized_start=973,
+  serialized_end=1006,
+)
+
+
+_REQUESTCOMMIT = _descriptor.Descriptor(
+  name='RequestCommit',
+  full_name='types.RequestCommit',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1008,
   serialized_end=1023,
 )
 
@@ -570,49 +570,49 @@ _RESPONSE = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='deliver_tx', full_name='types.Response.deliver_tx', index=5,
+      name='init_chain', full_name='types.Response.init_chain', index=5,
       number=6, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='check_tx', full_name='types.Response.check_tx', index=6,
+      name='query', full_name='types.Response.query', index=6,
       number=7, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='commit', full_name='types.Response.commit', index=7,
+      name='begin_block', full_name='types.Response.begin_block', index=7,
       number=8, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='query', full_name='types.Response.query', index=8,
+      name='check_tx', full_name='types.Response.check_tx', index=8,
       number=9, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='init_chain', full_name='types.Response.init_chain', index=9,
+      name='deliver_tx', full_name='types.Response.deliver_tx', index=9,
       number=10, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='begin_block', full_name='types.Response.begin_block', index=10,
+      name='end_block', full_name='types.Response.end_block', index=10,
       number=11, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='end_block', full_name='types.Response.end_block', index=11,
+      name='commit', full_name='types.Response.commit', index=11,
       number=12, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -814,41 +814,13 @@ _RESPONSESETOPTION = _descriptor.Descriptor(
 )
 
 
-_RESPONSEDELIVERTX = _descriptor.Descriptor(
-  name='ResponseDeliverTx',
-  full_name='types.ResponseDeliverTx',
+_RESPONSEINITCHAIN = _descriptor.Descriptor(
+  name='ResponseInitChain',
+  full_name='types.ResponseInitChain',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
-    _descriptor.FieldDescriptor(
-      name='code', full_name='types.ResponseDeliverTx.code', index=0,
-      number=1, type=13, cpp_type=3, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='data', full_name='types.ResponseDeliverTx.data', index=1,
-      number=2, type=12, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b(""),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='log', full_name='types.ResponseDeliverTx.log', index=2,
-      number=3, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='tags', full_name='types.ResponseDeliverTx.tags', index=3,
-      number=4, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -862,66 +834,7 @@ _RESPONSEDELIVERTX = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=1808,
-  serialized_end=1897,
-)
-
-
-_RESPONSECHECKTX = _descriptor.Descriptor(
-  name='ResponseCheckTx',
-  full_name='types.ResponseCheckTx',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='code', full_name='types.ResponseCheckTx.code', index=0,
-      number=1, type=13, cpp_type=3, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='data', full_name='types.ResponseCheckTx.data', index=1,
-      number=2, type=12, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b(""),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='log', full_name='types.ResponseCheckTx.log', index=2,
-      number=3, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='gas', full_name='types.ResponseCheckTx.gas', index=3,
-      number=4, type=3, cpp_type=2, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='fee', full_name='types.ResponseCheckTx.fee', index=4,
-      number=5, type=3, cpp_type=2, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=1899,
-  serialized_end=1983,
+  serialized_end=1827,
 )
 
 
@@ -993,8 +906,181 @@ _RESPONSEQUERY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1985,
-  serialized_end=2101,
+  serialized_start=1829,
+  serialized_end=1945,
+)
+
+
+_RESPONSEBEGINBLOCK = _descriptor.Descriptor(
+  name='ResponseBeginBlock',
+  full_name='types.ResponseBeginBlock',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1947,
+  serialized_end=1967,
+)
+
+
+_RESPONSECHECKTX = _descriptor.Descriptor(
+  name='ResponseCheckTx',
+  full_name='types.ResponseCheckTx',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='code', full_name='types.ResponseCheckTx.code', index=0,
+      number=1, type=13, cpp_type=3, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='data', full_name='types.ResponseCheckTx.data', index=1,
+      number=2, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='log', full_name='types.ResponseCheckTx.log', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='gas', full_name='types.ResponseCheckTx.gas', index=3,
+      number=4, type=3, cpp_type=2, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='fee', full_name='types.ResponseCheckTx.fee', index=4,
+      number=5, type=3, cpp_type=2, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1969,
+  serialized_end=2053,
+)
+
+
+_RESPONSEDELIVERTX = _descriptor.Descriptor(
+  name='ResponseDeliverTx',
+  full_name='types.ResponseDeliverTx',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='code', full_name='types.ResponseDeliverTx.code', index=0,
+      number=1, type=13, cpp_type=3, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='data', full_name='types.ResponseDeliverTx.data', index=1,
+      number=2, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='log', full_name='types.ResponseDeliverTx.log', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='tags', full_name='types.ResponseDeliverTx.tags', index=3,
+      number=4, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2055,
+  serialized_end=2144,
+)
+
+
+_RESPONSEENDBLOCK = _descriptor.Descriptor(
+  name='ResponseEndBlock',
+  full_name='types.ResponseEndBlock',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='validator_updates', full_name='types.ResponseEndBlock.validator_updates', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='consensus_param_updates', full_name='types.ResponseEndBlock.consensus_param_updates', index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2146,
+  serialized_end=2266,
 )
 
 
@@ -1038,70 +1124,36 @@ _RESPONSECOMMIT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2103,
-  serialized_end=2160,
+  serialized_start=2268,
+  serialized_end=2325,
 )
 
 
-_RESPONSEINITCHAIN = _descriptor.Descriptor(
-  name='ResponseInitChain',
-  full_name='types.ResponseInitChain',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=2162,
-  serialized_end=2181,
-)
-
-
-_RESPONSEBEGINBLOCK = _descriptor.Descriptor(
-  name='ResponseBeginBlock',
-  full_name='types.ResponseBeginBlock',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=2183,
-  serialized_end=2203,
-)
-
-
-_RESPONSEENDBLOCK = _descriptor.Descriptor(
-  name='ResponseEndBlock',
-  full_name='types.ResponseEndBlock',
+_CONSENSUSPARAMS = _descriptor.Descriptor(
+  name='ConsensusParams',
+  full_name='types.ConsensusParams',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='diffs', full_name='types.ResponseEndBlock.diffs', index=0,
-      number=1, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
+      name='block_size', full_name='types.ConsensusParams.block_size', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='tx_size', full_name='types.ConsensusParams.tx_size', index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='block_gossip', full_name='types.ConsensusParams.block_gossip', index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
@@ -1117,8 +1169,122 @@ _RESPONSEENDBLOCK = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2205,
-  serialized_end=2256,
+  serialized_start=2328,
+  serialized_end=2457,
+)
+
+
+_BLOCKSIZE = _descriptor.Descriptor(
+  name='BlockSize',
+  full_name='types.BlockSize',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='max_bytes', full_name='types.BlockSize.max_bytes', index=0,
+      number=1, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='max_txs', full_name='types.BlockSize.max_txs', index=1,
+      number=2, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='max_gas', full_name='types.BlockSize.max_gas', index=2,
+      number=3, type=3, cpp_type=2, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2459,
+  serialized_end=2523,
+)
+
+
+_TXSIZE = _descriptor.Descriptor(
+  name='TxSize',
+  full_name='types.TxSize',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='max_bytes', full_name='types.TxSize.max_bytes', index=0,
+      number=1, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='max_gas', full_name='types.TxSize.max_gas', index=1,
+      number=2, type=3, cpp_type=2, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2525,
+  serialized_end=2569,
+)
+
+
+_BLOCKGOSSIP = _descriptor.Descriptor(
+  name='BlockGossip',
+  full_name='types.BlockGossip',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='block_part_size_bytes', full_name='types.BlockGossip.block_part_size_bytes', index=0,
+      number=1, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2571,
+  serialized_end=2615,
 )
 
 
@@ -1204,8 +1370,8 @@ _HEADER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2259,
-  serialized_end=2459,
+  serialized_start=2618,
+  serialized_end=2818,
 )
 
 
@@ -1242,8 +1408,8 @@ _BLOCKID = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2461,
-  serialized_end=2521,
+  serialized_start=2820,
+  serialized_end=2880,
 )
 
 
@@ -1280,8 +1446,8 @@ _PARTSETHEADER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2523,
-  serialized_end=2567,
+  serialized_start=2882,
+  serialized_end=2926,
 )
 
 
@@ -1318,8 +1484,8 @@ _VALIDATOR = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2569,
-  serialized_end=2612,
+  serialized_start=2928,
+  serialized_end=2971,
 )
 
 
@@ -1356,8 +1522,8 @@ _EVIDENCE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2614,
-  serialized_end=2657,
+  serialized_start=2973,
+  serialized_end=3016,
 )
 
 
@@ -1409,21 +1575,21 @@ _KVPAIR = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2660,
-  serialized_end=2791,
+  serialized_start=3019,
+  serialized_end=3150,
 )
 
 _REQUEST.fields_by_name['echo'].message_type = _REQUESTECHO
 _REQUEST.fields_by_name['flush'].message_type = _REQUESTFLUSH
 _REQUEST.fields_by_name['info'].message_type = _REQUESTINFO
 _REQUEST.fields_by_name['set_option'].message_type = _REQUESTSETOPTION
-_REQUEST.fields_by_name['deliver_tx'].message_type = _REQUESTDELIVERTX
-_REQUEST.fields_by_name['check_tx'].message_type = _REQUESTCHECKTX
-_REQUEST.fields_by_name['commit'].message_type = _REQUESTCOMMIT
-_REQUEST.fields_by_name['query'].message_type = _REQUESTQUERY
 _REQUEST.fields_by_name['init_chain'].message_type = _REQUESTINITCHAIN
+_REQUEST.fields_by_name['query'].message_type = _REQUESTQUERY
 _REQUEST.fields_by_name['begin_block'].message_type = _REQUESTBEGINBLOCK
+_REQUEST.fields_by_name['check_tx'].message_type = _REQUESTCHECKTX
+_REQUEST.fields_by_name['deliver_tx'].message_type = _REQUESTDELIVERTX
 _REQUEST.fields_by_name['end_block'].message_type = _REQUESTENDBLOCK
+_REQUEST.fields_by_name['commit'].message_type = _REQUESTCOMMIT
 _REQUEST.oneofs_by_name['value'].fields.append(
   _REQUEST.fields_by_name['echo'])
 _REQUEST.fields_by_name['echo'].containing_oneof = _REQUEST.oneofs_by_name['value']
@@ -1437,26 +1603,26 @@ _REQUEST.oneofs_by_name['value'].fields.append(
   _REQUEST.fields_by_name['set_option'])
 _REQUEST.fields_by_name['set_option'].containing_oneof = _REQUEST.oneofs_by_name['value']
 _REQUEST.oneofs_by_name['value'].fields.append(
-  _REQUEST.fields_by_name['deliver_tx'])
-_REQUEST.fields_by_name['deliver_tx'].containing_oneof = _REQUEST.oneofs_by_name['value']
-_REQUEST.oneofs_by_name['value'].fields.append(
-  _REQUEST.fields_by_name['check_tx'])
-_REQUEST.fields_by_name['check_tx'].containing_oneof = _REQUEST.oneofs_by_name['value']
-_REQUEST.oneofs_by_name['value'].fields.append(
-  _REQUEST.fields_by_name['commit'])
-_REQUEST.fields_by_name['commit'].containing_oneof = _REQUEST.oneofs_by_name['value']
+  _REQUEST.fields_by_name['init_chain'])
+_REQUEST.fields_by_name['init_chain'].containing_oneof = _REQUEST.oneofs_by_name['value']
 _REQUEST.oneofs_by_name['value'].fields.append(
   _REQUEST.fields_by_name['query'])
 _REQUEST.fields_by_name['query'].containing_oneof = _REQUEST.oneofs_by_name['value']
 _REQUEST.oneofs_by_name['value'].fields.append(
-  _REQUEST.fields_by_name['init_chain'])
-_REQUEST.fields_by_name['init_chain'].containing_oneof = _REQUEST.oneofs_by_name['value']
-_REQUEST.oneofs_by_name['value'].fields.append(
   _REQUEST.fields_by_name['begin_block'])
 _REQUEST.fields_by_name['begin_block'].containing_oneof = _REQUEST.oneofs_by_name['value']
 _REQUEST.oneofs_by_name['value'].fields.append(
+  _REQUEST.fields_by_name['check_tx'])
+_REQUEST.fields_by_name['check_tx'].containing_oneof = _REQUEST.oneofs_by_name['value']
+_REQUEST.oneofs_by_name['value'].fields.append(
+  _REQUEST.fields_by_name['deliver_tx'])
+_REQUEST.fields_by_name['deliver_tx'].containing_oneof = _REQUEST.oneofs_by_name['value']
+_REQUEST.oneofs_by_name['value'].fields.append(
   _REQUEST.fields_by_name['end_block'])
 _REQUEST.fields_by_name['end_block'].containing_oneof = _REQUEST.oneofs_by_name['value']
+_REQUEST.oneofs_by_name['value'].fields.append(
+  _REQUEST.fields_by_name['commit'])
+_REQUEST.fields_by_name['commit'].containing_oneof = _REQUEST.oneofs_by_name['value']
 _REQUESTINITCHAIN.fields_by_name['validators'].message_type = _VALIDATOR
 _REQUESTBEGINBLOCK.fields_by_name['header'].message_type = _HEADER
 _REQUESTBEGINBLOCK.fields_by_name['byzantine_validators'].message_type = _EVIDENCE
@@ -1465,13 +1631,13 @@ _RESPONSE.fields_by_name['echo'].message_type = _RESPONSEECHO
 _RESPONSE.fields_by_name['flush'].message_type = _RESPONSEFLUSH
 _RESPONSE.fields_by_name['info'].message_type = _RESPONSEINFO
 _RESPONSE.fields_by_name['set_option'].message_type = _RESPONSESETOPTION
-_RESPONSE.fields_by_name['deliver_tx'].message_type = _RESPONSEDELIVERTX
-_RESPONSE.fields_by_name['check_tx'].message_type = _RESPONSECHECKTX
-_RESPONSE.fields_by_name['commit'].message_type = _RESPONSECOMMIT
-_RESPONSE.fields_by_name['query'].message_type = _RESPONSEQUERY
 _RESPONSE.fields_by_name['init_chain'].message_type = _RESPONSEINITCHAIN
+_RESPONSE.fields_by_name['query'].message_type = _RESPONSEQUERY
 _RESPONSE.fields_by_name['begin_block'].message_type = _RESPONSEBEGINBLOCK
+_RESPONSE.fields_by_name['check_tx'].message_type = _RESPONSECHECKTX
+_RESPONSE.fields_by_name['deliver_tx'].message_type = _RESPONSEDELIVERTX
 _RESPONSE.fields_by_name['end_block'].message_type = _RESPONSEENDBLOCK
+_RESPONSE.fields_by_name['commit'].message_type = _RESPONSECOMMIT
 _RESPONSE.oneofs_by_name['value'].fields.append(
   _RESPONSE.fields_by_name['exception'])
 _RESPONSE.fields_by_name['exception'].containing_oneof = _RESPONSE.oneofs_by_name['value']
@@ -1488,28 +1654,32 @@ _RESPONSE.oneofs_by_name['value'].fields.append(
   _RESPONSE.fields_by_name['set_option'])
 _RESPONSE.fields_by_name['set_option'].containing_oneof = _RESPONSE.oneofs_by_name['value']
 _RESPONSE.oneofs_by_name['value'].fields.append(
-  _RESPONSE.fields_by_name['deliver_tx'])
-_RESPONSE.fields_by_name['deliver_tx'].containing_oneof = _RESPONSE.oneofs_by_name['value']
-_RESPONSE.oneofs_by_name['value'].fields.append(
-  _RESPONSE.fields_by_name['check_tx'])
-_RESPONSE.fields_by_name['check_tx'].containing_oneof = _RESPONSE.oneofs_by_name['value']
-_RESPONSE.oneofs_by_name['value'].fields.append(
-  _RESPONSE.fields_by_name['commit'])
-_RESPONSE.fields_by_name['commit'].containing_oneof = _RESPONSE.oneofs_by_name['value']
+  _RESPONSE.fields_by_name['init_chain'])
+_RESPONSE.fields_by_name['init_chain'].containing_oneof = _RESPONSE.oneofs_by_name['value']
 _RESPONSE.oneofs_by_name['value'].fields.append(
   _RESPONSE.fields_by_name['query'])
 _RESPONSE.fields_by_name['query'].containing_oneof = _RESPONSE.oneofs_by_name['value']
 _RESPONSE.oneofs_by_name['value'].fields.append(
-  _RESPONSE.fields_by_name['init_chain'])
-_RESPONSE.fields_by_name['init_chain'].containing_oneof = _RESPONSE.oneofs_by_name['value']
-_RESPONSE.oneofs_by_name['value'].fields.append(
   _RESPONSE.fields_by_name['begin_block'])
 _RESPONSE.fields_by_name['begin_block'].containing_oneof = _RESPONSE.oneofs_by_name['value']
 _RESPONSE.oneofs_by_name['value'].fields.append(
+  _RESPONSE.fields_by_name['check_tx'])
+_RESPONSE.fields_by_name['check_tx'].containing_oneof = _RESPONSE.oneofs_by_name['value']
+_RESPONSE.oneofs_by_name['value'].fields.append(
+  _RESPONSE.fields_by_name['deliver_tx'])
+_RESPONSE.fields_by_name['deliver_tx'].containing_oneof = _RESPONSE.oneofs_by_name['value']
+_RESPONSE.oneofs_by_name['value'].fields.append(
   _RESPONSE.fields_by_name['end_block'])
 _RESPONSE.fields_by_name['end_block'].containing_oneof = _RESPONSE.oneofs_by_name['value']
+_RESPONSE.oneofs_by_name['value'].fields.append(
+  _RESPONSE.fields_by_name['commit'])
+_RESPONSE.fields_by_name['commit'].containing_oneof = _RESPONSE.oneofs_by_name['value']
 _RESPONSEDELIVERTX.fields_by_name['tags'].message_type = _KVPAIR
-_RESPONSEENDBLOCK.fields_by_name['diffs'].message_type = _VALIDATOR
+_RESPONSEENDBLOCK.fields_by_name['validator_updates'].message_type = _VALIDATOR
+_RESPONSEENDBLOCK.fields_by_name['consensus_param_updates'].message_type = _CONSENSUSPARAMS
+_CONSENSUSPARAMS.fields_by_name['block_size'].message_type = _BLOCKSIZE
+_CONSENSUSPARAMS.fields_by_name['tx_size'].message_type = _TXSIZE
+_CONSENSUSPARAMS.fields_by_name['block_gossip'].message_type = _BLOCKGOSSIP
 _HEADER.fields_by_name['last_block_id'].message_type = _BLOCKID
 _BLOCKID.fields_by_name['parts'].message_type = _PARTSETHEADER
 _KVPAIR.fields_by_name['value_type'].enum_type = _KVPAIR_TYPE
@@ -1519,26 +1689,30 @@ DESCRIPTOR.message_types_by_name['RequestEcho'] = _REQUESTECHO
 DESCRIPTOR.message_types_by_name['RequestFlush'] = _REQUESTFLUSH
 DESCRIPTOR.message_types_by_name['RequestInfo'] = _REQUESTINFO
 DESCRIPTOR.message_types_by_name['RequestSetOption'] = _REQUESTSETOPTION
-DESCRIPTOR.message_types_by_name['RequestDeliverTx'] = _REQUESTDELIVERTX
-DESCRIPTOR.message_types_by_name['RequestCheckTx'] = _REQUESTCHECKTX
-DESCRIPTOR.message_types_by_name['RequestQuery'] = _REQUESTQUERY
-DESCRIPTOR.message_types_by_name['RequestCommit'] = _REQUESTCOMMIT
 DESCRIPTOR.message_types_by_name['RequestInitChain'] = _REQUESTINITCHAIN
+DESCRIPTOR.message_types_by_name['RequestQuery'] = _REQUESTQUERY
 DESCRIPTOR.message_types_by_name['RequestBeginBlock'] = _REQUESTBEGINBLOCK
+DESCRIPTOR.message_types_by_name['RequestCheckTx'] = _REQUESTCHECKTX
+DESCRIPTOR.message_types_by_name['RequestDeliverTx'] = _REQUESTDELIVERTX
 DESCRIPTOR.message_types_by_name['RequestEndBlock'] = _REQUESTENDBLOCK
+DESCRIPTOR.message_types_by_name['RequestCommit'] = _REQUESTCOMMIT
 DESCRIPTOR.message_types_by_name['Response'] = _RESPONSE
 DESCRIPTOR.message_types_by_name['ResponseException'] = _RESPONSEEXCEPTION
 DESCRIPTOR.message_types_by_name['ResponseEcho'] = _RESPONSEECHO
 DESCRIPTOR.message_types_by_name['ResponseFlush'] = _RESPONSEFLUSH
 DESCRIPTOR.message_types_by_name['ResponseInfo'] = _RESPONSEINFO
 DESCRIPTOR.message_types_by_name['ResponseSetOption'] = _RESPONSESETOPTION
-DESCRIPTOR.message_types_by_name['ResponseDeliverTx'] = _RESPONSEDELIVERTX
-DESCRIPTOR.message_types_by_name['ResponseCheckTx'] = _RESPONSECHECKTX
-DESCRIPTOR.message_types_by_name['ResponseQuery'] = _RESPONSEQUERY
-DESCRIPTOR.message_types_by_name['ResponseCommit'] = _RESPONSECOMMIT
 DESCRIPTOR.message_types_by_name['ResponseInitChain'] = _RESPONSEINITCHAIN
+DESCRIPTOR.message_types_by_name['ResponseQuery'] = _RESPONSEQUERY
 DESCRIPTOR.message_types_by_name['ResponseBeginBlock'] = _RESPONSEBEGINBLOCK
+DESCRIPTOR.message_types_by_name['ResponseCheckTx'] = _RESPONSECHECKTX
+DESCRIPTOR.message_types_by_name['ResponseDeliverTx'] = _RESPONSEDELIVERTX
 DESCRIPTOR.message_types_by_name['ResponseEndBlock'] = _RESPONSEENDBLOCK
+DESCRIPTOR.message_types_by_name['ResponseCommit'] = _RESPONSECOMMIT
+DESCRIPTOR.message_types_by_name['ConsensusParams'] = _CONSENSUSPARAMS
+DESCRIPTOR.message_types_by_name['BlockSize'] = _BLOCKSIZE
+DESCRIPTOR.message_types_by_name['TxSize'] = _TXSIZE
+DESCRIPTOR.message_types_by_name['BlockGossip'] = _BLOCKGOSSIP
 DESCRIPTOR.message_types_by_name['Header'] = _HEADER
 DESCRIPTOR.message_types_by_name['BlockID'] = _BLOCKID
 DESCRIPTOR.message_types_by_name['PartSetHeader'] = _PARTSETHEADER
@@ -1582,19 +1756,12 @@ RequestSetOption = _reflection.GeneratedProtocolMessageType('RequestSetOption', 
   ))
 _sym_db.RegisterMessage(RequestSetOption)
 
-RequestDeliverTx = _reflection.GeneratedProtocolMessageType('RequestDeliverTx', (_message.Message,), dict(
-  DESCRIPTOR = _REQUESTDELIVERTX,
+RequestInitChain = _reflection.GeneratedProtocolMessageType('RequestInitChain', (_message.Message,), dict(
+  DESCRIPTOR = _REQUESTINITCHAIN,
   __module__ = 'types_pb2'
-  # @@protoc_insertion_point(class_scope:types.RequestDeliverTx)
+  # @@protoc_insertion_point(class_scope:types.RequestInitChain)
   ))
-_sym_db.RegisterMessage(RequestDeliverTx)
-
-RequestCheckTx = _reflection.GeneratedProtocolMessageType('RequestCheckTx', (_message.Message,), dict(
-  DESCRIPTOR = _REQUESTCHECKTX,
-  __module__ = 'types_pb2'
-  # @@protoc_insertion_point(class_scope:types.RequestCheckTx)
-  ))
-_sym_db.RegisterMessage(RequestCheckTx)
+_sym_db.RegisterMessage(RequestInitChain)
 
 RequestQuery = _reflection.GeneratedProtocolMessageType('RequestQuery', (_message.Message,), dict(
   DESCRIPTOR = _REQUESTQUERY,
@@ -1603,20 +1770,6 @@ RequestQuery = _reflection.GeneratedProtocolMessageType('RequestQuery', (_messag
   ))
 _sym_db.RegisterMessage(RequestQuery)
 
-RequestCommit = _reflection.GeneratedProtocolMessageType('RequestCommit', (_message.Message,), dict(
-  DESCRIPTOR = _REQUESTCOMMIT,
-  __module__ = 'types_pb2'
-  # @@protoc_insertion_point(class_scope:types.RequestCommit)
-  ))
-_sym_db.RegisterMessage(RequestCommit)
-
-RequestInitChain = _reflection.GeneratedProtocolMessageType('RequestInitChain', (_message.Message,), dict(
-  DESCRIPTOR = _REQUESTINITCHAIN,
-  __module__ = 'types_pb2'
-  # @@protoc_insertion_point(class_scope:types.RequestInitChain)
-  ))
-_sym_db.RegisterMessage(RequestInitChain)
-
 RequestBeginBlock = _reflection.GeneratedProtocolMessageType('RequestBeginBlock', (_message.Message,), dict(
   DESCRIPTOR = _REQUESTBEGINBLOCK,
   __module__ = 'types_pb2'
@@ -1624,12 +1777,33 @@ RequestBeginBlock = _reflection.GeneratedProtocolMessageType('RequestBeginBlock'
   ))
 _sym_db.RegisterMessage(RequestBeginBlock)
 
+RequestCheckTx = _reflection.GeneratedProtocolMessageType('RequestCheckTx', (_message.Message,), dict(
+  DESCRIPTOR = _REQUESTCHECKTX,
+  __module__ = 'types_pb2'
+  # @@protoc_insertion_point(class_scope:types.RequestCheckTx)
+  ))
+_sym_db.RegisterMessage(RequestCheckTx)
+
+RequestDeliverTx = _reflection.GeneratedProtocolMessageType('RequestDeliverTx', (_message.Message,), dict(
+  DESCRIPTOR = _REQUESTDELIVERTX,
+  __module__ = 'types_pb2'
+  # @@protoc_insertion_point(class_scope:types.RequestDeliverTx)
+  ))
+_sym_db.RegisterMessage(RequestDeliverTx)
+
 RequestEndBlock = _reflection.GeneratedProtocolMessageType('RequestEndBlock', (_message.Message,), dict(
   DESCRIPTOR = _REQUESTENDBLOCK,
   __module__ = 'types_pb2'
   # @@protoc_insertion_point(class_scope:types.RequestEndBlock)
   ))
 _sym_db.RegisterMessage(RequestEndBlock)
+
+RequestCommit = _reflection.GeneratedProtocolMessageType('RequestCommit', (_message.Message,), dict(
+  DESCRIPTOR = _REQUESTCOMMIT,
+  __module__ = 'types_pb2'
+  # @@protoc_insertion_point(class_scope:types.RequestCommit)
+  ))
+_sym_db.RegisterMessage(RequestCommit)
 
 Response = _reflection.GeneratedProtocolMessageType('Response', (_message.Message,), dict(
   DESCRIPTOR = _RESPONSE,
@@ -1673,19 +1847,12 @@ ResponseSetOption = _reflection.GeneratedProtocolMessageType('ResponseSetOption'
   ))
 _sym_db.RegisterMessage(ResponseSetOption)
 
-ResponseDeliverTx = _reflection.GeneratedProtocolMessageType('ResponseDeliverTx', (_message.Message,), dict(
-  DESCRIPTOR = _RESPONSEDELIVERTX,
+ResponseInitChain = _reflection.GeneratedProtocolMessageType('ResponseInitChain', (_message.Message,), dict(
+  DESCRIPTOR = _RESPONSEINITCHAIN,
   __module__ = 'types_pb2'
-  # @@protoc_insertion_point(class_scope:types.ResponseDeliverTx)
+  # @@protoc_insertion_point(class_scope:types.ResponseInitChain)
   ))
-_sym_db.RegisterMessage(ResponseDeliverTx)
-
-ResponseCheckTx = _reflection.GeneratedProtocolMessageType('ResponseCheckTx', (_message.Message,), dict(
-  DESCRIPTOR = _RESPONSECHECKTX,
-  __module__ = 'types_pb2'
-  # @@protoc_insertion_point(class_scope:types.ResponseCheckTx)
-  ))
-_sym_db.RegisterMessage(ResponseCheckTx)
+_sym_db.RegisterMessage(ResponseInitChain)
 
 ResponseQuery = _reflection.GeneratedProtocolMessageType('ResponseQuery', (_message.Message,), dict(
   DESCRIPTOR = _RESPONSEQUERY,
@@ -1694,20 +1861,6 @@ ResponseQuery = _reflection.GeneratedProtocolMessageType('ResponseQuery', (_mess
   ))
 _sym_db.RegisterMessage(ResponseQuery)
 
-ResponseCommit = _reflection.GeneratedProtocolMessageType('ResponseCommit', (_message.Message,), dict(
-  DESCRIPTOR = _RESPONSECOMMIT,
-  __module__ = 'types_pb2'
-  # @@protoc_insertion_point(class_scope:types.ResponseCommit)
-  ))
-_sym_db.RegisterMessage(ResponseCommit)
-
-ResponseInitChain = _reflection.GeneratedProtocolMessageType('ResponseInitChain', (_message.Message,), dict(
-  DESCRIPTOR = _RESPONSEINITCHAIN,
-  __module__ = 'types_pb2'
-  # @@protoc_insertion_point(class_scope:types.ResponseInitChain)
-  ))
-_sym_db.RegisterMessage(ResponseInitChain)
-
 ResponseBeginBlock = _reflection.GeneratedProtocolMessageType('ResponseBeginBlock', (_message.Message,), dict(
   DESCRIPTOR = _RESPONSEBEGINBLOCK,
   __module__ = 'types_pb2'
@@ -1715,12 +1868,61 @@ ResponseBeginBlock = _reflection.GeneratedProtocolMessageType('ResponseBeginBloc
   ))
 _sym_db.RegisterMessage(ResponseBeginBlock)
 
+ResponseCheckTx = _reflection.GeneratedProtocolMessageType('ResponseCheckTx', (_message.Message,), dict(
+  DESCRIPTOR = _RESPONSECHECKTX,
+  __module__ = 'types_pb2'
+  # @@protoc_insertion_point(class_scope:types.ResponseCheckTx)
+  ))
+_sym_db.RegisterMessage(ResponseCheckTx)
+
+ResponseDeliverTx = _reflection.GeneratedProtocolMessageType('ResponseDeliverTx', (_message.Message,), dict(
+  DESCRIPTOR = _RESPONSEDELIVERTX,
+  __module__ = 'types_pb2'
+  # @@protoc_insertion_point(class_scope:types.ResponseDeliverTx)
+  ))
+_sym_db.RegisterMessage(ResponseDeliverTx)
+
 ResponseEndBlock = _reflection.GeneratedProtocolMessageType('ResponseEndBlock', (_message.Message,), dict(
   DESCRIPTOR = _RESPONSEENDBLOCK,
   __module__ = 'types_pb2'
   # @@protoc_insertion_point(class_scope:types.ResponseEndBlock)
   ))
 _sym_db.RegisterMessage(ResponseEndBlock)
+
+ResponseCommit = _reflection.GeneratedProtocolMessageType('ResponseCommit', (_message.Message,), dict(
+  DESCRIPTOR = _RESPONSECOMMIT,
+  __module__ = 'types_pb2'
+  # @@protoc_insertion_point(class_scope:types.ResponseCommit)
+  ))
+_sym_db.RegisterMessage(ResponseCommit)
+
+ConsensusParams = _reflection.GeneratedProtocolMessageType('ConsensusParams', (_message.Message,), dict(
+  DESCRIPTOR = _CONSENSUSPARAMS,
+  __module__ = 'types_pb2'
+  # @@protoc_insertion_point(class_scope:types.ConsensusParams)
+  ))
+_sym_db.RegisterMessage(ConsensusParams)
+
+BlockSize = _reflection.GeneratedProtocolMessageType('BlockSize', (_message.Message,), dict(
+  DESCRIPTOR = _BLOCKSIZE,
+  __module__ = 'types_pb2'
+  # @@protoc_insertion_point(class_scope:types.BlockSize)
+  ))
+_sym_db.RegisterMessage(BlockSize)
+
+TxSize = _reflection.GeneratedProtocolMessageType('TxSize', (_message.Message,), dict(
+  DESCRIPTOR = _TXSIZE,
+  __module__ = 'types_pb2'
+  # @@protoc_insertion_point(class_scope:types.TxSize)
+  ))
+_sym_db.RegisterMessage(TxSize)
+
+BlockGossip = _reflection.GeneratedProtocolMessageType('BlockGossip', (_message.Message,), dict(
+  DESCRIPTOR = _BLOCKGOSSIP,
+  __module__ = 'types_pb2'
+  # @@protoc_insertion_point(class_scope:types.BlockGossip)
+  ))
+_sym_db.RegisterMessage(BlockGossip)
 
 Header = _reflection.GeneratedProtocolMessageType('Header', (_message.Message,), dict(
   DESCRIPTOR = _HEADER,
@@ -1772,8 +1974,8 @@ _ABCIAPPLICATION = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   options=None,
-  serialized_start=2794,
-  serialized_end=3446,
+  serialized_start=3153,
+  serialized_end=3805,
   methods=[
   _descriptor.MethodDescriptor(
     name='Echo',
