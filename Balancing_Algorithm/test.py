@@ -12,18 +12,20 @@ import time
 def twoLayerClusterTest():
     # Testing two layer / three cluster model without downward data movement
 
-    numLayerTwoClusters = 2
-    layerOneGroupSize = 2
+    numLayerTwoClusters = 10
+    layerOneGroupSize = 10
     secPerBlock = 10
 
     clusters = []
 
     MainCluster = blockchain.blockchain(100, None)
 
+    start_time = str(datetime.datetime.now())
+
     for i in range(0, numLayerTwoClusters):
         clusters.append(blockchain.blockchain((i+1)*10, MainCluster))
-        clusters[i].introduceClient(None)
-        clusters[i].introduceClient(None)
+        for j in range(0, layerOneGroupSize):
+            clusters[i].introduceClient(None)
         MainCluster.introduceClient(clusters[i])
 
     # while True:
@@ -50,8 +52,8 @@ def twoLayerClusterTest():
                                                production, predictedCons, predictedProd, consFlex, prodFlex)
             cluster.addClientreport(report)
 
-    time.sleep(secPerBlock)
-
+    # time.sleep(secPerBlock)
+    print("START:", start_time, "STOP:", str(datetime.datetime.now()))
 
 
 def oneLayerClusterTest():
