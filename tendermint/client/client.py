@@ -64,6 +64,14 @@ class Client:
 				msg.usage.timestamp = int(time.time())
 				msg.usage.consumption = int(float(self.data[counter].split(';')[3].replace(',', '.')) * pow(10, 7))
 				msg.usage.production = int(float(self.data[counter].split(';')[4].replace(',', '.')) * pow(10, 7))
+		
+
+				msg.usage.prediction_consumption['t+1'] = 10
+				msg.usage.prediction_consumption['t+2'] = 20
+				msg.usage.prediction_production['t+1'] = 3
+				msg.usage.consumption_flexibility[0] = 0
+				msg.usage.production_flexibility[2] = 500
+
 				payload = self.uuid.bytes + \
 						  msg.usage.timestamp.to_bytes(8, byteorder='big') + \
 						  msg.usage.consumption.to_bytes(8, byteorder='big') + \
