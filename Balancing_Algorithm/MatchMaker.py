@@ -1,6 +1,28 @@
 from enum import Enum
+from typing import List
 import operator
 import datetime
+
+# This module's purpose is to perform matchmaking between asks and bids. The algorithm first matches the highers buyer
+# With the lowest seller. If there are multiple buyer/sellers at the same price point the order or matched in decreasing
+# volume. The reason for this is to reward behavior that generates flexibility, if people are willing to buy for higher
+# and sell for lower there is a bigger chance on matches being made. When there is an sur plus of asks or bids, the
+# client offering for the price that generates the most flexibility will get priority as they are contributing to more
+# matches being made.
+
+# Use of this module
+# 1) Create an instance of the orderbook class
+# 2) Add orders to the order book
+# 3) create an instance of the Matcher class
+# 4) run matcher.match(orderbook)
+
+# optional (only if orders will be passed upwards):
+# 5) use matcher.merge(orderbook) to create a new orderbook
+# 6) pass these orders to another level and repeat from step 1
+# 7) use the trades made from the higher level with the unmerge function to match remaining orders with extra-cluster trades
+# 8) match.unmerge(trade_list_from_higher_level)
+
+# For a new round clear everything and start again from step 1
 
 
 class OrderBook:
@@ -71,8 +93,7 @@ class Bid:
 
 
 class CrossReference:
-    def __init__(self, uuid, order_id):
-        self.uuid = uuid
+    def __init__(self, order_id):
         self.order_id = order_id
         self.orders = []
 
@@ -168,7 +189,6 @@ class Matcher:
             price = round((sub_ask_list[0].price + sub_bid_list[0].price)/2)
 
             # spread out the smaller volume pro rata over the bigger amount
-            # todo: rewrite this to a while loop since python can't handel for each loops where elements are deleted.
             while len(bigger_list) > 0:
                 entry = bigger_list[0]
                 if isinstance(entry, Ask):
@@ -209,6 +229,10 @@ class Matcher:
         return self.trade_list
 
     def merge(self, orderbook: OrderBook):
+        # This function will create a new order book with the remaining orders. It will combine multiple orders of the
+        # same price and keep track of the corresponding original order and uuid. All the orders in the order book will
+        # be linked to the cluster id and then returned so they can be passed on to a higher level.
+
         merged_orders = OrderBook()
 
         ask_list = orderbook.getasklist()
@@ -218,7 +242,9 @@ class Matcher:
             volume = 0
             current_price = ask_list[0].price
             i = 0
-            cross_reference = CrossReference(self.uuid, self.order_id)
+
+            cross_reference = CrossReference(self.order_id)
+
             while i < len(ask_list):
                 if ask_list[i].price == current_price:
                     cross_reference.orders.append((ask_list[i].uuid, ask_list[i].order_id))
@@ -235,7 +261,7 @@ class Matcher:
             volume = 0
             current_price = bid_list[0].price
             i = 0
-            cross_reference = CrossReference(self.uuid, self.order_id)
+            cross_reference = CrossReference(self.order_id)
             while i < len(bid_list):
                 if bid_list[i].price == current_price:
                     cross_reference.orders.append((bid_list[i].uuid, bid_list[i].order_id))
@@ -248,3 +274,61 @@ class Matcher:
             self.order_id += 1
 
         return merged_orders
+
+    def unmerge(self, orderbook: OrderBook, trades: List[Transaction]):
+        # This functions accepts a list of trades from a higher cluster and then link the trades made by a higher level
+        # to the remaining open orders in its own order book. This is done by using the self.cross_reference_list, Which
+        # contains a uuid and order id (that was send to the higher cluster) among with a list of the order id's of the
+        # original id's it used to create the new order.
+
+        if len(trades) <= 0 or len(self.cross_reference_list) <= 0:
+            return
+
+        while len(trades) != 0:
+            for CRL_entry in self.cross_reference_list:
+
+                if CRL_entry.order_id == trades[0].order_id:
+                    total_trade_volume = trades[0].volume
+                    total_order_volume = 0
+
+                    order_list = []
+
+                    # Calculate order volume and create lsit to spread amongst
+                    for order in CRL_entry.orders:
+                        # Move all eligible orders from order book to local list (move back if not completely fulfilled)
+                        total_order_volume += order.volume
+                        order_list.append(order)
+                        orderbook.remove_order(order)
+
+                    while len(order_list) > 0:
+                        order = order_list[0]
+
+                        if isinstance(order, Ask):
+                            order_type = OrderType.ASK
+                        else:
+                            order_type = OrderType.BID
+
+                        trading_volume = round(total_order_volume / total_order_volume * total_trade_volume)
+
+                        total_order_volume -= order.volume
+                        total_trade_volume -= trading_volume
+                        order.volume -= trading_volume
+                        self.trade_list.append(Transaction(order.uuid, order.order_id, order_type, trading_volume, trades[0].price))
+
+                        if order.volume != 0:   # If the order is not empty, add it to the order book again
+                            orderbook.add_order(order)
+
+                        order_list.pop(0)  # If an order is full filled get rid of it
+
+            trades.pop(0)   # Delete the entry: if found it was handled else it was an invalid entry
+
+            # Find the merged order matching the trade in self.cross_reference_list
+            # self.cross_reference_list[0].orders is a list consisting of dupples of uuid and order id
+            # 1) Take all the mentioned orders from the list -> sum the volume
+            # 2) Do the pro rata splitting out and create trades.
+            # 3) check for none-zero volumes and add them back as orders.
+
+
+
+
+
