@@ -278,26 +278,53 @@ class Matcher:
         # contains a uuid and order id (that was send to the higher cluster) among with a list of the order id's of the
         # original id's it used to create the new order.
 
-        if len(trades) <= 0 or len(self.cross_reference_list):
+        if len(trades) <= 0 or len(self.cross_reference_list) <= 0:
             return
 
         while len(trades) != 0:
             for CRL_entry in self.cross_reference_list:
 
-                for order in CRL_entry.orders:
-                    0 ==0
+                if CRL_entry.order_id == trades[0].order_id:
+                    total_trade_volume = trades[0].volume
+                    total_order_volume = 0
 
-                trades.pop(0)   #Delete the entry: if found it was handled else it was an invalid entry
+                    order_list = []
 
+                    # Calculate order volume and create lsit to spread amongst
+                    for order in CRL_entry.orders:
+                        # Move all eligible orders from order book to local list (move back if not completely fulfilled)
+                        total_order_volume += order.volume
+                        order_list.append(order)
+                        orderbook.remove_order(order)
 
+                    while len(order_list) > 0:
+                        order = order_list[0]
 
+                        if isinstance(order, Ask):
+                            order_type = OrderType.ASK
+                        else:
+                            order_type = OrderType.BID
 
-                0 == 0  # random crap to shut up the style guidelines
-                # Find the merged order matching the trade in self.cross_reference_list
-                # self.cross_reference_list[0].orders is a list consisting of dupples of uuid and order id
-                # 1) Take all the mentioned orders from the list -> sum the volume
-                # 2) Do the pro rata splitting out and create trades.
-                # 3) check for none-zero volumes and add them back as orders.
+                        trading_volume = round(total_order_volume / total_order_volume * total_trade_volume)
+
+                        total_order_volume -= order.volume
+                        total_trade_volume -= trading_volume
+                        order.volume -= trading_volume
+                        self.trade_list.append(Transaction(order.uuid, order.order_id, order_type, trading_volume, trades[0].price))
+
+                        if order.volume != 0:   # If the order is not empty, add it to the order book again
+                            orderbook.add_order(order)
+
+                        order_list.pop(0)  # If an order is full filled get rid of it
+
+            trades.pop(0)   # Delete the entry: if found it was handled else it was an invalid entry
+
+            # Find the merged order matching the trade in self.cross_reference_list
+            # self.cross_reference_list[0].orders is a list consisting of dupples of uuid and order id
+            # 1) Take all the mentioned orders from the list -> sum the volume
+            # 2) Do the pro rata splitting out and create trades.
+            # 3) check for none-zero volumes and add them back as orders.
+
 
 
 
