@@ -1,1 +1,1 @@
-../app/transaction_pb2.py
+../app/src/transaction_pb2.py
