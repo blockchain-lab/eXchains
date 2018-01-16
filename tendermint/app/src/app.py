@@ -42,8 +42,8 @@ class EnergyMarketApplication(ABCIApplication):
 			"contracts": {}
 		}
 
-		self.orderBook = MatchMaker.OrderBook()
-		self.tradeBook = []
+		self.order_Book = MatchMaker.OrderBook()
+		self.local_trade_book = []
 
 		self.balancer = Process(target=self.balancing_timer)
 		self.balancer.start()
@@ -223,7 +223,7 @@ class EnergyMarketApplication(ABCIApplication):
 
 	def balance(self):
 
-		self.orderBook = OrderBook()
+		self.order_book = OrderBook()
 
 		for client_uuid in self.state['contracts']:
 			client_report = ClientReport(client_uuid, int(time.time()),
@@ -236,21 +236,28 @@ class EnergyMarketApplication(ABCIApplication):
 										self.state['contracts'][client_uuid]['consumption_flexibility'],
 										self.state['contracts'][client_uuid]['production_flexibility'])
 			# print(client_report)
-			orders.add_order(client_report.reportToAskOrders())
-			orders.add_order(client_report.reportToBidOrders())
+			order_book.add_order(client_report.reportToAskOrders())
+			order_book.add_order(client_report.reportToBidOrders())
 
-		print("Order book:", self.orderBook.getasklist() + self.orderBook.getbidlist())
+		print("Order book:", self.order_book.getasklist() + self.order_book.getbidlist())
 
 		matcher = Matcher(uuid.uuid4())
-		self.tradeBook.clear()
-		self.tradeBook = matcher.match(orders)
+		self.local_trade_book.clear()
+		self.local_trade_book = matcher.match(order_book)
 
-		print("Trade book:", self.tradeBook)
-		print("Remaining Order book:", self.orderBook.getasklist() + self.orderBook.getbidlist())
+		print("Local trade book:", self.local_trade_book)
+		print("Remaining Order book:", self.order_book.getasklist() + self.order_book.getbidlist())
 
-		new_book = self.matcher.merge(self.orderBook)
-		print("Merged Order", new_book.getasklist(), new_book.getbidlist())
+		merged_order_book = self.matcher.merge(self.order_book)
+		# crossreference_list = self.matcher.getCrosList  # not implemented yet
+		print("Merged remaining orders", merged_order_book.getasklist(), merged_order_book.getbidlist())
 
+
+		# data thats needs to be verified:
+		self.local_trade_book
+		# crossreference_list # not implemented yet
+		self.order_book
+		merged_order_book
 
 
 		# store result
