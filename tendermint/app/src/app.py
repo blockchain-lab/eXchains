@@ -29,7 +29,7 @@ class EnergyMarketApplication(ABCIApplication):
 
 		self.debug.update({
 			"protocol": False,
-			"signing": True,
+			"signing": False,
 			"check_tx": False,
 			"deliver_tx": False,
 			"messages": False

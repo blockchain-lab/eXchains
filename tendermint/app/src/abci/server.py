@@ -2,6 +2,7 @@ import socket
 import select
 import sys
 import logging
+import traceback
 
 from .wire import decode_varint, encode_varint, encode
 from .reader import BytesBuffer
@@ -125,29 +126,33 @@ class ABCIServer:
 				if req.HasField('deliver_tx'):
 					try:
 						res = self.app.on_deliver_tx(req.deliver_tx)
-					except Exception as e:
-						print('Error during on_deliver_tx:', e)
+					except:
+						print('Error during on_deliver_tx:')
+						traceback.print_exc()
 						res = Response()
 						res.deliver_tx.code = 500
 				if req.HasField('check_tx'):
 					try:
 						res = self.app.on_check_tx(req.check_tx)
-					except Exception as e:
-						print('Error during on_check_tx:', e)
+					except:
+						print('Error during on_check_tx:')
+						traceback.print_exc()
 						res = Response()
 						res.check_tx.code = 500
 				if req.HasField('commit'):
 					try:
 						res = self.app.on_commit(req.commit)
-					except Exception as e:
-						print('Error during on_commit:', e)
+					except:
+						print('Error during on_commit:')
+						traceback.print_exc()
 						res = Response()
 						res.commit.code = 500
 				if req.HasField('query'):
 					try:
 						res = self.app.on_query(req.query)
-					except Exception as e:
-						print('Error during on_query:', e)
+					except:
+						print('Error during on_query:')
+						traceback.print_exc()
 						res = Response()
 						res.query.code = 500
 				if req.HasField('init_chain'):

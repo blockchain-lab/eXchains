@@ -44,7 +44,7 @@ class Client:
 		url = 'http://{}:{}/'.format(self.address, self.port)  # Set destination URL here
 		
 		request = Request(url, json.dumps({
-			"method": 'broadcast_tx_sync',
+			"method": 'broadcast_tx_commit',
 			"params": [base64.b64encode(binarystring).decode('ascii')],
 			"jsonrpc": "2.0",
 			"id": "not_important"
