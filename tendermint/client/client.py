@@ -85,7 +85,7 @@ class Client:
 				msg = tx.Transaction()
 				msg.usage.contract_uuid = self.uuid.bytes
 				msg.usage.timestamp = int(time.time())
-				# TODO default consumption and production price fields are missing
+				#TODO default consumption and production price fields are missing
 				# msg.usage.def_consumption_price = 10
 				# msg.usage.def_production_price = 1
 
