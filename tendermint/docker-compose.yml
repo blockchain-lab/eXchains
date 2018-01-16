@@ -21,17 +21,10 @@ services:
       - tendermint
       - node
       - --consensus.create_empty_blocks=false
-      - --proxy_app=abci:46658
+      - --proxy_app=app:46658
 
-  abci:
-    build: abci
-    ports:
-      - 80:80
-
-  # app:
-  #   build: app
-  #   ports:
-  #     - 80:80
+  app:
+    build: app
     # depends_on:
       # - tendermint
       

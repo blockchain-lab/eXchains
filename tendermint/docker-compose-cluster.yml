@@ -1,17 +1,14 @@
 version: '3.0'
 services:
-  abci0:
-    build: abci
-    ports:
-      - 80:80
-      
+  app0:
+    build: app
   tendermint0:
     image: tendermint/tendermint:0.15.0
     volumes:
       - ./.data/cluster/mach0:/tendermint
       - tendermint0:/tendermint/data
     depends_on:
-      - abci0
+      - app0
     ports:
       - 46656:46656
       - 46657:46657
@@ -20,71 +17,71 @@ services:
       - node
       - --p2p.seeds=tendermint1:46656
       - --consensus.create_empty_blocks=false
-      - --proxy_app=abci0:46658
+      - --proxy_app=dummy
 
-  abci1:
-    build: abci
+  app1:
+    build: app
   tendermint1:
     image: tendermint/tendermint:0.15.0
     volumes:
       - ./.data/cluster/mach1:/tendermint
       - tendermint1:/tendermint/data
     depends_on:
-      - abci1
+      - app1
     entrypoint:
       - tendermint
       - node
       - --p2p.seeds=tendermint2:46656
       - --consensus.create_empty_blocks=false
-      - --proxy_app=abci1:46658
+      - --proxy_app=dummy
 
-  abci2:
-    build: abci
+  app2:
+    build: app
   tendermint2:
     image: tendermint/tendermint:0.15.0
     volumes:
       - ./.data/cluster/mach2:/tendermint
       - tendermint2:/tendermint/data
     depends_on:
-      - abci2
+      - app0
     entrypoint:
       - tendermint
       - node
       - --p2p.seeds=tendermint3:46656
       - --consensus.create_empty_blocks=false
-      - --proxy_app=abci2:46658
+      - --proxy_app=dummy
 
-  abci3:
-    build: abci
+  app3:
+    build: app
   tendermint3:
     image: tendermint/tendermint:0.15.0
     volumes:
       - ./.data/cluster/mach3:/tendermint
       - tendermint3:/tendermint/data
     depends_on:
-      - abci3
+      - app0
     entrypoint:
       - tendermint
       - node
       - --p2p.seeds=tendermint4:46656
       - --consensus.create_empty_blocks=false
-      - --proxy_app=abci3:46658
+      - --proxy_app=dummy
 
-  abci4:
-    build: abci
+  app4:
+    build: app
   tendermint4:
     image: tendermint/tendermint:0.15.0
     volumes:
       - ./.data/cluster/mach4:/tendermint
       - tendermint4:/tendermint/data
     depends_on:
-      - abci4
+      - app0
     entrypoint:
       - tendermint
       - node
       - --p2p.seeds=tendermint0:46656
       - --consensus.create_empty_blocks=false
-      - --proxy_app=anci4:46558
+      - --proxy_app=dummy
       
 volumes:
   tendermint0:
