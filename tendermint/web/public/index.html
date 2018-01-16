@@ -1,175 +1,91 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Web</title>
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/manifest.json">
+	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+	<meta name="theme-color" content="#ffffff">
+	<title>DEM - Decentralized Energy Market</title>
 	<script src="//cdn.rawgit.com/dcodeIO/protobuf.js/6.8.3/dist/protobuf.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/vue"></script>
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css" integrity="sha256-2k1KVsNPRXxZOsXQ8aqcZ9GOOwmJTMoOB5o5Qp1d6/s=" crossorigin="anonymous" />
-	
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
+	<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css" integrity="sha256-2k1KVsNPRXxZOsXQ8aqcZ9GOOwmJTMoOB5o5Qp1d6/s=" crossorigin="anonymous" /> -->
+	<style>
+		body {
+			background-color: #444;
+		}
+		.grid-wrapper {
+			/*vertical-align: top;*/
+			/*height: 310px;*/
+			/*display: grid;*/
+			/*grid-template-columns: 30% 30% 30%;*/
+			/*grid-template-rows: 30% 30% 30%;*/
+			/*grid-gap: 10px;*/
+			/*grid-auto-rows: minmax(100px, auto);*/
+		}
+		.grid-cell {
+			vertical-align: top;
+			/*grid-column: auto;*/
+			/*grid-row: auto;*/
+			width: 300px;
+			height: 300px;
+			border: grey 2px solid;
+			padding: 5px;
+			display: inline-block;
+			margin: 5px;
+			 border-radius: 5px;
+			 background-color: white;
+		}
+	</style>
 </head>
 <body>
-	<div class="columns">
-	  <div id="app-state" class="column">
-	  	<pre>{{state}}</pre>
-	  </div>
-	  <div id="transactions" class="column">
-	  	<ul>
-	  		<li v-for="transaction in transactions">
-	  			{{ transaction }}
-	  		</li>
-	  	</ul>
-	  </div>
+	<div style="padding-left: 30px">
+		<div id="app-debug" class="columns" style="display:none">
+			<div id="app-debug-state" class="column">
+				<pre>{{ state }}</pre>
+			</div>
+			<div id="app-debug-transactions" class="column">
+				<ul>
+					<li v-for="transaction in transactions">
+						{{ transaction }}
+					</li>
+				</ul>
+			</div>
+
+
+				
+		</div>
+		<div id="app-visual" class="grid-wrapper" style="display:block" >
+			<div id="app-round-state" class="grid-cell" >
+				<div>
+					Round #{{ state.balance.round }} 
+				</div>
+				<div v-bind:style="{ color: state.balance.state === 'COLLECTING' ? 'green' : 'red' }" > 
+					Allowing usage transactions 
+				</div>
+				<div v-bind:style="{ color: state.balance.state === 'BALANCING' ? 'green' : 'red' }"  >
+					Allowing balance transactions
+				</div>
+			</div>
+			<div id="app-round-transactions" class="grid-cell" >
+				<li v-for="transaction in transactions">
+					<span v-if="transaction.usage" >
+						{{ transaction }}
+					</span>
+				</li>
+			</div>
+			<div class="grid-cell" >
+				more info
+			</div>
+			<div class="grid-cell" >
+				even more info
+			</div>
+		</div>
 	</div>
-	<script type="text/javascript" >
-		socket = new WebSocket("ws://localhost:46657/websocket");
-		var pending = {}, listeners = {}, nextId = 1, Transaction;
-		socket.addEventListener('message', function(event) {
-			var data = JSON.parse(event.data);
-			console.log(JSON.stringify(data));
-			if (Boolean(pending[data.id])) {
-				pending[data.id](data.result);
-				delete pending[data.id];
-			}
-			if (Boolean(listeners[data.id])) {
-				listeners[data.id](data.result);
-			}
-		});
 
-		var appState = new Vue({
-			el: '#app-state',
-			data: {
-				state: {
-					contracts: {}
-				}
-			}
-		});
-		var transactions = new Vue({
-			el: '#transactions',
-			data: {
-				transactions: []
-			}
-		});
-		function toHex(s) {
-		    // utf8 to latin1
-		    var s = unescape(encodeURIComponent(s))
-		    var h = ''
-		    for (var i = 0; i < s.length; i++) {
-		        h += s.charCodeAt(i).toString(16)
-		    }
-		    return h
-		}
-
-		function fromHex(h) {
-		    var s = ''
-		    for (var i = 0; i < h.length; i+=2) {
-		        s += String.fromCharCode(parseInt(h.substr(i, 2), 16))
-		    }
-		    return decodeURIComponent(escape(s))
-		}
-		function bufferToHex(buf) {
-			var str = '';
-			for(var i = 0; i < 16; i += 1) {
-				str += buf[i].toString(16);
-			}
-			return str;
-		}
-		function bufferToBase64(buf) {
-			return btoa(String.fromCharCode.apply(null, buf))
-		}
-		function base64ToBuffer(base64str) {
-			var rawStr = atob(base64str),
-				buff = new Uint8Array(rawStr.length);
-			for (var i = 0; i < rawStr.length; i += 1) {
-				buff[i] = rawStr.charCodeAt(i);
-			}
-			return buff;
-		}
-		function bufferToUUID(buf) {
-			var str = bufferToHex(buf);
-			str = str.substr(0,8) + '-' + str.substr(8,12) + '-' + str.substr(12,16) + '-' + str.substr(16,20) + '-' + str.substr(20);
-			return str;
-		}
-		function genUUID() {
-			// xx xx xx xx - xx xx - 4x xx - yx xx-xxxxxxxxxxxx
-			var buf = new Uint8Array(16);
-			for(var i = 0; i < 16; i ++) {
-				buf[i] = (Math.random() * 256) | 0;
-			}
-			buf[6] = buf[6] & 0x0F | 0x40; // 0b0100xxxx
-			buf[8] = buf[8] & 0x3F | 0x80; // 0b10xxxxxx
-			return buf;
-		}
-		function createTransaction(data) {
-			var t = Transaction.encode(data).finish();
-			return bufferToBase64(t);
-		}
-		function doRequest(req, callback, event_listener) {
-			if (socket.readyState == 0) {
-				socket.addEventListener('open', function() {
-					doRequest(req, callback, event_listener);
-				});
-			} else {
-				let id = "request_" + String(nextId++);
-				pending[id] = callback;
-				req = {
-					method: req.method,
-					params: req.params,
-					jsonrpc: "2.0",
-					id: id
-				};
-				if (event_listener && req.method === 'subscribe') {
-					listeners[id + "#event"] = event_listener;
-				}
-				console.log(JSON.stringify(req));
-				socket.send(JSON.stringify(req));
-			}
-		};
-		function onTransaction(transaction) {
-			if (transaction.newContract) {
-				appState.state[bufferToUUID(base64ToBuffer(transaction.newContract.uuid))] = {
-					public_key: base64ToBuffer(transaction.new_contract.public_key),
-					consumption: 0,
-					production: 0,
-					prediction_consumption: {},
-					prediction_production: {},
-					consumption_flexibility: {},
-					production_flexibility: {}
-				}
-			}
-			if (transaction.usage) {
-				var contract = appState.state[bufferToUUID(base64ToBuffer(transaction.usage.contractUuid))];
-				contract.consumption = transaction.usage.consumption;
-				contract.production = transaction.usage.production;
-				contract.prediction_consumption = transaction.usage.prediction_consumption;
-				contract.prediction_production = transaction.usage.prediction_production;
-				contract.consumption_flexibility = transaction.usage.consumption_flexibility;
-				contract.production_flexibility = transaction.usage.production_flexibility;
-			}
-		}
-		protobuf.load("transaction.proto", function(err, root) {
-			Transaction = root.lookupType('Transaction');
-			doRequest({
-				method: 'subscribe',
-				params: {
-					query: "tm.event='Tx'"
-				}
-			}, function(data) {}, function(event) {
-				var rawTx = event.data.data.tx;
-				var transaction = Transaction.decode(base64ToBuffer(rawTx)).toJSON();
-				transactions.transactions.unshift(transaction);
-				onTransaction(transaction);
-			});
-			doRequest({
-				method: 'abci_query',
-				params: {
-					path: 'state'
-				}
-			}, function(result) {
-				console.log(fromHex(result.response.key));
-				appState.state = JSON.parse(fromHex(result.response.value));
-			});
-		});
-		
-	</script>
+	<script src="utils.js"></script>
+	<script src="app.js"></script>
 </body>
 </html>
