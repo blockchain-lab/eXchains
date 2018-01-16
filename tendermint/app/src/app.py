@@ -42,25 +42,28 @@ class EnergyMarketApplication(ABCIApplication):
 			"contracts": {}
 		}
 
+		self.orderBook = MatchMaker.OrderBook()
+		self.tradeBook = []
+
 		self.balancer = Process(target=self.balancing_timer)
 		self.balancer.start()
-	
+
 	def balancing_timer(self):
 		while True:
 			time.sleep(self.balancing_interval)
-	
+
 			url = 'http://{}:{}/'.format(self.address, self.port)  # Set destination URL here
 			message = Transaction()
 			message.balance.timestamp = int(time.time())
 			binarystring = message.SerializeToString()
-			
+
 			request = Request(url, json.dumps({
 				"method": 'broadcast_tx_sync',
 				"params": [base64.b64encode(binarystring).decode('ascii')],
 				"jsonrpc": "2.0",
 				"id": "not_important"
 			}).encode())
-			
+
 			result = urlopen(request).read().decode()
 
 	def check_signature(self, transaction_type, transaction):
@@ -199,30 +202,12 @@ class EnergyMarketApplication(ABCIApplication):
 			self.state["contracts"][contract_uuid]["production_flexibility"] = usage["production_flexibility"]
 
 		if transaction.HasField('balance_start'):
-			pass
+			# start balancing in different process
+			self.balancer = Process(target=self.balance)
+			self.balancer.start()
 
 		if transaction.HasField('balance'):
-			orders = OrderBook()
-			# print(self.state['contracts'])
-			for client_uuid in self.state['contracts']:
-				client_report = ClientReport(client_uuid, \
-											 int(time.time()), \
-											 0, \
-											 0, \
-											 self.state['contracts'][client_uuid]['consumption'], \
-											 self.state['contracts'][client_uuid]['production'], \
-											 self.state['contracts'][client_uuid]['prediction_consumption'], \
-											 self.state['contracts'][client_uuid]['prediction_production'], \
-											 self.state['contracts'][client_uuid]['consumption_flexibility'], \
-											 self.state['contracts'][client_uuid]['production_flexibility'])
-				# print(client_report)
-				orders.add_order(client_report.reportToAskOrders())
-				orders.add_order(client_report.reportToBidOrders())
-			matcher = Matcher(uuid.uuid4())
-			# TODO: make some nicer prints or remove them at all
-			# print(orders.getbidlist(), orders.getasklist())
-			matcher.match(orders)
-			# print(orders.getbidlist(), orders.getasklist())
+			pass
 
 		if transaction.HasField('balance_end'):
 			pass
@@ -236,10 +221,45 @@ class EnergyMarketApplication(ABCIApplication):
 
 		return res
 
+	def balance(self):
+
+		self.orderBook = OrderBook()
+
+		for client_uuid in self.state['contracts']:
+			client_report = ClientReport(client_uuid, int(time.time()),
+										self.state['contracts'][client_uuid]['default_consumption_price'], # not implemented?
+										self.state['contracts'][client_uuid]['default_production_price'], # not implemented?
+										self.state['contracts'][client_uuid]['consumption'],
+										self.state['contracts'][client_uuid]['production'],
+										self.state['contracts'][client_uuid]['prediction_consumption'],
+										self.state['contracts'][client_uuid]['prediction_production'],
+										self.state['contracts'][client_uuid]['consumption_flexibility'],
+										self.state['contracts'][client_uuid]['production_flexibility'])
+			# print(client_report)
+			orders.add_order(client_report.reportToAskOrders())
+			orders.add_order(client_report.reportToBidOrders())
+
+		print("Order book:", self.orderBook.getasklist() + self.orderBook.getbidlist())
+
+		matcher = Matcher(uuid.uuid4())
+		self.tradeBook.clear()
+		self.tradeBook = matcher.match(orders)
+
+		print("Trade book:", self.tradeBook)
+		print("Remaining Order book:", self.orderBook.getasklist() + self.orderBook.getbidlist())
+
+		new_book = self.matcher.merge(self.orderBook)
+		print("Merged Order", new_book.getasklist(), new_book.getbidlist())
+
+
+
+		# store result
+		# if chosen one propose block
+
+
 	def on_end_block(self, msg):
 		self.pending_state = self.state.copy()
 		return super().on_end_block(msg)
-
 
 	def on_query(self, msg: RequestQuery):
 		if self.debug['messages']:
