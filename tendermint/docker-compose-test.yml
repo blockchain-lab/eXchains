@@ -35,6 +35,7 @@ services:
       - 80:80
     volumes:
       - ./web/public:/app/public
+      - ./app/transaction.proto:/app/public/transaction.proto
 
 volumes:
   tendermint:

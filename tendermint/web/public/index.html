@@ -3,6 +3,23 @@
 <head>
 	<title>Web</title>
 	<script src="//cdn.rawgit.com/dcodeIO/protobuf.js/6.8.3/dist/protobuf.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css" integrity="sha256-2k1KVsNPRXxZOsXQ8aqcZ9GOOwmJTMoOB5o5Qp1d6/s=" crossorigin="anonymous" />
+	
+</head>
+<body>
+	<div class="columns">
+	  <div id="app-state" class="column">
+	  	<pre>{{state}}</pre>
+	  </div>
+	  <div id="transactions" class="column">
+	  	<ul>
+	  		<li v-for="transaction in transactions">
+	  			{{ transaction.toJSON() }}
+	  		</li>
+	  	</ul>
+	  </div>
+	</div>
 	<script type="text/javascript" >
 		socket = new WebSocket("ws://localhost:46657/websocket");
 		var pending = {}, listeners = {}, nextId = 1, Transaction;
@@ -17,6 +34,38 @@
 				listeners[data.id](data.result);
 			}
 		});
+
+		var appState = new Vue({
+			el: '#app-state',
+			data: {
+				state: {
+					contracts: {}
+				}
+			}
+		});
+		var transactions = new Vue({
+			el: '#transactions',
+			data: {
+				transactions: []
+			}
+		});
+		function toHex(s) {
+		    // utf8 to latin1
+		    var s = unescape(encodeURIComponent(s))
+		    var h = ''
+		    for (var i = 0; i < s.length; i++) {
+		        h += s.charCodeAt(i).toString(16)
+		    }
+		    return h
+		}
+
+		function fromHex(h) {
+		    var s = ''
+		    for (var i = 0; i < h.length; i+=2) {
+		        s += String.fromCharCode(parseInt(h.substr(i, 2), 16))
+		    }
+		    return decodeURIComponent(escape(s))
+		}
 		function bufferToBase64(buf) {
 			return btoa(String.fromCharCode.apply(null, buf))
 		}
@@ -65,37 +114,29 @@
 		};
 		protobuf.load("transaction.proto", function(err, root) {
 			Transaction = root.lookupType('Transaction');
-			// doRequest({
-			// 	method: 'broadcast_tx_sync',
-			// 	params: [createTransaction({
-			// 		newContract: {
-			// 			uuid: genUUID(),
-			// 			timestamp: Date.now(),
-			// 			publicKey: new Uint8Array([0,1,2,3,4,5])
-			// 		}
-			// 	})]
-			// }, function(data) {
-
-			// });
 			doRequest({
 				method: 'subscribe',
 				params: {
 					query: "tm.event='Tx'"
 				}
-			}, function(data) {
-				console.log(data);
-			}, function(event) {
-				console.log('event =', event);
+			}, function(data) {}, function(event) {
 				var rawTx = event.data.data.tx;
-				console.log('rawTx =', rawTx);
 				var transaction = Transaction.decode(base64ToBuffer(rawTx));
-				console.log(transaction);
+				transactions.transactions.unshift(transaction);
+
+				
+			});
+			doRequest({
+				method: 'abci_query',
+				params: {
+					path: 'state'
+				}
+			}, function(result) {
+				console.log(fromHex(result.response.key));
+				appState.state = JSON.parse(fromHex(result.response.value));
 			});
 		});
 		
 	</script>
-</head>
-<body>
-
 </body>
 </html>

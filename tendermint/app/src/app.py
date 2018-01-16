@@ -1,6 +1,6 @@
 import sys
 
-from abci.types_pb2 import RequestCheckTx, Response, RequestDeliverTx
+from abci.types_pb2 import RequestCheckTx, Response, RequestDeliverTx, RequestQuery
 from abci.server import ABCIServer
 from abci.abci_application import ABCIApplication
 from transaction_pb2 import Transaction
@@ -14,7 +14,9 @@ import base64
 from multiprocessing import Process
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
+from google.protobuf import json_format
 
+signed_types = ['new_contract', 'usage']
 
 class EnergyMarketApplication(ABCIApplication):
 
@@ -24,13 +26,13 @@ class EnergyMarketApplication(ABCIApplication):
 		self.port = port
 		# in seconds
 		self.balancing_interval = 20
-		self.debug.protocol = False;
 
 		self.debug.update({
 			"protocol": False,
-			"signing": False,
-			"check_tx": True,
-			"deliver_tx": False
+			"signing": True,
+			"check_tx": False,
+			"deliver_tx": False,
+			"messages": False
 		})
 
 		self.state = {
@@ -61,23 +63,26 @@ class EnergyMarketApplication(ABCIApplication):
 			
 			result = urlopen(request).read().decode()
 
-	def check_signature(self, public_key, transaction_type, transaction):
+	def check_signature(self, transaction_type, transaction):
 		payload = None
 		# if !transaction.HasField('signature'):
 		# 	return False
 
 		signature = transaction.signature
+		public_key = None
 		if transaction_type == 'new_contract':
+			public_key = transaction.public_key
 			payload = transaction.uuid + int(transaction.timestamp).to_bytes(8, 'big') + transaction.public_key
 
 		if transaction_type == 'usage':
+			public_key = bytes.fromhex(self.pending_state["contracts"][self.bytes_to_string_uuid(transaction.contract_uuid)]["public_key"])
 			payload = transaction.contract_uuid + \
 				int(transaction.timestamp).to_bytes(8, 'big') + \
 				int(transaction.consumption).to_bytes(8, 'big') + \
 				int(transaction.production).to_bytes(8, 'big')
 
 		if self.debug['signing']:
-			print(payload, transaction)
+			print(transaction_type, public_key, payload, transaction)
 
 		if payload is None:
 			return False
@@ -88,6 +93,12 @@ class EnergyMarketApplication(ABCIApplication):
 		except AssertionError:
 			return False
 		return True
+
+	# 00000000-0000-0000-0000-000000000000
+	def bytes_to_string_uuid(self, uuid_in_bytes):
+		uuid_str = uuid_in_bytes.hex()
+		uuid_str = uuid_str[0:8] + '-' + uuid_str[8:12] + '-' + uuid_str[12:16] + '-' + uuid_str[16:20] + '-' + uuid_str[20:]
+		return uuid_str
 
 	def on_check_tx(self, msg: RequestCheckTx):
 		tx = msg.tx
@@ -101,36 +112,35 @@ class EnergyMarketApplication(ABCIApplication):
 		if self.debug['check_tx']:
 			print(transaction)
 
-		if transaction.HasField('new_contract'):
-			if transaction.new_contract.uuid in self.pending_state["contracts"]:
+		descriptor, value = transaction.ListFields()[0]
+		transaction_type = descriptor.name
+		if signed_types.count(transaction_type) > 0:
+			if not self.check_signature(transaction_type, value):
 				res = Response()
 				res.check_tx.code = 401
 				return res
 
-			if not self.check_signature(transaction.new_contract.public_key, 'new_contract', transaction.new_contract):
+		if transaction_type == 'new_contract':
+			if self.bytes_to_string_uuid(transaction.new_contract.uuid) in self.pending_state["contracts"]:
 				res = Response()
 				res.check_tx.code = 401
 				return res
 
-			self.pending_state["contracts"][transaction.new_contract.uuid] = {
-				"public_key": transaction.new_contract.public_key,
+			self.pending_state["contracts"][self.bytes_to_string_uuid(value.uuid)] = {
+				"public_key": value.public_key.hex(),
 				"consumption": 0,
 				"production": 0
 			}
 
 		# todo: verify contractor_signature
 		elif transaction.HasField('usage'):
-			if transaction.usage.contract_uuid not in self.pending_state["contracts"]:
+			if self.bytes_to_string_uuid(transaction.usage.contract_uuid) not in self.pending_state["contracts"]:
 				res = Response()
 				res.check_tx.code = 401
 				return res
 
-			if not self.check_signature(self.pending_state["contracts"][transaction.usage.contract_uuid]["public_key"], 'usage', transaction.usage):
-				res = Response()
-				res.check_tx.code = 401
-				return res
-			self.pending_state["contracts"][transaction.usage.contract_uuid]["consumption"] = transaction.usage.consumption
-			self.pending_state["contracts"][transaction.usage.contract_uuid]["production"] = transaction.usage.production
+			self.pending_state["contracts"][self.bytes_to_string_uuid(transaction.usage.contract_uuid)]["consumption"] = transaction.usage.consumption
+			self.pending_state["contracts"][self.bytes_to_string_uuid(transaction.usage.contract_uuid)]["production"] = transaction.usage.production
 
 		elif transaction.HasField('balance_start'):
 			pass
@@ -160,9 +170,12 @@ class EnergyMarketApplication(ABCIApplication):
 		if self.debug['deliver_tx']:
 			print(transaction)
 
+		descriptor, value = transaction.ListFields()[0]
+		transaction_type = descriptor.name
+
 		if transaction.HasField('new_contract'):
-			self.state["contracts"][transaction.new_contract.uuid] = {
-				"public_key": transaction.new_contract.public_key,
+			self.state["contracts"][self.bytes_to_string_uuid(transaction.new_contract.uuid)] = {
+				"public_key": transaction.new_contract.public_key.hex(),
 				"consumption": 0,
 				"production": 0,
 				"prediction_consumption": {},
@@ -173,21 +186,24 @@ class EnergyMarketApplication(ABCIApplication):
 
 		# self.contract[transaction.new_contract.uuid] = transaction.new_contract.public_key
 		if transaction.HasField('usage'):
-			self.state["contracts"][transaction.usage.contract_uuid]["consumption"] = transaction.usage.consumption
-			self.state["contracts"][transaction.usage.contract_uuid]["production"] = transaction.usage.production
+			contract_uuid = self.bytes_to_string_uuid(transaction.usage.contract_uuid)
+			# We need to have the maps in dictionary format.
+			usage = json_format.MessageToDict(transaction.usage, False, True)
+			self.state["contracts"][contract_uuid]["consumption"] = transaction.usage.consumption
+			self.state["contracts"][contract_uuid]["production"] = transaction.usage.production
 
-			self.state["contracts"][transaction.usage.contract_uuid]["prediction_consumption"] = transaction.usage.prediction_consumption
-			self.state["contracts"][transaction.usage.contract_uuid]["prediction_production"] = transaction.usage.prediction_production
+			self.state["contracts"][contract_uuid]["prediction_consumption"] = usage["prediction_consumption"]
+			self.state["contracts"][contract_uuid]["prediction_production"] = usage["prediction_production"]
 
-			self.state["contracts"][transaction.usage.contract_uuid]["consumption_flexibility"] = transaction.usage.consumption_flexibility
-			self.state["contracts"][transaction.usage.contract_uuid]["production_flexibility"] = transaction.usage.production_flexibility
+			self.state["contracts"][contract_uuid]["consumption_flexibility"] = usage["consumption_flexibility"]
+			self.state["contracts"][contract_uuid]["production_flexibility"] = usage["production_flexibility"]
 
 		if transaction.HasField('balance_start'):
 			pass
 
 		if transaction.HasField('balance'):
 			orders = OrderBook()
-			print(self.state['contracts'])
+			# print(self.state['contracts'])
 			for client_uuid in self.state['contracts']:
 				client_report = ClientReport(client_uuid, \
 											 int(time.time()), \
@@ -199,25 +215,43 @@ class EnergyMarketApplication(ABCIApplication):
 											 self.state['contracts'][client_uuid]['prediction_production'], \
 											 self.state['contracts'][client_uuid]['consumption_flexibility'], \
 											 self.state['contracts'][client_uuid]['production_flexibility'])
-				print(client_report)
+				# print(client_report)
 				orders.add_order(client_report.reportToAskOrders())
 				orders.add_order(client_report.reportToBidOrders())
 			matcher = Matcher(uuid.uuid4())
 			# TODO: make some nicer prints or remove them at all
-			print(orders.getbidlist(), orders.getasklist())
+			# print(orders.getbidlist(), orders.getasklist())
 			matcher.match(orders)
-			print(orders.getbidlist(), orders.getasklist())
+			# print(orders.getbidlist(), orders.getasklist())
 
 		if transaction.HasField('balance_end'):
 			pass
 
 		res = Response()
 		res.deliver_tx.code = 0
+
+		type_tag = res.deliver_tx.tags.add()
+		type_tag.key = 'type'
+		type_tag.value_string = transaction_type
+
 		return res
 
 	def on_end_block(self, msg):
 		self.pending_state = self.state.copy()
 		return super().on_end_block(msg)
+
+
+	def on_query(self, msg: RequestQuery):
+		if self.debug['messages']:
+			print('onQuery(path=' + msg.path + ', data=' + str(msg.data) + ')')
+		res = Response()
+
+		if msg.path == 'state':
+			res.query.key = bytes('state', 'utf8')
+			res.query.value = bytes(json.dumps(self.state), 'utf8')
+
+		res.query.code = 0
+		return res
 
 
 if __name__ == '__main__':
