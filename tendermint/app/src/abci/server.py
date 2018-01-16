@@ -5,7 +5,7 @@ import logging
 
 from .wire import decode_varint, encode_varint, encode
 from .reader import BytesBuffer
-from .types_pb2 import Request
+from .types_pb2 import Request, Response
 
 # hold the asyncronous state of a connection
 # ie. we may not get enough bytes on one read to decode the message
@@ -123,13 +123,33 @@ class ABCIServer:
 				if req.HasField('set_option'):
 					res = self.app.on_set_option(req.set_option)
 				if req.HasField('deliver_tx'):
-					res = self.app.on_deliver_tx(req.deliver_tx)
+					try:
+						res = self.app.on_deliver_tx(req.deliver_tx)
+					except Exception as e:
+						print('Error during on_deliver_tx:', e)
+						res = Response()
+						res.deliver_tx.code = 500
 				if req.HasField('check_tx'):
-					res = self.app.on_check_tx(req.check_tx)
+					try:
+						res = self.app.on_check_tx(req.check_tx)
+					except Exception as e:
+						print('Error during on_check_tx:', e)
+						res = Response()
+						res.check_tx.code = 500
 				if req.HasField('commit'):
-					res = self.app.on_commit(req.commit)
+					try:
+						res = self.app.on_commit(req.commit)
+					except Exception as e:
+						print('Error during on_commit:', e)
+						res = Response()
+						res.commit.code = 500
 				if req.HasField('query'):
-					res = self.app.on_query(req.query)
+					try:
+						res = self.app.on_query(req.query)
+					except Exception as e:
+						print('Error during on_query:', e)
+						res = Response()
+						res.query.code = 500
 				if req.HasField('init_chain'):
 					res = self.app.on_init_chain(req.init_chain)
 				if req.HasField('begin_block'):
@@ -164,6 +184,8 @@ class ABCIServer:
 	def write_response(self, conn, res):
 		if self.app.debug["protocol"]:
 			print('Write', res.ByteSize(), encode_varint(res.ByteSize()), res.SerializeToString())
+
+		# print('Response', res)
 		header = encode_varint(res.ByteSize())
 		packet = res.SerializeToString()
 		conn.resBuf.write(header)
