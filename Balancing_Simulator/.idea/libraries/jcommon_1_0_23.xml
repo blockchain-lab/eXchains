@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="jcommon-1.0.23">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/freechart/jcommon-1.0.23.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
