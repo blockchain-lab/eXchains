@@ -19,86 +19,10 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='transaction.proto',
   package='transaction',
   syntax='proto3',
-  serialized_pb=_b('\n\x11transaction.proto\x12\x0btransaction\")\n\nPrediction\x12\x0c\n\x04time\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x04\",\n\x0b\x46lexibility\x12\r\n\x05price\x18\x01 \x01(\x03\x12\x0e\n\x06\x61mount\x18\x02 \x01(\x04\"\xd8\x05\n\x10TransactionUsage\x12\x15\n\rcontract_uuid\x18\x01 \x01(\x0c\x12\x11\n\ttimestamp\x18\x02 \x01(\x04\x12\x13\n\x0b\x63onsumption\x18\x03 \x01(\x04\x12\x12\n\nproduction\x18\x04 \x01(\x04\x12X\n\x16prediction_consumption\x18\x05 \x03(\x0b\x32\x38.transaction.TransactionUsage.PredictionConsumptionEntry\x12V\n\x15prediction_production\x18\x06 \x03(\x0b\x32\x37.transaction.TransactionUsage.PredictionProductionEntry\x12Z\n\x17\x63onsumption_flexibility\x18\x07 \x03(\x0b\x32\x39.transaction.TransactionUsage.ConsumptionFlexibilityEntry\x12X\n\x16production_flexibility\x18\x08 \x03(\x0b\x32\x38.transaction.TransactionUsage.ProductionFlexibilityEntry\x12\x11\n\tsignature\x18\t \x01(\x0c\x1a<\n\x1aPredictionConsumptionEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x04:\x02\x38\x01\x1a;\n\x19PredictionProductionEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x04:\x02\x38\x01\x1a=\n\x1b\x43onsumptionFlexibilityEntry\x12\x0b\n\x03key\x18\x01 \x01(\x03\x12\r\n\x05value\x18\x02 \x01(\x04:\x02\x38\x01\x1a<\n\x1aProductionFlexibilityEntry\x12\x0b\n\x03key\x18\x01 \x01(\x03\x12\r\n\x05value\x18\x02 \x01(\x04:\x02\x38\x01\"~\n\x16TransactionNewContract\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x11\n\ttimestamp\x18\x02 \x01(\x04\x12\x12\n\npublic_key\x18\x03 \x01(\x0c\x12\x11\n\tsignature\x18\x04 \x01(\x0c\x12\x1c\n\x14\x63ontractor_signature\x18\x05 \x01(\x0c\"N\n\x18TransactionCloseContract\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x11\n\ttimestamp\x18\x02 \x01(\x04\x12\x11\n\tsignature\x18\x03 \x01(\x0c\".\n\x19TransactionStartBalancing\x12\x11\n\ttimestamp\x18\x01 \x01(\x04\"\'\n\x12TransactionBalance\x12\x11\n\ttimestamp\x18\x01 \x01(\x04\",\n\x17TransactionEndBalancing\x12\x11\n\ttimestamp\x18\x01 \x01(\x04\"\xf6\x02\n\x0bTransaction\x12.\n\x05usage\x18\x01 \x01(\x0b\x32\x1d.transaction.TransactionUsageH\x00\x12;\n\x0cnew_contract\x18\x02 \x01(\x0b\x32#.transaction.TransactionNewContractH\x00\x12?\n\x0e\x63lose_contract\x18\x03 \x01(\x0b\x32%.transaction.TransactionCloseContractH\x00\x12?\n\rbalance_start\x18\x04 \x01(\x0b\x32&.transaction.TransactionStartBalancingH\x00\x12\x32\n\x07\x62\x61lance\x18\x05 \x01(\x0b\x32\x1f.transaction.TransactionBalanceH\x00\x12;\n\x0b\x62\x61lance_end\x18\x06 \x01(\x0b\x32$.transaction.TransactionEndBalancingH\x00\x42\x07\n\x05valueb\x06proto3')
+  serialized_pb=_b('\n\x11transaction.proto\x12\x0btransaction\"\x9d\x06\n\x10TransactionUsage\x12\x15\n\rcontract_uuid\x18\x01 \x01(\x0c\x12\x11\n\ttimestamp\x18\x02 \x01(\x04\x12\x13\n\x0b\x63onsumption\x18\x03 \x01(\x04\x12\x12\n\nproduction\x18\x04 \x01(\x04\x12X\n\x16prediction_consumption\x18\x05 \x03(\x0b\x32\x38.transaction.TransactionUsage.PredictionConsumptionEntry\x12V\n\x15prediction_production\x18\x06 \x03(\x0b\x32\x37.transaction.TransactionUsage.PredictionProductionEntry\x12Z\n\x17\x63onsumption_flexibility\x18\x07 \x03(\x0b\x32\x39.transaction.TransactionUsage.ConsumptionFlexibilityEntry\x12X\n\x16production_flexibility\x18\x08 \x03(\x0b\x32\x38.transaction.TransactionUsage.ProductionFlexibilityEntry\x12!\n\x19\x64\x65\x66\x61ult_consumption_price\x18\t \x01(\x04\x12 \n\x18\x64\x65\x66\x61ult_production_price\x18\n \x01(\x04\x12\x11\n\tsignature\x18\x0b \x01(\x0c\x1a<\n\x1aPredictionConsumptionEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x04:\x02\x38\x01\x1a;\n\x19PredictionProductionEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x04:\x02\x38\x01\x1a=\n\x1b\x43onsumptionFlexibilityEntry\x12\x0b\n\x03key\x18\x01 \x01(\x04\x12\r\n\x05value\x18\x02 \x01(\x03:\x02\x38\x01\x1a<\n\x1aProductionFlexibilityEntry\x12\x0b\n\x03key\x18\x01 \x01(\x04\x12\r\n\x05value\x18\x02 \x01(\x03:\x02\x38\x01\"~\n\x16TransactionNewContract\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x11\n\ttimestamp\x18\x02 \x01(\x04\x12\x12\n\npublic_key\x18\x03 \x01(\x0c\x12\x11\n\tsignature\x18\x04 \x01(\x0c\x12\x1c\n\x14\x63ontractor_signature\x18\x05 \x01(\x0c\"N\n\x18TransactionCloseContract\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x11\n\ttimestamp\x18\x02 \x01(\x04\x12\x11\n\tsignature\x18\x03 \x01(\x0c\"D\n\x19TransactionStartBalancing\x12\x11\n\ttimestamp\x18\x01 \x01(\x04\x12\x14\n\x0cround_number\x18\x02 \x01(\x04\"e\n\x10TransactionTrade\x12\x0c\n\x04uuid\x18\x01 \x01(\t\x12\x10\n\x08order_id\x18\x02 \x01(\x04\x12\x12\n\norder_type\x18\x03 \x01(\x04\x12\x0e\n\x06volume\x18\x04 \x01(\x04\x12\r\n\x05price\x18\x05 \x01(\x04\"l\n\x12TransactionBalance\x12\x11\n\ttimestamp\x18\x01 \x01(\x04\x12\x14\n\x0cround_number\x18\x02 \x01(\x04\x12-\n\x06trades\x18\x03 \x03(\x0b\x32\x1d.transaction.TransactionTrade\"B\n\x17TransactionEndBalancing\x12\x11\n\ttimestamp\x18\x01 \x01(\x04\x12\x14\n\x0cround_number\x18\x02 \x01(\x04\"\xf6\x02\n\x0bTransaction\x12.\n\x05usage\x18\x01 \x01(\x0b\x32\x1d.transaction.TransactionUsageH\x00\x12;\n\x0cnew_contract\x18\x02 \x01(\x0b\x32#.transaction.TransactionNewContractH\x00\x12?\n\x0e\x63lose_contract\x18\x03 \x01(\x0b\x32%.transaction.TransactionCloseContractH\x00\x12?\n\rbalance_start\x18\x04 \x01(\x0b\x32&.transaction.TransactionStartBalancingH\x00\x12\x32\n\x07\x62\x61lance\x18\x05 \x01(\x0b\x32\x1f.transaction.TransactionBalanceH\x00\x12;\n\x0b\x62\x61lance_end\x18\x06 \x01(\x0b\x32$.transaction.TransactionEndBalancingH\x00\x42\x07\n\x05valueb\x06proto3')
 )
 
 
-
-
-_PREDICTION = _descriptor.Descriptor(
-  name='Prediction',
-  full_name='transaction.Prediction',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='time', full_name='transaction.Prediction.time', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='value', full_name='transaction.Prediction.value', index=1,
-      number=2, type=4, cpp_type=4, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=34,
-  serialized_end=75,
-)
-
-
-_FLEXIBILITY = _descriptor.Descriptor(
-  name='Flexibility',
-  full_name='transaction.Flexibility',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='price', full_name='transaction.Flexibility.price', index=0,
-      number=1, type=3, cpp_type=2, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='amount', full_name='transaction.Flexibility.amount', index=1,
-      number=2, type=4, cpp_type=4, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=77,
-  serialized_end=121,
-)
 
 
 _TRANSACTIONUSAGE_PREDICTIONCONSUMPTIONENTRY = _descriptor.Descriptor(
@@ -134,8 +58,8 @@ _TRANSACTIONUSAGE_PREDICTIONCONSUMPTIONENTRY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=606,
-  serialized_end=666,
+  serialized_start=586,
+  serialized_end=646,
 )
 
 _TRANSACTIONUSAGE_PREDICTIONPRODUCTIONENTRY = _descriptor.Descriptor(
@@ -171,8 +95,8 @@ _TRANSACTIONUSAGE_PREDICTIONPRODUCTIONENTRY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=668,
-  serialized_end=727,
+  serialized_start=648,
+  serialized_end=707,
 )
 
 _TRANSACTIONUSAGE_CONSUMPTIONFLEXIBILITYENTRY = _descriptor.Descriptor(
@@ -184,14 +108,14 @@ _TRANSACTIONUSAGE_CONSUMPTIONFLEXIBILITYENTRY = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='key', full_name='transaction.TransactionUsage.ConsumptionFlexibilityEntry.key', index=0,
-      number=1, type=3, cpp_type=2, label=1,
+      number=1, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='value', full_name='transaction.TransactionUsage.ConsumptionFlexibilityEntry.value', index=1,
-      number=2, type=4, cpp_type=4, label=1,
+      number=2, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -208,8 +132,8 @@ _TRANSACTIONUSAGE_CONSUMPTIONFLEXIBILITYENTRY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=729,
-  serialized_end=790,
+  serialized_start=709,
+  serialized_end=770,
 )
 
 _TRANSACTIONUSAGE_PRODUCTIONFLEXIBILITYENTRY = _descriptor.Descriptor(
@@ -221,14 +145,14 @@ _TRANSACTIONUSAGE_PRODUCTIONFLEXIBILITYENTRY = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='key', full_name='transaction.TransactionUsage.ProductionFlexibilityEntry.key', index=0,
-      number=1, type=3, cpp_type=2, label=1,
+      number=1, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='value', full_name='transaction.TransactionUsage.ProductionFlexibilityEntry.value', index=1,
-      number=2, type=4, cpp_type=4, label=1,
+      number=2, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -245,8 +169,8 @@ _TRANSACTIONUSAGE_PRODUCTIONFLEXIBILITYENTRY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=792,
-  serialized_end=852,
+  serialized_start=772,
+  serialized_end=832,
 )
 
 _TRANSACTIONUSAGE = _descriptor.Descriptor(
@@ -313,8 +237,22 @@ _TRANSACTIONUSAGE = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='signature', full_name='transaction.TransactionUsage.signature', index=8,
-      number=9, type=12, cpp_type=9, label=1,
+      name='default_consumption_price', full_name='transaction.TransactionUsage.default_consumption_price', index=8,
+      number=9, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='default_production_price', full_name='transaction.TransactionUsage.default_production_price', index=9,
+      number=10, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='signature', full_name='transaction.TransactionUsage.signature', index=10,
+      number=11, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -331,8 +269,8 @@ _TRANSACTIONUSAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=124,
-  serialized_end=852,
+  serialized_start=35,
+  serialized_end=832,
 )
 
 
@@ -390,8 +328,8 @@ _TRANSACTIONNEWCONTRACT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=854,
-  serialized_end=980,
+  serialized_start=834,
+  serialized_end=960,
 )
 
 
@@ -435,8 +373,8 @@ _TRANSACTIONCLOSECONTRACT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=982,
-  serialized_end=1060,
+  serialized_start=962,
+  serialized_end=1040,
 )
 
 
@@ -454,6 +392,13 @@ _TRANSACTIONSTARTBALANCING = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='round_number', full_name='transaction.TransactionStartBalancing.round_number', index=1,
+      number=2, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -466,8 +411,67 @@ _TRANSACTIONSTARTBALANCING = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1062,
-  serialized_end=1108,
+  serialized_start=1042,
+  serialized_end=1110,
+)
+
+
+_TRANSACTIONTRADE = _descriptor.Descriptor(
+  name='TransactionTrade',
+  full_name='transaction.TransactionTrade',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='uuid', full_name='transaction.TransactionTrade.uuid', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='order_id', full_name='transaction.TransactionTrade.order_id', index=1,
+      number=2, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='order_type', full_name='transaction.TransactionTrade.order_type', index=2,
+      number=3, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='volume', full_name='transaction.TransactionTrade.volume', index=3,
+      number=4, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='price', full_name='transaction.TransactionTrade.price', index=4,
+      number=5, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1112,
+  serialized_end=1213,
 )
 
 
@@ -485,6 +489,20 @@ _TRANSACTIONBALANCE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='round_number', full_name='transaction.TransactionBalance.round_number', index=1,
+      number=2, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='trades', full_name='transaction.TransactionBalance.trades', index=2,
+      number=3, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -497,8 +515,8 @@ _TRANSACTIONBALANCE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1110,
-  serialized_end=1149,
+  serialized_start=1215,
+  serialized_end=1323,
 )
 
 
@@ -516,6 +534,13 @@ _TRANSACTIONENDBALANCING = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='round_number', full_name='transaction.TransactionEndBalancing.round_number', index=1,
+      number=2, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -528,8 +553,8 @@ _TRANSACTIONENDBALANCING = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1151,
-  serialized_end=1195,
+  serialized_start=1325,
+  serialized_end=1391,
 )
 
 
@@ -597,8 +622,8 @@ _TRANSACTION = _descriptor.Descriptor(
       name='value', full_name='transaction.Transaction.value',
       index=0, containing_type=None, fields=[]),
   ],
-  serialized_start=1198,
-  serialized_end=1572,
+  serialized_start=1394,
+  serialized_end=1768,
 )
 
 _TRANSACTIONUSAGE_PREDICTIONCONSUMPTIONENTRY.containing_type = _TRANSACTIONUSAGE
@@ -609,6 +634,7 @@ _TRANSACTIONUSAGE.fields_by_name['prediction_consumption'].message_type = _TRANS
 _TRANSACTIONUSAGE.fields_by_name['prediction_production'].message_type = _TRANSACTIONUSAGE_PREDICTIONPRODUCTIONENTRY
 _TRANSACTIONUSAGE.fields_by_name['consumption_flexibility'].message_type = _TRANSACTIONUSAGE_CONSUMPTIONFLEXIBILITYENTRY
 _TRANSACTIONUSAGE.fields_by_name['production_flexibility'].message_type = _TRANSACTIONUSAGE_PRODUCTIONFLEXIBILITYENTRY
+_TRANSACTIONBALANCE.fields_by_name['trades'].message_type = _TRANSACTIONTRADE
 _TRANSACTION.fields_by_name['usage'].message_type = _TRANSACTIONUSAGE
 _TRANSACTION.fields_by_name['new_contract'].message_type = _TRANSACTIONNEWCONTRACT
 _TRANSACTION.fields_by_name['close_contract'].message_type = _TRANSACTIONCLOSECONTRACT
@@ -633,30 +659,15 @@ _TRANSACTION.fields_by_name['balance'].containing_oneof = _TRANSACTION.oneofs_by
 _TRANSACTION.oneofs_by_name['value'].fields.append(
   _TRANSACTION.fields_by_name['balance_end'])
 _TRANSACTION.fields_by_name['balance_end'].containing_oneof = _TRANSACTION.oneofs_by_name['value']
-DESCRIPTOR.message_types_by_name['Prediction'] = _PREDICTION
-DESCRIPTOR.message_types_by_name['Flexibility'] = _FLEXIBILITY
 DESCRIPTOR.message_types_by_name['TransactionUsage'] = _TRANSACTIONUSAGE
 DESCRIPTOR.message_types_by_name['TransactionNewContract'] = _TRANSACTIONNEWCONTRACT
 DESCRIPTOR.message_types_by_name['TransactionCloseContract'] = _TRANSACTIONCLOSECONTRACT
 DESCRIPTOR.message_types_by_name['TransactionStartBalancing'] = _TRANSACTIONSTARTBALANCING
+DESCRIPTOR.message_types_by_name['TransactionTrade'] = _TRANSACTIONTRADE
 DESCRIPTOR.message_types_by_name['TransactionBalance'] = _TRANSACTIONBALANCE
 DESCRIPTOR.message_types_by_name['TransactionEndBalancing'] = _TRANSACTIONENDBALANCING
 DESCRIPTOR.message_types_by_name['Transaction'] = _TRANSACTION
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
-
-Prediction = _reflection.GeneratedProtocolMessageType('Prediction', (_message.Message,), dict(
-  DESCRIPTOR = _PREDICTION,
-  __module__ = 'transaction_pb2'
-  # @@protoc_insertion_point(class_scope:transaction.Prediction)
-  ))
-_sym_db.RegisterMessage(Prediction)
-
-Flexibility = _reflection.GeneratedProtocolMessageType('Flexibility', (_message.Message,), dict(
-  DESCRIPTOR = _FLEXIBILITY,
-  __module__ = 'transaction_pb2'
-  # @@protoc_insertion_point(class_scope:transaction.Flexibility)
-  ))
-_sym_db.RegisterMessage(Flexibility)
 
 TransactionUsage = _reflection.GeneratedProtocolMessageType('TransactionUsage', (_message.Message,), dict(
 
@@ -717,6 +728,13 @@ TransactionStartBalancing = _reflection.GeneratedProtocolMessageType('Transactio
   # @@protoc_insertion_point(class_scope:transaction.TransactionStartBalancing)
   ))
 _sym_db.RegisterMessage(TransactionStartBalancing)
+
+TransactionTrade = _reflection.GeneratedProtocolMessageType('TransactionTrade', (_message.Message,), dict(
+  DESCRIPTOR = _TRANSACTIONTRADE,
+  __module__ = 'transaction_pb2'
+  # @@protoc_insertion_point(class_scope:transaction.TransactionTrade)
+  ))
+_sym_db.RegisterMessage(TransactionTrade)
 
 TransactionBalance = _reflection.GeneratedProtocolMessageType('TransactionBalance', (_message.Message,), dict(
   DESCRIPTOR = _TRANSACTIONBALANCE,

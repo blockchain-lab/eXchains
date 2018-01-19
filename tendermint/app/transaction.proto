@@ -7,17 +7,21 @@ message TransactionUsage {
     uint64 consumption = 3;
     uint64 production = 4;
     
+    /*time, value*/
     map<string, uint64> prediction_consumption = 5;
     map<string, uint64> prediction_production = 6;
     
-    map<int64, uint64> consumption_flexibility = 7;
-    map<int64, uint64> production_flexibility = 8;
-
+    /*price, amount*/
+    map<uint64, int64> consumption_flexibility = 7;
+    map<uint64, int64> production_flexibility = 8;
+    
+    uint64 default_consumption_price = 9;
+    uint64 default_production_price = 10;
     /*
        concat(contract_uuid, timestamp.to_bytes(8, big_endian), consumption.to_bytes(8, big_endian), production.to_bytes(8, big_endian))
     */
 
-    bytes signature = 9;
+    bytes signature = 11;
 }
 
 message TransactionNewContract {
@@ -40,14 +44,26 @@ message TransactionCloseContract {
 
 message TransactionStartBalancing {
     uint64 timestamp = 1;
+    uint64 round_number = 2;
+}
+
+message TransactionTrade {
+    string uuid = 1;
+    uint64 order_id = 2;
+    uint64 order_type = 3;
+    uint64 volume = 4;
+    uint64 price = 5;
 }
 
 message TransactionBalance {
     uint64 timestamp = 1;
+    uint64 round_number = 2;
+    repeated TransactionTrade trades = 3; 
 }
 
 message TransactionEndBalancing {
     uint64 timestamp = 1;
+    uint64 round_number = 2;
 }
 
 message Transaction {
