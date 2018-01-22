@@ -11,7 +11,7 @@ import uuid
 import time
 import json
 import base64
-from multiprocessing import Process
+from multiprocessing import Process, Value
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 from google.protobuf import json_format
@@ -30,7 +30,7 @@ class EnergyMarketApplication(ABCIApplication):
 		# in seconds
 		self.balancing_interval = 20
 		self.mode = COLLECTING_MODE
-		self.round_counter = 0
+		self.round_number = Value('i', 0)
 
 		self.debug.update({
 			"protocol": False,
@@ -60,12 +60,12 @@ class EnergyMarketApplication(ABCIApplication):
 		if message_type == 'balance_start':
 			method = 'broadcast_tx_async'
 			message.balance_start.timestamp = int(time.time())
-			message.balance_start.round_number = self.round_counter
+			message.balance_start.round_number = self.round_number.value
 		
 		elif message_type == 'balance':
 			method = 'broadcast_tx_async'
 			message.balance.timestamp = int(time.time())
-			message.balance.round_number = self.round_counter
+			message.balance.round_number = self.round_number.value
 			for trade in self.last_trade_list:
 				new_trade = message.balance.trades.add()
 				new_trade.uuid = trade.uuid
@@ -77,7 +77,7 @@ class EnergyMarketApplication(ABCIApplication):
 		elif message_type == 'balance_end':
 			method = 'broadcast_tx_async'
 			message.balance_end.timestamp = int(time.time())
-			message.balance_end.round_number = self.round_counter
+			message.balance_end.round_number = self.round_number.value
 
 		print("Sending message: {}".format(message))
 		binarystring = message.SerializeToString()
@@ -176,13 +176,13 @@ class EnergyMarketApplication(ABCIApplication):
 			self.pending_state["contracts"][self.bytes_to_string_uuid(transaction.usage.contract_uuid)]["production"] = transaction.usage.production
 
 		elif transaction.HasField('balance_start'):
-			if self.mode != COLLECTING_MODE or transaction.balance_start.round_number != self.round_counter:
+			if self.mode != COLLECTING_MODE or transaction.balance_start.round_number != self.round_number.value:
 				res = Response()
 				res.check_tx.code = 401
 				return res
 
 		elif transaction.HasField('balance'):
-			if self.mode != BALANCING_MODE or transaction.balance.round_number != self.round_counter:
+			if self.mode != BALANCING_MODE or transaction.balance.round_number != self.round_number.value:
 				res = Response()
 				res.check_tx.code = 401
 				return res
@@ -197,7 +197,7 @@ class EnergyMarketApplication(ABCIApplication):
 						return res
 		
 		elif transaction.HasField('balance_end'):
-			if self.mode != BALANCING_MODE or transaction.balance_end.round_number != self.round_counter:
+			if self.mode != BALANCING_MODE or transaction.balance_end.round_number != self.round_number.value:
 				res = Response()
 				res.check_tx.code = 401
 				return res
@@ -274,7 +274,7 @@ class EnergyMarketApplication(ABCIApplication):
 			self.send_message('balance_end')
 
 		elif transaction.HasField('balance_end'):
-			self.round_counter += 1
+			self.round_number.value += 1
 			self.mode = COLLECTING_MODE
 			print('BALANCING ENDED')
 		
