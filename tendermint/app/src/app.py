@@ -1,22 +1,25 @@
 import sys
-
 from abci.types_pb2 import RequestCheckTx, Response, RequestDeliverTx, RequestQuery
 from abci.server import ABCIServer
 from abci.abci_application import ABCIApplication
 from transaction_pb2 import Transaction
 import ed25519
 from MatchMaker import Matcher, OrderBook
+from MatchMaker import Transaction as Trade
 from ClientReport import ClientReport
 import uuid
 import time
 import json
 import base64
-from multiprocessing import Process
+from multiprocessing import Process, Value
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 from google.protobuf import json_format
+import operator
 
 signed_types = ['new_contract', 'usage']
+COLLECTING_MODE = 0
+BALANCING_MODE = 1
 
 class EnergyMarketApplication(ABCIApplication):
 
@@ -26,6 +29,8 @@ class EnergyMarketApplication(ABCIApplication):
 		self.port = port
 		# in seconds
 		self.balancing_interval = 20
+		self.mode = COLLECTING_MODE
+		self.round_number = Value('i', 0)
 
 		self.debug.update({
 			"protocol": False,
@@ -42,26 +47,54 @@ class EnergyMarketApplication(ABCIApplication):
 			"contracts": {}
 		}
 
+		self.last_trade_list = []
+
 		self.balancer = Process(target=self.balancing_timer)
 		self.balancer.start()
+
+	def send_message(self, message_type):
+		url = 'http://{}:{}/'.format(self.address, self.port)  # Set destination URL here
+		message = Transaction()
+		method = ''
+
+		if message_type == 'balance_start':
+			method = 'broadcast_tx_async'
+			message.balance_start.timestamp = int(time.time())
+			message.balance_start.round_number = self.round_number.value
+		
+		elif message_type == 'balance':
+			method = 'broadcast_tx_async'
+			message.balance.timestamp = int(time.time())
+			message.balance.round_number = self.round_number.value
+			for trade in self.last_trade_list:
+				new_trade = message.balance.trades.add()
+				new_trade.uuid = trade.uuid
+				new_trade.order_id = trade.order_id
+				new_trade.order_type = trade.order_type
+				new_trade.volume = trade.volume
+				new_trade.price = trade.price
+		
+		elif message_type == 'balance_end':
+			method = 'broadcast_tx_async'
+			message.balance_end.timestamp = int(time.time())
+			message.balance_end.round_number = self.round_number.value
+
+		print("Sending message: {}".format(message))
+		binarystring = message.SerializeToString()
+		request = Request(url, json.dumps({
+			"method": method,
+			"params": [base64.b64encode(binarystring).decode('ascii')],
+			"jsonrpc": "2.0",
+			"id": "not_important"
+		}).encode())
+		result = urlopen(request)
+		# print(result.read().decode())
 	
 	def balancing_timer(self):
 		while True:
 			time.sleep(self.balancing_interval)
-	
-			url = 'http://{}:{}/'.format(self.address, self.port)  # Set destination URL here
-			message = Transaction()
-			message.balance.timestamp = int(time.time())
-			binarystring = message.SerializeToString()
-			
-			request = Request(url, json.dumps({
-				"method": 'broadcast_tx_sync',
-				"params": [base64.b64encode(binarystring).decode('ascii')],
-				"jsonrpc": "2.0",
-				"id": "not_important"
-			}).encode())
-			
-			result = urlopen(request).read().decode()
+			print("BALANCING STARTED")
+			self.send_message('balance_start')
 
 	def check_signature(self, transaction_type, transaction):
 		payload = None
@@ -134,7 +167,7 @@ class EnergyMarketApplication(ABCIApplication):
 
 		# todo: verify contractor_signature
 		elif transaction.HasField('usage'):
-			if self.bytes_to_string_uuid(transaction.usage.contract_uuid) not in self.pending_state["contracts"]:
+			if self.bytes_to_string_uuid(transaction.usage.contract_uuid) not in self.pending_state["contracts"] or self.mode != COLLECTING_MODE:
 				res = Response()
 				res.check_tx.code = 401
 				return res
@@ -143,11 +176,31 @@ class EnergyMarketApplication(ABCIApplication):
 			self.pending_state["contracts"][self.bytes_to_string_uuid(transaction.usage.contract_uuid)]["production"] = transaction.usage.production
 
 		elif transaction.HasField('balance_start'):
-			pass
+			if self.mode != COLLECTING_MODE or transaction.balance_start.round_number != self.round_number.value:
+				res = Response()
+				res.check_tx.code = 401
+				return res
+
 		elif transaction.HasField('balance'):
-			pass
+			if self.mode != BALANCING_MODE or transaction.balance.round_number != self.round_number.value:
+				res = Response()
+				res.check_tx.code = 401
+				return res
+			else:
+				for (received_trade, trade) in zip(transaction.balance.trades, self.last_trade_list):
+					attributes = operator.attrgetter('uuid', 'order_id', 'order_type', 'volume', 'price')
+					new_trade = Trade(*attributes(received_trade))
+					# print('new trade: {}\ntrade: {}'.format(new_trade, trade))
+					if new_trade != trade:
+						res = Response()
+						res.check_tx.code = 401
+						return res
+		
 		elif transaction.HasField('balance_end'):
-			pass
+			if self.mode != BALANCING_MODE or transaction.balance_end.round_number != self.round_number.value:
+				res = Response()
+				res.check_tx.code = 401
+				return res
 
 		else:
 			res = Response()
@@ -181,51 +234,54 @@ class EnergyMarketApplication(ABCIApplication):
 				"prediction_consumption": {},
 				"prediction_production": {},
 				"consumption_flexibility": {},
-				"production_flexibility": {}
+				"production_flexibility": {},
+				"default_consumption_price": 0,
+				"default_production_price": 0
 			}
 
 		# self.contract[transaction.new_contract.uuid] = transaction.new_contract.public_key
-		if transaction.HasField('usage'):
+		elif transaction.HasField('usage'):
 			contract_uuid = self.bytes_to_string_uuid(transaction.usage.contract_uuid)
 			# We need to have the maps in dictionary format.
 			usage = json_format.MessageToDict(transaction.usage, False, True)
-			self.state["contracts"][contract_uuid]["consumption"] = transaction.usage.consumption
-			self.state["contracts"][contract_uuid]["production"] = transaction.usage.production
 
-			self.state["contracts"][contract_uuid]["prediction_consumption"] = usage["prediction_consumption"]
-			self.state["contracts"][contract_uuid]["prediction_production"] = usage["prediction_production"]
+			self.state["contracts"][contract_uuid]["consumption"] = int(transaction.usage.consumption)
+			self.state["contracts"][contract_uuid]["production"] = int(transaction.usage.production)
 
-			self.state["contracts"][contract_uuid]["consumption_flexibility"] = usage["consumption_flexibility"]
-			self.state["contracts"][contract_uuid]["production_flexibility"] = usage["production_flexibility"]
+			self.state["contracts"][contract_uuid]["prediction_consumption"] = dict([time, int(value)] for time, value in usage["prediction_consumption"].items())
+			self.state["contracts"][contract_uuid]["prediction_production"] = dict([time, int(value)] for time, value in usage["prediction_production"].items())
 
-		if transaction.HasField('balance_start'):
+			self.state["contracts"][contract_uuid]["consumption_flexibility"] = dict([int(price), int(amount)] for price, amount in usage["consumption_flexibility"].items())
+			self.state["contracts"][contract_uuid]["production_flexibility"] = dict([int(price), int(amount)] for price, amount in usage["production_flexibility"].items())
+
+			self.state["contracts"][contract_uuid]["default_consumption_price"] = int(usage["default_consumption_price"])
+			self.state["contracts"][contract_uuid]["default_production_price"] = int(usage["default_production_price"])
+
+		elif transaction.HasField('close_contract'):
 			pass
 
-		if transaction.HasField('balance'):
-			orders = OrderBook()
-			# print(self.state['contracts'])
-			for client_uuid in self.state['contracts']:
-				client_report = ClientReport(client_uuid, \
-											 int(time.time()), \
-											 0, \
-											 0, \
-											 self.state['contracts'][client_uuid]['consumption'], \
-											 self.state['contracts'][client_uuid]['production'], \
-											 self.state['contracts'][client_uuid]['prediction_consumption'], \
-											 self.state['contracts'][client_uuid]['prediction_production'], \
-											 self.state['contracts'][client_uuid]['consumption_flexibility'], \
-											 self.state['contracts'][client_uuid]['production_flexibility'])
-				# print(client_report)
-				orders.add_order(client_report.reportToAskOrders())
-				orders.add_order(client_report.reportToBidOrders())
-			matcher = Matcher(uuid.uuid4())
-			# TODO: make some nicer prints or remove them at all
-			# print(orders.getbidlist(), orders.getasklist())
-			matcher.match(orders)
-			# print(orders.getbidlist(), orders.getasklist())
+		elif transaction.HasField('balance_start'):
+			self.mode = BALANCING_MODE
+			#balance_process = Process(target=self.run_balance)
+			#balance_process.start()
+			self.run_balance()
+			self.send_message('balance')
 
-		if transaction.HasField('balance_end'):
-			pass
+
+		elif transaction.HasField('balance'):
+			#sender_process = Process(target=self.send_message, args=('balance_end', ))
+			#sender_process.start()
+			self.send_message('balance_end')
+
+		elif transaction.HasField('balance_end'):
+			self.round_number.value += 1
+			self.mode = COLLECTING_MODE
+			print('BALANCING ENDED')
+		
+		else:
+			res = Response()
+			res.check_tx.code = 400
+			return res
 
 		res = Response()
 		res.deliver_tx.code = 0
@@ -240,6 +296,25 @@ class EnergyMarketApplication(ABCIApplication):
 		self.pending_state = self.state.copy()
 		return super().on_end_block(msg)
 
+	def run_balance(self):
+		orders = OrderBook()
+		for client_uuid in self.state['contracts']:
+			client_report = ClientReport(client_uuid, \
+										 int(time.time()), \
+										 self.state['contracts'][client_uuid]['default_consumption_price'], \
+										 self.state['contracts'][client_uuid]['default_production_price'], \
+										 self.state['contracts'][client_uuid]['consumption'], \
+										 self.state['contracts'][client_uuid]['production'], \
+										 self.state['contracts'][client_uuid]['prediction_consumption'], \
+										 self.state['contracts'][client_uuid]['prediction_production'], \
+										 self.state['contracts'][client_uuid]['consumption_flexibility'], \
+										 self.state['contracts'][client_uuid]['production_flexibility'])
+			orders.add_order(client_report.reportToAskOrders())
+			orders.add_order(client_report.reportToBidOrders())
+		
+		matcher = Matcher(uuid.uuid4())
+		self.last_trade_list = matcher.match(orders)
+		# print(self.last_trade_list)
 
 	def on_query(self, msg: RequestQuery):
 		if self.debug['messages']:
