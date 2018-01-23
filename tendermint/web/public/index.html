@@ -62,15 +62,18 @@
 				<div>
 					Round #{{ state.balance.round }} 
 				</div>
-				<div v-bind:style="{ color: state.balance.state === 'COLLECTING' ? 'green' : 'red' }" > 
+				<div v-bind:style="{ color: state.balance.mode === 0 ? 'green' : 'red' }" > 
 					Allowing usage transactions 
 				</div>
-				<div v-bind:style="{ color: state.balance.state === 'BALANCING' ? 'green' : 'red' }"  >
+				<div v-bind:style="{ color: state.balance.mode === 1 ? 'green' : 'red' }"  >
 					Allowing balance transactions
+				</div>
+				<div>
+					{{ lastTrade }}
 				</div>
 			</div>
 			<div id="app-round-transactions" class="grid-cell" >
-				<li v-for="transaction in transactions">
+				<li v-for="transaction in state">
 					<span v-if="transaction.usage" >
 						{{ transaction }}
 					</span>

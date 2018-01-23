@@ -3,7 +3,7 @@ var Transaction, // Protobuf Transaction
 	applicationState = {
 		balance: {
 			round: 0,
-			state: 'COLLECTING'
+			mode: 0
 		},
 		contracts: {}
 	}, 
@@ -27,13 +27,14 @@ var appDebugTransactions = new Vue({
 var appRoundState = new Vue({
 	el: '#app-round-state',
 	data: {
-		state: applicationState
+		state: applicationState,
+		lastTrade: null
 	}
 });
-var appRoundState = new Vue({
+var appRoundTransactions = new Vue({
 	el: '#app-round-transactions',
 	data: {
-		transactions: currentTransactions,
+		state: currentTransactions,
 		info: 'bla' 
 	}
 })
@@ -44,9 +45,10 @@ function createTransaction(data) {
 }
 
 function onTransaction(transaction) {
+	console.log(transaction);
 	if (transaction.newContract) {
-		applicationState.constracts[bufferToUUID(base64ToBuffer(transaction.newContract.uuid))] = {
-			public_key: base64ToBuffer(transaction.new_contract.public_key),
+		appRoundState.state.contracts[bufferToUUID(base64ToBuffer(transaction.newContract.uuid))] = {
+			public_key: base64ToBuffer(transaction.newContract.public_key),
 			consumption: 0,
 			production: 0,
 			prediction_consumption: {},
@@ -56,7 +58,7 @@ function onTransaction(transaction) {
 		}
 	}
 	if (transaction.usage) {
-		var contract = applicationState.constracts[bufferToUUID(base64ToBuffer(transaction.usage.contractUuid))];
+		var contract = appRoundState.state.contracts[bufferToUUID(base64ToBuffer(transaction.usage.contractUuid))];
 		contract.consumption = transaction.usage.consumption;
 		contract.production = transaction.usage.production;
 		contract.prediction_consumption = transaction.usage.prediction_consumption;
@@ -65,11 +67,14 @@ function onTransaction(transaction) {
 		contract.production_flexibility = transaction.usage.production_flexibility;
 	}
 	if (transaction.beginBalance) { 
-		applicationState.balance.state = 'BALANCING';
+		appRoundState.state.balance.mode = 1;
+	}
+	if (transaction.balance) {
+		appRoundState.lastTrade = transaction.balance;
 	}
 	if (transaction.endBalance) {
-		applicationState.balance.round = transaction.endBalance.round;
-		applicationState.balance.state = 'COLLECTING';
+		appRoundState.state.balance.round = transaction.endBalance.roundNumber;
+		appRoundState.state.balance.mode = 0;
 	}
 }
 protobuf.load("transaction.proto", function(err, root) {
@@ -82,7 +87,7 @@ protobuf.load("transaction.proto", function(err, root) {
 	}, function(data) {}, function(event) {
 		var rawTx = event.data.data.tx;
 		var transaction = Transaction.decode(base64ToBuffer(rawTx)).toJSON();
-		currentTransactions.unshift(transaction);
+		currentTransactions.unshift(_.cloneDeep(transaction));
 		onTransaction(transaction);
 	});
 	channel.request({

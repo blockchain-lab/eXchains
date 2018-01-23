@@ -72,6 +72,9 @@ function hexToString(h) {
 function bufferToHex(buf) {
 	var str = '';
 	for (var i = 0; i < 16; i += 1) {
+		if (buf[i] < 16) {
+			str += "0";
+		}
 		str += buf[i].toString(16);
 	}
 	return str;
@@ -82,18 +85,27 @@ function bufferToBase64(buf) {
 }
 
 function base64ToBuffer(base64str) {
-	var rawStr = atob(base64str),
-		buff = new Uint8Array(rawStr.length);
-	for (var i = 0; i < rawStr.length; i += 1) {
-		buff[i] = rawStr.charCodeAt(i);
+	// return new Uint8Array(atob(base64str).split('').map(base64str.charCodeAt));
+	// var rawStr = atob(base64str),
+	// 	buff = new Uint8Array(rawStr.length);
+	// for (var i = 0; i < rawStr.length; i += 1) {
+	// 	buff[i] = rawStr.charCodeAt(i);
+	// }
+	// return buff;
+	var raw = window.atob(base64str);
+	var rawLength = raw.length;
+	var array = new Uint8Array(new ArrayBuffer(rawLength));
+
+	for(i = 0; i < rawLength; i++) {
+		array[i] = raw.charCodeAt(i);
 	}
-	return buff;
+	return array;
 }
 
 function bufferToUUID(buf) {
 	var str = bufferToHex(buf);
-	str = str.substr(0, 8) + '-' + str.substr(8, 12) + '-' + str.substr(12, 16) + '-' + str.substr(16, 20) + '-' + str.substr(20);
-	return str;
+	var uuid = str.substr(0, 8) + '-' + str.substr(8, 4) + '-' + str.substr(12, 4) + '-' + str.substr(16, 4) + '-' + str.substr(20);
+	return uuid;
 }
 
 function genUUIDBuffer() {
