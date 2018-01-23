@@ -32,14 +32,11 @@ class OrderBook:
 
     def add_order(self, order):
         if isinstance(order, Ask):
-            # print("You've added an Ask order ")
             self.askList.append(order)
         elif isinstance(order, Bid):
-            # print("You've added an Bid order " )
             self.bidList.append(order)
         elif isinstance(order, list):
             for orders in order[:]:
-                # print("Oooeh adding a thing from the list")
                 self.add_order(orders)
 
     def remove_order(self, order):
@@ -294,7 +291,7 @@ class Matcher:
 
         while len(trades) != 0:
             while len(self.cross_reference_list):
-                0 == 0  # random crap to shut up the style guidelines
+                pass
                 # Find the merged order matching the trade in self.cross_reference_list
                 # self.cross_reference_list[0].orders is a list consisting of dupples of uuid and order id
                 # 1) Take all the mentioned orders from the list -> sum the volume
