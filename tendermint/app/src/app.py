@@ -11,7 +11,7 @@ import uuid
 import time
 import json
 import base64
-from multiprocessing import Process, Value
+from threading import Thread
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 from google.protobuf import json_format
@@ -53,11 +53,9 @@ class EnergyMarketApplication(ABCIApplication):
 			}
 		}
 
-		self.round_number = Value('i', 0)
-
 		self.last_trade_list = []
 
-		self.balancer = Process(target=self.balancing_timer)
+		self.balancer = Thread(target=self.balancing_timer)
 		self.balancer.start()
 
 	def send_message(self, message_type):
@@ -68,12 +66,12 @@ class EnergyMarketApplication(ABCIApplication):
 		if message_type == 'balance_start':
 			method = 'broadcast_tx_async'
 			message.balance_start.timestamp = int(time.time())
-			message.balance_start.round_number = self.round_number.value
+			message.balance_start.round_number = self.state["balance"]["round"]
 		
 		elif message_type == 'balance':
 			method = 'broadcast_tx_async'
 			message.balance.timestamp = int(time.time())
-			message.balance.round_number = self.round_number.value
+			message.balance.round_number = self.state["balance"]["round"]
 			for trade in self.last_trade_list:
 				new_trade = message.balance.trades.add()
 				new_trade.uuid = trade.uuid
@@ -85,7 +83,7 @@ class EnergyMarketApplication(ABCIApplication):
 		elif message_type == 'balance_end':
 			method = 'broadcast_tx_async'
 			message.balance_end.timestamp = int(time.time())
-			message.balance_end.round_number = self.round_number.value
+			message.balance_end.round_number = self.state["balance"]["round"] 
 
 		print("Sending message: {}".format(message))
 		binarystring = message.SerializeToString()
@@ -283,7 +281,6 @@ class EnergyMarketApplication(ABCIApplication):
 
 		elif transaction.HasField('balance_end'):
 			self.state["balance"]["round"] += 1
-			self.round_number.value += 1
 			self.state["balance"]["mode"] = COLLECTING_MODE
 			print('BALANCING ENDED')
 		
