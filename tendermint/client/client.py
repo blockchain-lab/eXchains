@@ -7,11 +7,14 @@ import transaction_pb2 as tx
 import base64
 import json
 from random import randint
+from multiprocessing import Process
+import sys
 
 
-class Client:
+class Client(Process):
 	def __init__(self, address='localhost', port=46657, data_file='data.csv', time_interval=900):
 		'''Initialize client with provided parameters, generate keys'''
+		super().__init__()
 		self.uuid = uuid.uuid4()
 		# optional storage of the uuid
 		# open('uuid', 'wb').write(self.uuid.bytes)
@@ -135,5 +138,10 @@ class Client:
 
 
 if __name__ == '__main__':
-	client = Client(time_interval=0)
-	client.run()
+	n = 1 
+	if len(sys.argv) == 2:
+		n = int(sys.argv[1])
+
+	for x in range(n):
+		c = Client(time_interval=20)
+		c.start()

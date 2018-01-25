@@ -11,7 +11,7 @@ import uuid
 import time
 import json
 import base64
-from multiprocessing import Process, Value
+from threading import Thread
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 from google.protobuf import json_format
@@ -29,8 +29,6 @@ class EnergyMarketApplication(ABCIApplication):
 		self.port = port
 		# in seconds
 		self.balancing_interval = 20
-		self.mode = COLLECTING_MODE
-		self.round_number = Value('i', 0)
 
 		self.debug.update({
 			"protocol": False,
@@ -41,15 +39,23 @@ class EnergyMarketApplication(ABCIApplication):
 		})
 
 		self.state = {
-			"contracts": {}
+			"contracts": {},
+			"balance": {
+				"round": 0,
+				"mode": COLLECTING_MODE
+			}
 		}
 		self.pending_state = {
-			"contracts": {}
+			"contracts": {},
+			"balance": {
+				"round": 0,
+				"mode": COLLECTING_MODE
+			}
 		}
 
 		self.last_trade_list = []
 
-		self.balancer = Process(target=self.balancing_timer)
+		self.balancer = Thread(target=self.balancing_timer)
 		self.balancer.start()
 
 	def send_message(self, message_type):
@@ -60,12 +66,12 @@ class EnergyMarketApplication(ABCIApplication):
 		if message_type == 'balance_start':
 			method = 'broadcast_tx_async'
 			message.balance_start.timestamp = int(time.time())
-			message.balance_start.round_number = self.round_number.value
+			message.balance_start.round_number = self.state["balance"]["round"]
 		
 		elif message_type == 'balance':
 			method = 'broadcast_tx_async'
 			message.balance.timestamp = int(time.time())
-			message.balance.round_number = self.round_number.value
+			message.balance.round_number = self.state["balance"]["round"]
 			for trade in self.last_trade_list:
 				new_trade = message.balance.trades.add()
 				new_trade.uuid = trade.uuid
@@ -77,7 +83,7 @@ class EnergyMarketApplication(ABCIApplication):
 		elif message_type == 'balance_end':
 			method = 'broadcast_tx_async'
 			message.balance_end.timestamp = int(time.time())
-			message.balance_end.round_number = self.round_number.value
+			message.balance_end.round_number = self.state["balance"]["round"] 
 
 		print("Sending message: {}".format(message))
 		binarystring = message.SerializeToString()
@@ -167,7 +173,7 @@ class EnergyMarketApplication(ABCIApplication):
 
 		# todo: verify contractor_signature
 		elif transaction.HasField('usage'):
-			if self.bytes_to_string_uuid(transaction.usage.contract_uuid) not in self.pending_state["contracts"] or self.mode != COLLECTING_MODE:
+			if self.bytes_to_string_uuid(transaction.usage.contract_uuid) not in self.pending_state["contracts"] or self.state["balance"]["mode"] != COLLECTING_MODE:
 				res = Response()
 				res.check_tx.code = 401
 				return res
@@ -176,13 +182,13 @@ class EnergyMarketApplication(ABCIApplication):
 			self.pending_state["contracts"][self.bytes_to_string_uuid(transaction.usage.contract_uuid)]["production"] = transaction.usage.production
 
 		elif transaction.HasField('balance_start'):
-			if self.mode != COLLECTING_MODE or transaction.balance_start.round_number != self.round_number.value:
+			if self.state["balance"]["mode"] != COLLECTING_MODE or transaction.balance_start.round_number != self.state["balance"]["round"]:
 				res = Response()
 				res.check_tx.code = 401
 				return res
 
 		elif transaction.HasField('balance'):
-			if self.mode != BALANCING_MODE or transaction.balance.round_number != self.round_number.value:
+			if self.state["balance"]["mode"] != BALANCING_MODE or transaction.balance.round_number != self.state["balance"]["round"]:
 				res = Response()
 				res.check_tx.code = 401
 				return res
@@ -197,7 +203,7 @@ class EnergyMarketApplication(ABCIApplication):
 						return res
 		
 		elif transaction.HasField('balance_end'):
-			if self.mode != BALANCING_MODE or transaction.balance_end.round_number != self.round_number.value:
+			if self.state["balance"]["mode"] != BALANCING_MODE or transaction.balance_end.round_number != self.state["balance"]["round"]:
 				res = Response()
 				res.check_tx.code = 401
 				return res
@@ -261,7 +267,7 @@ class EnergyMarketApplication(ABCIApplication):
 			pass
 
 		elif transaction.HasField('balance_start'):
-			self.mode = BALANCING_MODE
+			self.state["balance"]["mode"] = BALANCING_MODE
 			#balance_process = Process(target=self.run_balance)
 			#balance_process.start()
 			self.run_balance()
@@ -274,8 +280,8 @@ class EnergyMarketApplication(ABCIApplication):
 			self.send_message('balance_end')
 
 		elif transaction.HasField('balance_end'):
-			self.round_number.value += 1
-			self.mode = COLLECTING_MODE
+			self.state["balance"]["round"] += 1
+			self.state["balance"]["mode"] = COLLECTING_MODE
 			print('BALANCING ENDED')
 		
 		else:

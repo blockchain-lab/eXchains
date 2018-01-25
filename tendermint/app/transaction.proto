@@ -3,6 +3,7 @@ package transaction;
 
 message TransactionUsage {
     bytes contract_uuid = 1;
+    
     uint64 timestamp = 2;
     uint64 consumption = 3;
     uint64 production = 4;
