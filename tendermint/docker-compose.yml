@@ -25,6 +25,8 @@ services:
 
   app:
     build: app
+    environment:
+      - TENDERMINT_HOST=tendermint
     volumes:
       - ./app/src:/app/src:cached
       - tendermint:/tendermint

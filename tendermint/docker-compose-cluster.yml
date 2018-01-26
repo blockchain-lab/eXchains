@@ -2,6 +2,8 @@ version: '3.0'
 services:
   app0:
     build: app
+    environment:
+      - TENDERMINT_HOST=tendermint0
     volumes:
       - ./app/src:/app/src:cached
       - ./.data/cluster/mach0:/tendermint
@@ -25,6 +27,8 @@ services:
 
   app1:
     build: app
+    environment:
+      - TENDERMINT_HOST=tendermint1
     volumes:
       - ./app/src:/app/src:cached
       - ./.data/cluster/mach1:/tendermint
@@ -45,6 +49,8 @@ services:
 
   app2:
     build: app
+    environment:
+      - TENDERMINT_HOST=tendermint2
     volumes:
       - ./app/src:/app/src:cached
       - ./.data/cluster/mach2:/tendermint
@@ -65,6 +71,8 @@ services:
 
   app3:
     build: app
+    environment:
+      - TENDERMINT_HOST=tendermint3
     volumes:
       - ./app/src:/app/src:cached
       - ./.data/cluster/mach3:/tendermint
@@ -85,6 +93,8 @@ services:
 
   app4:
     build: app
+    environment:
+      - TENDERMINT_HOST=tendermint4
     volumes:
       - ./app/src:/app/src:cached
       - ./.data/cluster/mach4:/tendermint

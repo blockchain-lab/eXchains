@@ -17,6 +17,7 @@ from urllib.request import Request, urlopen
 from google.protobuf import json_format
 import operator
 import random
+import os
 
 signed_types = ['new_contract', 'usage']
 COLLECTING_MODE = 0
@@ -24,7 +25,7 @@ BALANCING_MODE = 1
 
 class EnergyMarketApplication(ABCIApplication):
 
-	def __init__(self, address='tendermint', port=46657):
+	def __init__(self, address=os.environ.get("TENDERMINT_HOST", "tendermint"), port=46657):
 		super().__init__()
 		self.address = address
 		self.port = port
@@ -315,7 +316,7 @@ class EnergyMarketApplication(ABCIApplication):
 		random.seed(self.last_block_app_hash)
 		self.state["balance"]["current_node_id"] = random.choice(self.validators)
 		if self.public_key == self.state['balance']['current_node_id']:
-			print("Node {} is responsible for balancing".format(self.public_key))
+			print("Node {} is responsible for balancing".format(self.name))
 
 	def run_balance(self):
 		orders = OrderBook()
