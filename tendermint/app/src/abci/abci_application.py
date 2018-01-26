@@ -1,12 +1,23 @@
 from .types_pb2 import Response, RequestEcho, RequestFlush, RequestInfo, RequestSetOption, RequestDeliverTx, \
 	RequestCheckTx, RequestCommit, RequestQuery, RequestInitChain, RequestBeginBlock, RequestEndBlock
 
+from google.protobuf import json_format
+import json
+import base64
+import binascii
 
 class ABCIApplication:
 
 	def __init__(self):
 		self.last_block_app_hash = b''
 		self.last_block_height = 0
+
+		self.validators = []
+
+		with open("/tendermint/priv_validator.json", "r") as f:
+			dict = json.load(f)
+			self.public_key = binascii.unhexlify(dict["pub_key"]["data"])
+			print(self.public_key, len(self.public_key))
 
 		self.debug = {
 			"protocol": True,
@@ -84,6 +95,15 @@ class ABCIApplication:
 	def on_init_chain(self, msg: RequestInitChain):
 		if self.debug['messages']:
 			print('onInitChain(...)')
+
+		msgdict = json_format.MessageToDict(msg, False, True)
+		# print(msgdict)
+		self.validators = []
+		for validator in msgdict["validators"]:
+			key = base64.b64decode(validator["pub_key"])[1:]
+			self.validators.append(key)
+			print(key, len(key))
+
 		res = Response()
 		res.init_chain.SetInParent()
 		return res

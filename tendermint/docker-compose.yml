@@ -25,6 +25,9 @@ services:
 
   app:
     build: app
+    volumes:
+      - ./app/src:/app/src:cached
+      - tendermint:/tendermint
     # depends_on:
       # - tendermint
       
