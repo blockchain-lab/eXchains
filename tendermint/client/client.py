@@ -143,5 +143,8 @@ if __name__ == '__main__':
 		n = int(sys.argv[1])
 
 	for x in range(n):
-		c = Client(time_interval=20)
-		c.start()
+		c = Client(time_interval=6)
+		if c.time_interval == 0:
+			c.run()
+		else:
+			c.start()

@@ -16,6 +16,7 @@ from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 from google.protobuf import json_format
 import operator
+import random
 
 signed_types = ['new_contract', 'usage']
 COLLECTING_MODE = 0
@@ -29,6 +30,7 @@ class EnergyMarketApplication(ABCIApplication):
 		self.port = port
 		# in seconds
 		self.balancing_interval = 20
+		self.last_balance_timestamp = int(time.time())
 
 		self.debug.update({
 			"protocol": False,
@@ -42,14 +44,16 @@ class EnergyMarketApplication(ABCIApplication):
 			"contracts": {},
 			"balance": {
 				"round": 0,
-				"mode": COLLECTING_MODE
+				"mode": COLLECTING_MODE,
+				"current_node_id": None
 			}
 		}
 		self.pending_state = {
 			"contracts": {},
 			"balance": {
 				"round": 0,
-				"mode": COLLECTING_MODE
+				"mode": COLLECTING_MODE,
+				"current_node_id": None
 			}
 		}
 
@@ -98,9 +102,9 @@ class EnergyMarketApplication(ABCIApplication):
 	
 	def balancing_timer(self):
 		while True:
-			time.sleep(self.balancing_interval)
-			print("BALANCING STARTED")
-			self.send_message('balance_start')
+			time.sleep(1)
+			if self.state["balance"]["mode"] == COLLECTING_MODE and (int(time.time()) - self.balancing_interval) > self.last_balance_timestamp:
+				self.send_message('balance_start')
 
 	def check_signature(self, transaction_type, transaction):
 		payload = None
@@ -267,21 +271,26 @@ class EnergyMarketApplication(ABCIApplication):
 			pass
 
 		elif transaction.HasField('balance_start'):
+			print("BALANCING STARTED")
+			self.select_node()
 			self.state["balance"]["mode"] = BALANCING_MODE
 			#balance_process = Process(target=self.run_balance)
 			#balance_process.start()
 			self.run_balance()
-			self.send_message('balance')
+			if self.public_key == self.state['balance']['current_node_id']:
+				self.send_message('balance')
 
 
 		elif transaction.HasField('balance'):
 			#sender_process = Process(target=self.send_message, args=('balance_end', ))
 			#sender_process.start()
-			self.send_message('balance_end')
+			if self.public_key == self.state['balance']['current_node_id']:
+				self.send_message('balance_end')
 
 		elif transaction.HasField('balance_end'):
 			self.state["balance"]["round"] += 1
 			self.state["balance"]["mode"] = COLLECTING_MODE
+			self.last_balance_timestamp = int(transaction.balance_end.timestamp)
 			print('BALANCING ENDED')
 		
 		else:
@@ -301,6 +310,12 @@ class EnergyMarketApplication(ABCIApplication):
 	def on_end_block(self, msg):
 		self.pending_state = self.state.copy()
 		return super().on_end_block(msg)
+
+	def select_node(self):
+		random.seed(self.last_block_app_hash)
+		self.state["balance"]["current_node_id"] = random.choice(self.validators)
+		if self.public_key == self.state['balance']['current_node_id']:
+			print("Node {} is responsible for balancing".format(self.public_key))
 
 	def run_balance(self):
 		orders = OrderBook()
@@ -333,7 +348,6 @@ class EnergyMarketApplication(ABCIApplication):
 
 		res.query.code = 0
 		return res
-
 
 if __name__ == '__main__':
 	l = len(sys.argv)

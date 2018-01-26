@@ -127,6 +127,20 @@ class Transaction:
 		return "\nT(uuid: {}, order id: {}, Type: {}, Volume: {}, Price: {})".format(self.uuid, self.order_id, self.order_type, self.volume,
 																self.price)
 
+	def __eq__(self, other):
+		return self.uuid == other.uuid and \
+			   self.order_id == other.order_id and \
+			   self.order_type == other.order_type and \
+			   self.volume == other.volume and \
+			   self.price == other.price
+
+	def __ne__(self, other):
+		return self.uuid != other.uuid or \
+			   self.order_id != other.order_id or \
+			   self.order_type != other.order_type or \
+			   self.volume != other.volume or \
+			   self.price != other.price
+
 
 class Matcher:
 	def __init__(self, uuid, order_id_start=0):
@@ -188,9 +202,9 @@ class Matcher:
 			while len(bigger_list) > 0:
 				entry = bigger_list[0]
 				if isinstance(entry, Ask):
-					order_type = OrderType.ASK
+					order_type = OrderType.ASK.value
 				else:
-					order_type = OrderType.BID
+					order_type = OrderType.BID.value
 
 				trading_volume = round(entry.volume / remaining_big_volume * remaining_small_volume)
 
@@ -214,12 +228,11 @@ class Matcher:
 
 			for entry in smaller_list:
 				if isinstance(entry, Ask):
-					order_type = OrderType.ASK
+					order_type = OrderType.ASK.value
 				else:
-					order_type = OrderType.BID
+					order_type = OrderType.BID.value
 				self.trade_list.append(Transaction(entry.uuid, entry.order_id, order_type, entry.volume, price))
 
-		print("No matches can be made anymore")
 		orderbook.add_order(ask_list)
 		orderbook.add_order(bid_list)
 		return self.trade_list
