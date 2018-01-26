@@ -17,7 +17,7 @@ class ABCIApplication:
 		with open("/tendermint/priv_validator.json", "r") as f:
 			dict = json.load(f)
 			self.public_key = binascii.unhexlify(dict["pub_key"]["data"])
-			print(self.public_key, len(self.public_key))
+			# print(self.public_key, len(self.public_key))
 
 		self.debug = {
 			"protocol": True,
@@ -102,7 +102,7 @@ class ABCIApplication:
 		for validator in msgdict["validators"]:
 			key = base64.b64decode(validator["pub_key"])[1:]
 			self.validators.append(key)
-			print(key, len(key))
+			# print(key, len(key))
 
 		res = Response()
 		res.init_chain.SetInParent()
