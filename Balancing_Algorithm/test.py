@@ -56,6 +56,9 @@ def realDataTestMultiLayer():
 	prevConsumptionSum = 0
 	prevProductionSum = 0
 
+	consPercentageToFlex = 0.2
+	prodPercentageToFlex = 0.1
+
 	# while True:
 	for clientID in range(0, numClients):
 		for min in range(0, minPerBlock):
@@ -65,16 +68,22 @@ def realDataTestMultiLayer():
 
 		uuid = clientID                            # ClientReport ID
 		timestamp = str(datetime.datetime.now())   # Time stamp
-		defaultConsPrice = 10                      # Default consumption price
-		defaultProdsPrice = 1                      # Default production price
+		defaultConsPrice = 22000                   # Default consumption price /
+		defaultProdsPrice = 5000                   # Default production price
 		consumption = prevConsumptionSum           # Actual consumption last block
 		production = prevProductionSum             # Actual production last block
-		predictedCons = {"t+1": consumptionSum}    # Consumption prediction for coming blocks
-		predictedProd = {"t+1": productionSum}     # Production prediction for coming blocks
+		predictedCons = {"t+1": int(consumptionSum * (1-consPercentageToFlex))}    # Consumption prediction for coming blocks
+		predictedProd = {"t+1": int(productionSum  * (1-prodPercentageToFlex))}    # Production prediction for coming blocks
+
+		consFlex = {randint(150, 220)*100: int(0.2*(consumptionSum*consPercentageToFlex)), # Consumption flexibility options for coming block
+					randint(100, 150)*100: int(0.3*(consumptionSum*consPercentageToFlex)),
+					randint(50, 100) *100: int(0.5*(consumptionSum*consPercentageToFlex))}
+
+		prodFlex = {randint(150, 220)*100: int(0.5*(consumptionSum*prodPercentageToFlex)), # Production flexibility options for coming block
+					randint(100, 150)*100: int(0.3*(consumptionSum*prodPercentageToFlex)),
+					randint(50, 100) *100: int(0.2*(consumptionSum*prodPercentageToFlex))}
 
 
-		consFlex = {randint(6, 9): 100, randint(3, 5): 50, randint(2, 9): -100} # Consumption flexibility options for coming block
-		prodFlex = {randint(2, 5): 200, randint(2, 9): -100}                    # Production flexibility options for coming block
 
 		report = ClientReport.ClientReport(uuid, timestamp, defaultConsPrice, defaultProdsPrice, consumption,
 										   production, predictedCons, predictedProd, consFlex, prodFlex)

@@ -65,13 +65,16 @@ class Client(Process):
 		clientOffset = 1440 # minutes in one day
 		dayOffset = 720
 
-		powSignificance = pow(10, 7)
+		powSignificance = pow(10, 1)
 		powUnit = "wh"
 
 		consumptionSum = 0
 		productionSum = 0
 		prevConsumptionSum = 0
 		prevProductionSum = 0
+
+		consPercentageToFlex = 0.2
+		prodPercentageToFlex = 0.1
 
 		# make each client start on different day
 		for i in range(0, randint(0, 25)):
@@ -100,17 +103,19 @@ class Client(Process):
 				msg.usage.consumption = prevConsumptionSum
 				msg.usage.production = prevProductionSum
 
-				msg.usage.prediction_consumption['t+1'] = consumptionSum
-				msg.usage.prediction_production['t+1'] = productionSum
+				msg.usage.prediction_consumption['t+1'] = int(consumptionSum * (1-consPercentageToFlex))    # Consumption prediction for coming blocks
+				msg.usage.prediction_production['t+1']  = int(productionSum  * (1-prodPercentageToFlex))	# Production prediction for coming blocks
 
-				# TODO not indexed talk about what todo
-				# consFlex = {randint(6, 9): 100, randint(3, 5): 50, randint(2, 9): -100} # Consumption flexibility options for coming block
-				# prodFlex = {randint(2, 5): 200, randint(2, 9): -100}
-				msg.usage.consumption_flexibility[0] = 0
-				msg.usage.production_flexibility[2] = 500
+				msg.usage.consumption_flexibility[randint(150, 220)*100] = int(0.2*(consumptionSum*consPercentageToFlex))	# Consumption flexibility options for coming block
+				msg.usage.consumption_flexibility[randint(100, 150)*100] = int(0.3*(consumptionSum*consPercentageToFlex))
+				msg.usage.consumption_flexibility[randint(50, 100) *100] = int(0.5*(consumptionSum*consPercentageToFlex))
 
-				msg.usage.default_consumption_price = 10
-				msg.usage.default_production_price = 1
+				msg.usage.production_flexibility[randint(150, 220)*100] = int(0.5*(consumptionSum*prodPercentageToFlex))	# Production flexibility options for coming block
+				msg.usage.production_flexibility[randint(100, 150)*100] = int(0.3*(consumptionSum*prodPercentageToFlex))
+				msg.usage.production_flexibility[randint(50, 100) *100] = int(0.2*(consumptionSum*prodPercentageToFlex))
+
+				msg.usage.default_consumption_price = 22000
+				msg.usage.default_production_price = 5000
 
 				payload = self.uuid.bytes + \
 						  msg.usage.timestamp.to_bytes(8, byteorder='big') + \
