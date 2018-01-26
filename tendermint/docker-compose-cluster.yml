@@ -21,7 +21,7 @@ services:
     entrypoint:
       - tendermint
       - node
-      - --p2p.seeds=tendermint1:46656
+      - --p2p.seeds=tendermint4:46656,tendermint1:46656,tendermint2:46656,tendermint3:46656
       - --consensus.create_empty_blocks=false
       - --proxy_app=app0:46658
 
@@ -43,7 +43,7 @@ services:
     entrypoint:
       - tendermint
       - node
-      - --p2p.seeds=tendermint0:46656
+      - --p2p.seeds=tendermint0:46656,tendermint4:46656,tendermint2:46656,tendermint3:46656
       - --consensus.create_empty_blocks=false
       - --proxy_app=app1:46658
 
@@ -61,11 +61,11 @@ services:
       - ./.data/cluster/mach2:/tendermint
       - tendermint2:/tendermint/data
     depends_on:
-      - app0
+      - app2
     entrypoint:
       - tendermint
       - node
-      - --p2p.seeds=tendermint0:46656
+      - --p2p.seeds=tendermint0:46656,tendermint1:46656,tendermint4:46656,tendermint3:46656
       - --consensus.create_empty_blocks=false
       - --proxy_app=app2:46658
 
@@ -83,11 +83,11 @@ services:
       - ./.data/cluster/mach3:/tendermint
       - tendermint3:/tendermint/data
     depends_on:
-      - app0
+      - app3
     entrypoint:
       - tendermint
       - node
-      - --p2p.seeds=tendermint0:46656
+      - --p2p.seeds=tendermint0:46656,tendermint1:46656,tendermint2:46656,tendermint4:46656
       - --consensus.create_empty_blocks=false
       - --proxy_app=app3:46658
 
@@ -105,11 +105,11 @@ services:
       - ./.data/cluster/mach4:/tendermint
       - tendermint4:/tendermint/data
     depends_on:
-      - app0
+      - app4
     entrypoint:
       - tendermint
       - node
-      - --p2p.seeds=tendermint0:46656
+      - --p2p.seeds=tendermint0:46656,tendermint1:46656,tendermint2:46656,tendermint3:46656
       - --consensus.create_empty_blocks=false
       - --proxy_app=app4:46658
       
