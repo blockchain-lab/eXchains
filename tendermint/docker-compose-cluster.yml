@@ -2,6 +2,10 @@ version: '3.0'
 services:
   app0:
     build: app
+    volumes:
+      - ./app/src:/app/src:cached
+      - ./.data/cluster/mach0:/tendermint
+
   tendermint0:
     image: tendermint/tendermint:0.15.0
     volumes:
@@ -17,10 +21,14 @@ services:
       - node
       - --p2p.seeds=tendermint1:46656
       - --consensus.create_empty_blocks=false
-      - --proxy_app=dummy
+      - --proxy_app=app0:46658
 
   app1:
     build: app
+    volumes:
+      - ./app/src:/app/src:cached
+      - ./.data/cluster/mach1:/tendermint
+
   tendermint1:
     image: tendermint/tendermint:0.15.0
     volumes:
@@ -31,12 +39,16 @@ services:
     entrypoint:
       - tendermint
       - node
-      - --p2p.seeds=tendermint2:46656
+      - --p2p.seeds=tendermint0:46656
       - --consensus.create_empty_blocks=false
-      - --proxy_app=dummy
+      - --proxy_app=app1:46658
 
   app2:
     build: app
+    volumes:
+      - ./app/src:/app/src:cached
+      - ./.data/cluster/mach2:/tendermint
+
   tendermint2:
     image: tendermint/tendermint:0.15.0
     volumes:
@@ -47,12 +59,16 @@ services:
     entrypoint:
       - tendermint
       - node
-      - --p2p.seeds=tendermint3:46656
+      - --p2p.seeds=tendermint0:46656
       - --consensus.create_empty_blocks=false
-      - --proxy_app=dummy
+      - --proxy_app=app2:46658
 
   app3:
     build: app
+    volumes:
+      - ./app/src:/app/src:cached
+      - ./.data/cluster/mach3:/tendermint
+
   tendermint3:
     image: tendermint/tendermint:0.15.0
     volumes:
@@ -63,12 +79,16 @@ services:
     entrypoint:
       - tendermint
       - node
-      - --p2p.seeds=tendermint4:46656
+      - --p2p.seeds=tendermint0:46656
       - --consensus.create_empty_blocks=false
-      - --proxy_app=dummy
+      - --proxy_app=app3:46658
 
   app4:
     build: app
+    volumes:
+      - ./app/src:/app/src:cached
+      - ./.data/cluster/mach4:/tendermint
+
   tendermint4:
     image: tendermint/tendermint:0.15.0
     volumes:
@@ -81,7 +101,7 @@ services:
       - node
       - --p2p.seeds=tendermint0:46656
       - --consensus.create_empty_blocks=false
-      - --proxy_app=dummy
+      - --proxy_app=app4:46658
       
 volumes:
   tendermint0:

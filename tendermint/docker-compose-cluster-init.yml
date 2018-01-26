@@ -3,9 +3,9 @@ services:
   tendermint_init:
     image: tendermint/tendermint:0.15.0
     volumes:
-      - ./.data/cluster:/tendermint
+      - "./.data/cluster:/tmp:rw"
     entrypoint:
       - tendermint
       - testnet
       - --n=5
-      - --dir=/tendermint
+      - --dir=/tmp
