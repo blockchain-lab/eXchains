@@ -314,15 +314,15 @@ class EnergyMarketApplication(ABCIApplication):
 		orders = OrderBook()
 		for client_uuid in self.state['contracts']:
 			client_report = ClientReport(client_uuid, \
-										 int(time.time()), \
-										 self.state['contracts'][client_uuid]['default_consumption_price'], \
-										 self.state['contracts'][client_uuid]['default_production_price'], \
-										 self.state['contracts'][client_uuid]['consumption'], \
-										 self.state['contracts'][client_uuid]['production'], \
-										 self.state['contracts'][client_uuid]['prediction_consumption'], \
-										 self.state['contracts'][client_uuid]['prediction_production'], \
-										 self.state['contracts'][client_uuid]['consumption_flexibility'], \
-										 self.state['contracts'][client_uuid]['production_flexibility'])
+										int(time.time()), \
+										self.state['contracts'][client_uuid]['default_consumption_price'], \
+										self.state['contracts'][client_uuid]['default_production_price'], \
+										self.state['contracts'][client_uuid]['consumption'], \
+										self.state['contracts'][client_uuid]['production'], \
+										self.state['contracts'][client_uuid]['prediction_consumption'], \
+										self.state['contracts'][client_uuid]['prediction_production'], \
+										self.state['contracts'][client_uuid]['consumption_flexibility'], \
+										self.state['contracts'][client_uuid]['production_flexibility'])
 			orders.add_order(client_report.reportToAskOrders())
 			orders.add_order(client_report.reportToBidOrders())
 		

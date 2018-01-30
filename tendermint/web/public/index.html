@@ -26,6 +26,7 @@
 			/*grid-auto-rows: minmax(100px, auto);*/
 		}
 		.grid-cell {
+			overflow: hidden;
 			vertical-align: top;
 			/*grid-column: auto;*/
 			/*grid-row: auto;*/
@@ -68,8 +69,14 @@
 				<div v-bind:style="{ color: state.balance.mode === 1 ? 'green' : 'red' }"  >
 					Allowing balance transactions
 				</div>
-				<div>
-					{{ lastTrade }}
+				<br />
+				<div v-if="lastTrade" >
+					Trades in #{{ lastTrade.roundNumber }}
+					<ul v-if="lastTrade.trades">
+						<li v-for="trade in lastTrade.trades" >
+							{{ trade.orderType == 1 ? "A" : "B" }}: {{ trade.volume }} at {{trade.price}}
+						</li>
+					</ul>
 				</div>
 				<div>
 				</div>
@@ -83,7 +90,7 @@
 				</li>
 			</div>
 			<div class="grid-cell" >
-				graph
+				
 			</div>
 			<div class="grid-cell" >
 				graph
