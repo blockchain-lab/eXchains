@@ -4,6 +4,8 @@ import sys
 import logging
 import traceback
 
+import time
+
 from .wire import decode_varint, encode_varint, encode
 from .reader import BytesBuffer
 from .types_pb2 import Request, Response
@@ -214,6 +216,9 @@ class ABCIServer:
 						print("Could not connect due to unexpected error:", sys.exc_info()[0])
 				else:
 					self.handle_recv(r)
+
+
+			time.sleep(0.001)
 
 	def handle_shutdown(self):
 		for r in self.read_list:
