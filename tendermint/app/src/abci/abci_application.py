@@ -131,3 +131,6 @@ class ABCIApplication:
 
 		self.last_block_height = msg.height
 		return res
+
+	def log(self, msg):
+		print(self.name + ":", msg)
