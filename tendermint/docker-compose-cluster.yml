@@ -15,15 +15,16 @@ services:
       - tendermint0:/tendermint/data
     depends_on:
       - app0
+      - tendermint4
     ports:
       - 46656:46656
       - 46657:46657
     entrypoint:
       - tendermint
       - node
-      # - --p2p.seeds=tendermint1:46656,tendermint2:46656,tendermint3:46656,tendermint4:46656
+      - --p2p.seeds=tendermint1:46656,tendermint2:46656,tendermint3:46656,tendermint4:46656
       - --consensus.create_empty_blocks=false
-      - --p2p.pex=true
+      - --p2p.pex=false
       - --p2p.skip_upnp=true
       - --proxy_app=app0:46658
 
@@ -42,13 +43,13 @@ services:
       - tendermint1:/tendermint/data
     depends_on:
       - app1
-      - tendermint0
+      - tendermint4
     entrypoint:
       - tendermint
       - node
-      - --p2p.seeds=tendermint0:46656
+      - --p2p.seeds=tendermint2:46656,tendermint3:46656,tendermint4:46656
       - --consensus.create_empty_blocks=false
-      - --p2p.pex=true
+      - --p2p.pex=false
       - --p2p.skip_upnp=true
       - --proxy_app=app1:46658
 
@@ -67,13 +68,13 @@ services:
       - tendermint2:/tendermint/data
     depends_on:
       - app2
-      - tendermint0
+      - tendermint4
     entrypoint:
       - tendermint
       - node
-      - --p2p.seeds=tendermint0:46656
+      - --p2p.seeds=tendermint3:46656,tendermint4:46656
       - --consensus.create_empty_blocks=false
-      - --p2p.pex=true
+      - --p2p.pex=false
       - --p2p.skip_upnp=true
       - --proxy_app=app2:46658
 
@@ -92,13 +93,13 @@ services:
       - tendermint3:/tendermint/data
     depends_on:
       - app3
-      - tendermint0
+      - tendermint4
     entrypoint:
       - tendermint
       - node
-      - --p2p.seeds=tendermint0:46656
+      - --p2p.seeds=tendermint4:46656
       - --consensus.create_empty_blocks=false
-      - --p2p.pex=true
+      - --p2p.pex=false
       - --p2p.skip_upnp=true
       - --proxy_app=app3:46658
 
@@ -117,13 +118,12 @@ services:
       - tendermint4:/tendermint/data
     depends_on:
       - app4
-      - tendermint0
     entrypoint:
       - tendermint
       - node
-      - --p2p.seeds=tendermint0:46656
+      # - --p2p.seeds=tendermint0:46656
       - --consensus.create_empty_blocks=false
-      - --p2p.pex=true
+      - --p2p.pex=false
       - --p2p.skip_upnp=true
       - --proxy_app=app4:46658
       
