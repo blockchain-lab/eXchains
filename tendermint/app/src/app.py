@@ -10,14 +10,14 @@ from ClientReport import ClientReport
 import uuid
 import time
 import json
-import base64
-from threading import Thread
-from urllib.request import Request, urlopen
 from google.protobuf import json_format
 import operator
 import random
 import os
 from hashlib import sha256
+import balance
+
+from multiprocessing import Manager
 
 signed_types = ['new_contract', 'usage']
 COLLECTING_MODE = 0
@@ -37,8 +37,8 @@ class EnergyMarketApplication(ABCIApplication):
 		self.debug.update({
 			"protocol": False,
 			"signing": False,
-			"check_tx": True,
-			"deliver_tx": True,
+			"check_tx": False,
+			"deliver_tx": False,
 			"messages": False
 		})
 
@@ -63,64 +63,13 @@ class EnergyMarketApplication(ABCIApplication):
 
 		self.last_trade_list = []
 
-		# messages pending from current onCommit ready to be transmitted
-		self.pending_messages = []
-
 		# messages pending from current onDeliverTx
 		self.pending_changes = []
 
-		self.balancer = Thread(target=self.balancing_timer)
+		self.multiprocessing_manager = Manager()
+		self.multiprocessing_que = self.multiprocessing_manager.Queue()
+		self.balancer = balance.Balancer(self.address, self.port, self.multiprocessing_que)
 		self.balancer.start()
-
-	def send_message(self, message_type):
-		url = 'http://{}:{}/'.format(self.address, self.port)  # Set destination URL here
-		message = Transaction()
-		method = ''
-
-		if message_type == 'balance_start':
-			method = 'broadcast_tx_async'
-			message.balance_start.timestamp = int(time.time())
-			message.balance_start.round_number = self.state["balance"]["round"]
-		
-		elif message_type == 'balance':
-			method = 'broadcast_tx_async'
-			message.balance.timestamp = int(time.time())
-			message.balance.round_number = self.state["balance"]["round"]
-			for trade in self.last_trade_list:
-				new_trade = message.balance.trades.add()
-				new_trade.uuid = trade.uuid
-				new_trade.order_id = trade.order_id
-				new_trade.order_type = trade.order_type
-				new_trade.volume = trade.volume
-				new_trade.price = trade.price
-		
-		elif message_type == 'balance_end':
-			method = 'broadcast_tx_async'
-			message.balance_end.timestamp = int(time.time())
-			message.balance_end.round_number = self.state["balance"]["round"] 
-
-		print("Sending message: {}".format(message))
-		binarystring = message.SerializeToString()
-		request = Request(url, json.dumps({
-			"method": method,
-			"params": [base64.b64encode(binarystring).decode('ascii')],
-			"jsonrpc": "2.0",
-			"id": "not_important"
-		}).encode())
-		result = urlopen(request, None, 10)
-		print(result.read().decode())
-	
-	def balancing_timer(self):
-		while True:
-			for msg in self.pending_messages:
-				self.send_message(msg)
-
-			self.pending_messages = []
-
-			time.sleep(1)
-
-			if self.state["balance"]["mode"] == COLLECTING_MODE and (int(time.time()) - self.balancing_interval) > self.last_balance_timestamp:
-				self.pending_messages.append('balance_start')
 
 	def check_signature(self, transaction_type, transaction):
 		payload = None
@@ -311,19 +260,24 @@ class EnergyMarketApplication(ABCIApplication):
 				self.select_node()
 				self.state["balance"]["mode"] = BALANCING_MODE
 				self.run_balance()
+				self.multiprocessing_que.put(["balance_start", self.last_trade_list])
 				if self.public_key == self.current_node_id:
-					self.pending_changes.append('balance')
+					self.pending_changes.append("balance")
 
 		elif transaction.HasField('balance'):
 			if self.debug['deliver_tx']:
 				self.log("onBalance")
 			if self.public_key == self.current_node_id:
-				self.pending_changes.append('balance_end')
+				self.pending_changes.append("balance_end")
 
 		elif transaction.HasField('balance_end'):
 			if self.debug['deliver_tx']:
 				self.log("onBalanceEnd")
+
 			self.state["balance"]["round"] += 1
+
+			self.multiprocessing_que.put(["balance_end", self.state["balance"]["round"]])
+
 			self.state["balance"]["mode"] = COLLECTING_MODE
 			self.last_balance_timestamp = int(time.time())
 		
@@ -346,7 +300,8 @@ class EnergyMarketApplication(ABCIApplication):
 		return super().on_end_block(msg)
 
 	def on_commit(self, msg):
-		self.pending_messages = self.pending_changes
+		for msg in self.pending_changes:
+			self.multiprocessing_que.put(['message', msg])
 		self.pending_changes = []
 
 		return super().on_commit(msg)

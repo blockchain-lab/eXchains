@@ -9,6 +9,8 @@ import binascii
 class ABCIApplication:
 
 	def __init__(self):
+		self.name = ''
+
 		self.last_block_app_hash = b''
 		self.last_block_height = 0
 
