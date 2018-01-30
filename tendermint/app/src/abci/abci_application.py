@@ -14,10 +14,15 @@ class ABCIApplication:
 
 		self.validators = []
 
-		with open("/tendermint/priv_validator.json", "r") as f:
-			dict = json.load(f)
-			self.public_key = binascii.unhexlify(dict["pub_key"]["data"])
+		with open("/tendermint/priv_validator.json", "r") as f, open("/tendermint/genesis.json", "r") as g:
+			privjson = json.load(f)
+			self.public_key = binascii.unhexlify(privjson["pub_key"]["data"])
+			genjson = json.load(g)
+			for node in genjson["validators"]:
+				if self.public_key == binascii.unhexlify(node["pub_key"]["data"]):
+					self.name = node["name"]
 			# print(self.public_key, len(self.public_key))
+
 
 		self.debug = {
 			"protocol": True,
@@ -126,3 +131,6 @@ class ABCIApplication:
 
 		self.last_block_height = msg.height
 		return res
+
+	def log(self, msg):
+		print(self.name + ":", msg)

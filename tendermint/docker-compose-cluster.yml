@@ -2,6 +2,8 @@ version: '3.0'
 services:
   app0:
     build: app
+    environment:
+      - TENDERMINT_HOST=tendermint0
     volumes:
       - ./app/src:/app/src:cached
       - ./.data/cluster/mach0:/tendermint
@@ -13,18 +15,23 @@ services:
       - tendermint0:/tendermint/data
     depends_on:
       - app0
+      - tendermint4
     ports:
       - 46656:46656
       - 46657:46657
     entrypoint:
       - tendermint
       - node
-      - --p2p.seeds=tendermint1:46656
+      - --p2p.seeds=tendermint1:46656,tendermint2:46656,tendermint3:46656,tendermint4:46656
       - --consensus.create_empty_blocks=false
+      - --p2p.pex=false
+      - --p2p.skip_upnp=true
       - --proxy_app=app0:46658
 
   app1:
     build: app
+    environment:
+      - TENDERMINT_HOST=tendermint1
     volumes:
       - ./app/src:/app/src:cached
       - ./.data/cluster/mach1:/tendermint
@@ -36,15 +43,20 @@ services:
       - tendermint1:/tendermint/data
     depends_on:
       - app1
+      - tendermint4
     entrypoint:
       - tendermint
       - node
-      - --p2p.seeds=tendermint0:46656
+      - --p2p.seeds=tendermint2:46656,tendermint3:46656,tendermint4:46656
       - --consensus.create_empty_blocks=false
+      - --p2p.pex=false
+      - --p2p.skip_upnp=true
       - --proxy_app=app1:46658
 
   app2:
     build: app
+    environment:
+      - TENDERMINT_HOST=tendermint2
     volumes:
       - ./app/src:/app/src:cached
       - ./.data/cluster/mach2:/tendermint
@@ -55,16 +67,21 @@ services:
       - ./.data/cluster/mach2:/tendermint
       - tendermint2:/tendermint/data
     depends_on:
-      - app0
+      - app2
+      - tendermint4
     entrypoint:
       - tendermint
       - node
-      - --p2p.seeds=tendermint0:46656
+      - --p2p.seeds=tendermint3:46656,tendermint4:46656
       - --consensus.create_empty_blocks=false
+      - --p2p.pex=false
+      - --p2p.skip_upnp=true
       - --proxy_app=app2:46658
 
   app3:
     build: app
+    environment:
+      - TENDERMINT_HOST=tendermint3
     volumes:
       - ./app/src:/app/src:cached
       - ./.data/cluster/mach3:/tendermint
@@ -75,16 +92,21 @@ services:
       - ./.data/cluster/mach3:/tendermint
       - tendermint3:/tendermint/data
     depends_on:
-      - app0
+      - app3
+      - tendermint4
     entrypoint:
       - tendermint
       - node
-      - --p2p.seeds=tendermint0:46656
+      - --p2p.seeds=tendermint4:46656
       - --consensus.create_empty_blocks=false
+      - --p2p.pex=false
+      - --p2p.skip_upnp=true
       - --proxy_app=app3:46658
 
   app4:
     build: app
+    environment:
+      - TENDERMINT_HOST=tendermint4
     volumes:
       - ./app/src:/app/src:cached
       - ./.data/cluster/mach4:/tendermint
@@ -95,12 +117,14 @@ services:
       - ./.data/cluster/mach4:/tendermint
       - tendermint4:/tendermint/data
     depends_on:
-      - app0
+      - app4
     entrypoint:
       - tendermint
       - node
-      - --p2p.seeds=tendermint0:46656
+      # - --p2p.seeds=tendermint0:46656
       - --consensus.create_empty_blocks=false
+      - --p2p.pex=false
+      - --p2p.skip_upnp=true
       - --proxy_app=app4:46658
       
 volumes:
