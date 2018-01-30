@@ -19,7 +19,7 @@ import balance
 
 from multiprocessing import Manager
 
-signed_types = ['new_contract', 'usage']
+signed_types = ['new_contract', 'usage', 'close_contract']
 COLLECTING_MODE = 0
 BALANCING_MODE = 1
 
@@ -85,6 +85,11 @@ class EnergyMarketApplication(ABCIApplication):
 			transaction.signature = bytes(0)
 			payload = transaction.SerializeToString()
 
+		if transaction_type == 'close_contract':
+			public_key = bytes.fromhex(self.state["contracts"][self.bytes_to_string_uuid(transaction.uuid)]["public_key"])
+			transaction.signature = bytes(0)
+			payload = transaction.SerializeToString() 
+
 		if self.debug['signing']:
 			print(transaction_type, public_key, payload, transaction)
 
@@ -145,6 +150,12 @@ class EnergyMarketApplication(ABCIApplication):
 
 			self.pending_state["contracts"][self.bytes_to_string_uuid(transaction.usage.contract_uuid)]["consumption"] = transaction.usage.consumption
 			self.pending_state["contracts"][self.bytes_to_string_uuid(transaction.usage.contract_uuid)]["production"] = transaction.usage.production
+
+		elif transaction.HasField('close_contract'):
+			if self.bytes_to_string_uuid(transaction.close_contract.uuid) not in self.state['contracts']:
+				res = Response()
+				res.check_tx.code = 401
+				return res
 
 		elif transaction.HasField('balance_start'):
 			if self.state["balance"]["mode"] != COLLECTING_MODE or transaction.balance_start.round_number != self.state["balance"]["round"]:
@@ -249,7 +260,8 @@ class EnergyMarketApplication(ABCIApplication):
 			self.state["contracts"][contract_uuid]["default_production_price"] = int(usage["default_production_price"])
 
 		elif transaction.HasField('close_contract'):
-			pass
+			uuid = self.bytes_to_string_uuid(transaction.close_contract.uuid)
+			del(self.state['contracts'][uuid])
 
 		elif transaction.HasField('balance_start'):
 			if self.state["balance"]["mode"] == COLLECTING_MODE:

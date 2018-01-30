@@ -138,7 +138,14 @@ class Client(Process):
 
 				counter += 1
 
-		except KeyboardInterrupt:
+		except (KeyboardInterrupt, EOFError):
+			msg = tx.Transaction()
+			msg.close_contract.uuid = self.uuid.bytes
+			msg.close_contract.timestamp = int(time.time())
+			msg.close_contract.signature = self.priv_key.sign(msg.close_contract.SerializeToString())
+			data = msg.SerializeToString()
+			self.send_request(data)
+
 			print('\nExiting\n')
 
 
@@ -162,3 +169,4 @@ if __name__ == '__main__':
 			c.run()
 		else:
 			c.start()
+		time.sleep(1)
