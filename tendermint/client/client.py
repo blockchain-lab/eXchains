@@ -9,11 +9,11 @@ import json
 from random import randint
 from multiprocessing import Process
 import sys
-
+from google.protobuf import json_format
 
 class Client(Process):
 	def __init__(self, address='localhost', port=46657, data_file='data.csv', time_interval=900):
-		'''Initialize client with provided parameters, generate keys'''
+		'''Client simulates behavior of a smart meter. It registers to the ABCI and then keep posting all necessary data in the transactions.'''
 		super().__init__()
 		self.uuid = uuid.uuid4()
 		# optional storage of the uuid
@@ -32,6 +32,7 @@ class Client(Process):
 		self.data_file.readline()
 
 	def register_to_abci(self):
+		'''Method used when the client makes the first connection to the ABCI'''
 		msg = tx.Transaction()
 		msg.new_contract.uuid = self.uuid.bytes
 		msg.new_contract.timestamp = int(time.time())
@@ -45,6 +46,7 @@ class Client(Process):
 		self.send_request(data)
 
 	def send_request(self, binarystring):
+		'''Method responsible for sending any transactions to the ABCI'''
 		url = 'http://{}:{}/'.format(self.address, self.port)  # Set destination URL here
 
 		request = Request(url, json.dumps({
@@ -55,31 +57,32 @@ class Client(Process):
 		}).encode())
 
 		result = urlopen(request).read().decode()
-		print(result)
+		# print(result)
 
 	def run(self):
 		'''Main loop of the client, sends data retrieved from the file to the ABCI server'''
 		self.register_to_abci()
 
-		minPerBlock = 5
-		clientOffset = 1440 # minutes in one day
-		dayOffset = 720
+		# Variables needed for simulating the smart meter signals
+		min_per_block = 5
+		client_offset = 1440 # minutes in one day
+		day_offset = 720
+		pow_significance = pow(10, 1)
 
-		powSignificance = pow(10, 7)
-		powUnit = "wh"
-
-		consumptionSum = 0
-		productionSum = 0
-		prevConsumptionSum = 0
-		prevProductionSum = 0
+		consumption_sum = 0
+		production_sum = 0
+		prev_consumption_sum = 0
+		prev_production_sum = 0
+		consumption_percentage_to_flexibility = 0.2
+		production_percentage_to_flexibility = 0.1
 
 		# make each client start on different day
 		for i in range(0, randint(0, 25)):
-			for j in range(0, clientOffset):
+			for j in range(0, client_offset):
 				self.data_file.readline()
 
 		# make clients start with noon data
-		for i in range(0, dayOffset):
+		for i in range(0, day_offset):
 			self.data_file.readline()
 
 		counter = 1
@@ -89,61 +92,73 @@ class Client(Process):
 				msg.usage.contract_uuid = self.uuid.bytes
 				msg.usage.timestamp = int(time.time())
 				
-				
-
 				# need to sum, as data is only per minute
-				for minute in range(0, minPerBlock):
+				for minute in range(0, min_per_block):
 					row = self.data_file.readline()
-					#int(float(self.data[counter].split(';')[3].replace(',', '.')) * pow(10, 7))
-					consumptionSum += int(float(row.split(';')[3].replace(",", ".")) * powSignificance)
-					productionSum += int(float(row.split(';')[4].replace(",", ".")) * powSignificance)
-				msg.usage.consumption = prevConsumptionSum
-				msg.usage.production = prevProductionSum
+					consumption_sum += int(float(row.split(';')[3].replace(",", ".")) * pow_significance)
+					production_sum += int(float(row.split(';')[4].replace(",", ".")) * pow_significance)
 
-				msg.usage.prediction_consumption['t+1'] = consumptionSum
-				msg.usage.prediction_production['t+1'] = productionSum
+				msg.usage.consumption = prev_consumption_sum
+				msg.usage.production = prev_production_sum
 
-				# TODO not indexed talk about what todo
-				# consFlex = {randint(6, 9): 100, randint(3, 5): 50, randint(2, 9): -100} # Consumption flexibility options for coming block
-				# prodFlex = {randint(2, 5): 200, randint(2, 9): -100}
-				msg.usage.consumption_flexibility[0] = 0
-				msg.usage.production_flexibility[2] = 500
+				# Consumption prediction for coming blocks
+				msg.usage.prediction_consumption['t+1'] = int(consumption_sum * (1 - consumption_percentage_to_flexibility))
+				# Production prediction for coming blocks
+				msg.usage.prediction_production['t+1']  = int(production_sum  * (1 - production_percentage_to_flexibility))
 
-				msg.usage.default_consumption_price = 10
-				msg.usage.default_production_price = 1
+				# Consumption flexibility options for coming block
+				msg.usage.consumption_flexibility[randint(150, 220) * 100] = int(0.2 * (consumption_sum * consumption_percentage_to_flexibility))
+				msg.usage.consumption_flexibility[randint(100, 150) * 100] = int(0.3 * (consumption_sum * consumption_percentage_to_flexibility))
+				msg.usage.consumption_flexibility[randint(50, 100)  * 100] = int(0.5 * (consumption_sum * consumption_percentage_to_flexibility))
 
-				payload = self.uuid.bytes + \
-						  msg.usage.timestamp.to_bytes(8, byteorder='big') + \
-						  msg.usage.consumption.to_bytes(8, byteorder='big') + \
-						  msg.usage.production.to_bytes(8, byteorder='big')
-				msg.usage.signature = self.priv_key.sign(payload)
-				print(msg)
+				# Production flexibility options for coming block
+				msg.usage.production_flexibility[randint(150, 220) * 100] = int(0.5 * (consumption_sum * production_percentage_to_flexibility))	
+				msg.usage.production_flexibility[randint(100, 150) * 100] = int(0.3 * (consumption_sum * production_percentage_to_flexibility))
+				msg.usage.production_flexibility[randint(50, 100)  * 100] = int(0.2 * (consumption_sum * production_percentage_to_flexibility))
+
+				msg.usage.default_consumption_price = 22000
+				msg.usage.default_production_price = 500
+
+				msg.usage.signature = self.priv_key.sign(msg.SerializeToString())
+
+				print("Sending message: {}".format(msg))
 				data = msg.SerializeToString()
 				self.send_request(data)
 
-				prevConsumptionSum = consumptionSum
-				prevProductionSum = productionSum
+				prev_consumption_sum = consumption_sum
+				prev_production_sum = production_sum
 
-				consumptionSum = 0
-				productionSum = 0
+				consumption_sum = 0
+				production_sum = 0
 
+				# In case of no time interval, new transactions are sent by the user manually
 				if self.time_interval == 0:
 					input()
 				else:
 					time.sleep(self.time_interval)
 
 				counter += 1
+
 		except KeyboardInterrupt:
 			print('\nExiting\n')
 
 
 if __name__ == '__main__':
-	n = 1 
-	if len(sys.argv) == 2:
-		n = int(sys.argv[1])
+	'''Execution of file creates number of clients specified as the first parameter, time interval as second'''
+	n = 1
+	t = 0
+	if len(sys.argv) > 1:
+		try:
+			n = int(sys.argv[1])
+			t = int(sys.argv[2])
+		except ValueError:
+			print('Provide correct number of clients')
+			quit()
 
 	for x in range(n):
-		c = Client(time_interval=6)
+		# Don't use multiple clients with manual transactions
+		c = Client(time_interval=t)
+
 		if c.time_interval == 0:
 			c.run()
 		else:
