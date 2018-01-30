@@ -71,19 +71,22 @@
 				<div>
 					{{ lastTrade }}
 				</div>
+				<div>
+				</div>
 			</div>
 			<div id="app-round-transactions" class="grid-cell" >
 				<li v-for="transaction in state">
+					{{ transaction.type }}
 					<span v-if="transaction.usage" >
-						{{ transaction }}
+						P:{{ transaction.usage.production }}, C:{{ transaction.usage.consumption }}
 					</span>
 				</li>
 			</div>
 			<div class="grid-cell" >
-				more info
+				graph
 			</div>
 			<div class="grid-cell" >
-				even more info
+				graph
 			</div>
 		</div>
 	</div>

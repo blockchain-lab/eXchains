@@ -42,20 +42,20 @@ class EnergyMarketApplication(ABCIApplication):
 			"messages": False
 		})
 
+		self.current_node_id = None
+
 		self.state = {
 			"contracts": {},
 			"balance": {
 				"round": 0,
-				"mode": COLLECTING_MODE,
-				"current_node_id": None
+				"mode": COLLECTING_MODE
 			}
 		}
 		self.pending_state = {
 			"contracts": {},
 			"balance": {
 				"round": 0,
-				"mode": COLLECTING_MODE,
-				"current_node_id": None
+				"mode": COLLECTING_MODE
 			}
 		}
 
@@ -311,13 +311,13 @@ class EnergyMarketApplication(ABCIApplication):
 				self.select_node()
 				self.state["balance"]["mode"] = BALANCING_MODE
 				self.run_balance()
-				if self.public_key == self.state['balance']['current_node_id']:
+				if self.public_key == self.current_node_id:
 					self.pending_changes.append('balance')
 
 		elif transaction.HasField('balance'):
 			if self.debug['deliver_tx']:
 				self.log("onBalance")
-			if self.public_key == self.state['balance']['current_node_id']:
+			if self.public_key == self.current_node_id:
 				self.pending_changes.append('balance_end')
 
 		elif transaction.HasField('balance_end'):
@@ -353,8 +353,8 @@ class EnergyMarketApplication(ABCIApplication):
 
 	def select_node(self):
 		random.seed(self.last_block_app_hash)
-		self.state["balance"]["current_node_id"] = random.choice(self.validators)
-		if self.public_key == self.state['balance']['current_node_id']:
+		self.current_node_id = random.choice(self.validators)
+		if self.public_key == self.current_node_id:
 			print("Node {} is responsible for balancing".format(self.name))
 
 	def run_balance(self):

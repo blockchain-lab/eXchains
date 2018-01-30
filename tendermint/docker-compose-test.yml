@@ -15,12 +15,12 @@ services:
     ports:
       - 46656:46656
       - 46657:46657
-    # depends_on:
-      # - tendermint_init
+    depends_on:
+      - tendermint_init
     entrypoint:
       - tendermint
       - node
-      - --consensus.create_empty_blocks=false
+      # - --consensus.create_empty_blocks=false
       - --proxy_app=app:46658
 
   app:
