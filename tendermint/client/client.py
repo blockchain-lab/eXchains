@@ -57,7 +57,7 @@ class Client(Process):
 		}).encode())
 
 		result = urlopen(request).read().decode()
-		# print(result)
+		print(result)
 
 	def run(self):
 		'''Main loop of the client, sends data retrieved from the file to the ABCI server'''
@@ -118,8 +118,7 @@ class Client(Process):
 
 				msg.usage.default_consumption_price = 22000
 				msg.usage.default_production_price = 500
-
-				msg.usage.signature = self.priv_key.sign(msg.SerializeToString())
+				msg.usage.signature = self.priv_key.sign(msg.usage.SerializeToString())
 
 				print("Sending message: {}".format(msg))
 				data = msg.SerializeToString()
@@ -152,7 +151,7 @@ if __name__ == '__main__':
 			n = int(sys.argv[1])
 			t = int(sys.argv[2])
 		except ValueError:
-			print('Provide correct number of clients')
+			print('Provide correct number of clients and/or time interval')
 			quit()
 
 	for x in range(n):

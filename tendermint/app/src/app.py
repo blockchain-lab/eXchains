@@ -82,10 +82,8 @@ class EnergyMarketApplication(ABCIApplication):
 
 		if transaction_type == 'usage':
 			public_key = bytes.fromhex(self.pending_state["contracts"][self.bytes_to_string_uuid(transaction.contract_uuid)]["public_key"])
-			payload = transaction.contract_uuid + \
-				int(transaction.timestamp).to_bytes(8, 'big') + \
-				int(transaction.consumption).to_bytes(8, 'big') + \
-				int(transaction.production).to_bytes(8, 'big')
+			transaction.signature = bytes(0)
+			payload = transaction.SerializeToString()
 
 		if self.debug['signing']:
 			print(transaction_type, public_key, payload, transaction)
