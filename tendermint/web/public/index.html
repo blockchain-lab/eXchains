@@ -54,9 +54,6 @@
 					</li>
 				</ul>
 			</div>
-
-
-				
 		</div>
 		<div id="app-visual" class="grid-wrapper" style="display:block" >
 			<div id="app-round-state" class="grid-cell" >
@@ -72,6 +69,9 @@
 				<br />
 				<div v-if="lastTrade" >
 					Trades in #{{ lastTrade.roundNumber }}
+					Unbalance:<br/>
+					&nbsp;&nbsp;&nbsp;&nbsp;Before:{{unbalanceBefore}}<br />
+					&nbsp;&nbsp;&nbsp;&nbsp;After: {{unbalanceAfter}} <br />
 					<ul v-if="lastTrade.trades">
 						<li v-for="trade in lastTrade.trades" >
 							{{ trade.orderType == 1 ? "A" : "B" }}: {{ trade.volume }} at {{trade.price}}
@@ -93,7 +93,7 @@
 				
 			</div>
 			<div class="grid-cell" >
-				graph
+				
 			</div>
 		</div>
 	</div>

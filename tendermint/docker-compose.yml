@@ -1,12 +1,16 @@
+# This file is intented for development purposes
+# Why:
+#  - It exposes too many ports
+#  - It resets the chain on every startup
+
 version: '3.0'
 services:
   tendermint_init:
     image: tendermint/tendermint:0.15.0
     volumes:
       - tendermint:/tendermint
-    entrypoint:
-      - tendermint
-      - init
+    entrypoint: >
+      bash -c 'rm -rf /tendermint/* && tendermint init'
 
   tendermint:
     image: tendermint/tendermint:0.15.0
@@ -15,8 +19,9 @@ services:
     ports:
       - 46656:46656
       - 46657:46657
-    # depends_on:
-      # - tendermint_init
+    depends_on:
+      - tendermint_init
+      - app
     entrypoint:
       - tendermint
       - node
@@ -30,8 +35,21 @@ services:
     volumes:
       - ./app/src:/app/src:cached
       - tendermint:/tendermint
-    # depends_on:
-      # - tendermint
+
+  client:
+    build: client
+    environment:
+      - TENDERMINT_HOST=tendermint
+    volumes:
+      - ./client/src:/client/src:cached
+
+  web:
+    build: web
+    ports:
+      - 80:80
+    volumes:
+      - ./web/public:/app/public
+      - ./app/transaction.proto:/app/public/transaction.proto
       
 volumes:
   tendermint:
