@@ -99,8 +99,11 @@ class Client(Process):
 				# need to sum, as data is only per minute
 				for minute in range(0, min_per_block):
 					row = self.data_file.readline()
-					consumption_sum += int(float(row.split(';')[3].replace(",", ".")) * pow_significance)
-					production_sum += int(float(row.split(';')[4].replace(",", ".")) * pow_significance)
+					if row:
+						consumption_sum += int(float(row.split(';')[3].replace(",", ".")) * pow_significance)
+						production_sum += int(float(row.split(';')[4].replace(",", ".")) * pow_significance)
+					else:
+						self.data_file.seek(0)
 
 				msg.usage.consumption = prev_consumption_sum
 				msg.usage.production = prev_production_sum

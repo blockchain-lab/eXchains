@@ -238,7 +238,8 @@ class EnergyMarketApplication(ABCIApplication):
 				"consumption_flexibility": {},
 				"production_flexibility": {},
 				"default_consumption_price": 0,
-				"default_production_price": 0
+				"default_production_price": 0,
+				"is_used": False
 			}
 
 		# self.contract[transaction.new_contract.uuid] = transaction.new_contract.public_key
@@ -258,6 +259,8 @@ class EnergyMarketApplication(ABCIApplication):
 
 			self.state["contracts"][contract_uuid]["default_consumption_price"] = int(usage["default_consumption_price"])
 			self.state["contracts"][contract_uuid]["default_production_price"] = int(usage["default_production_price"])
+
+			self.state['contracts'][contract_uuid]['is_used'] = True
 
 		elif transaction.HasField('close_contract'):
 			uuid = self.bytes_to_string_uuid(transaction.close_contract.uuid)
@@ -325,18 +328,19 @@ class EnergyMarketApplication(ABCIApplication):
 	def run_balance(self):
 		orders = OrderBook()
 		for client_uuid in self.state['contracts']:
-			client_report = ClientReport(client_uuid, \
-										int(time.time()), \
-										self.state['contracts'][client_uuid]['default_consumption_price'], \
-										self.state['contracts'][client_uuid]['default_production_price'], \
-										self.state['contracts'][client_uuid]['consumption'], \
-										self.state['contracts'][client_uuid]['production'], \
-										self.state['contracts'][client_uuid]['prediction_consumption'], \
-										self.state['contracts'][client_uuid]['prediction_production'], \
-										self.state['contracts'][client_uuid]['consumption_flexibility'], \
-										self.state['contracts'][client_uuid]['production_flexibility'])
-			orders.add_order(client_report.reportToAskOrders())
-			orders.add_order(client_report.reportToBidOrders())
+			if self.state['contracts'][client_uuid]['is_used']:
+				client_report = ClientReport(client_uuid, \
+											int(time.time()), \
+											self.state['contracts'][client_uuid]['default_consumption_price'], \
+											self.state['contracts'][client_uuid]['default_production_price'], \
+											self.state['contracts'][client_uuid]['consumption'], \
+											self.state['contracts'][client_uuid]['production'], \
+											self.state['contracts'][client_uuid]['prediction_consumption'], \
+											self.state['contracts'][client_uuid]['prediction_production'], \
+											self.state['contracts'][client_uuid]['consumption_flexibility'], \
+											self.state['contracts'][client_uuid]['production_flexibility'])
+				orders.add_order(client_report.reportToAskOrders())
+				orders.add_order(client_report.reportToBidOrders())
 		
 		matcher = Matcher(uuid.uuid4())
 		self.last_trade_list = matcher.match(orders)
