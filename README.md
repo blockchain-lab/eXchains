@@ -12,36 +12,25 @@ These instructions will get you a copy of the project up and running on your loc
 
 What things you need to install the software and how to install them
 
-* Docker (on Windows needs Hyper-V) [Download](https://docs.docker.com/install/#supported-platforms)
+* Docker (on Windows needs Hyper-V enabled) [Download](https://docs.docker.com/install/#supported-platforms)
 
-### Installing
+### Running
 
 A step by step series of examples that tell you have to get a development env running
 
-Say what the step will be
+* Start Docker
 
+* navigate to eXchains/tendermint/
+
+* run command: docker-compose up --build
+
+output should look someting like this:
 ```
 Give the example
 ```
 
-And repeat
+* to shutdown press ctrl-C twice and run command: docker-compose down -v
 
-```
-until finished
-```
-
-End with an example of getting some data out of the system or using it for a little demo
-
-
-## Deployment
-
-Add additional notes about how to deploy this on a live system
-
-## Built With
-
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
 
 
 ## Authors
