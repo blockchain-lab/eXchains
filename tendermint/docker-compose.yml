@@ -40,6 +40,7 @@ services:
     build: client
     environment:
       - TENDERMINT_HOST=tendermint
+      - STARTUP_DELAY=15
     volumes:
       - ./client/src:/client/src:cached
 

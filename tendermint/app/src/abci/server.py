@@ -203,6 +203,9 @@ class ABCIServer:
 			r_list, w_list, _ = select.select(
 				self.read_list, self.write_list, [], 2.5)
 
+			if len(r_list) == 0:
+				time.sleep(0.01)
+
 			for r in r_list:
 				if (r == self.listener):
 					try:
@@ -218,7 +221,7 @@ class ABCIServer:
 					self.handle_recv(r)
 
 
-			time.sleep(0.001)
+			# time.sleep(0.001)
 
 	def handle_shutdown(self):
 		for r in self.read_list:

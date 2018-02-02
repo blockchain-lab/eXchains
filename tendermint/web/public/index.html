@@ -31,7 +31,7 @@
 			/*grid-column: auto;*/
 			/*grid-row: auto;*/
 			width: 300px;
-			height: 300px;
+			height: 600px;
 			border: grey 2px solid;
 			padding: 5px;
 			display: inline-block;
@@ -68,7 +68,7 @@
 				</div>
 				<br />
 				<div v-if="lastTrade" >
-					Trades in #{{ lastTrade.roundNumber }}
+					Trades in #{{ lastTrade.roundNumber }}<br />
 					Unbalance:<br/>
 					&nbsp;&nbsp;&nbsp;&nbsp;Before:{{unbalanceBefore}}<br />
 					&nbsp;&nbsp;&nbsp;&nbsp;After: {{unbalanceAfter}} <br />

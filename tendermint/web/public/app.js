@@ -84,7 +84,7 @@ function onTransaction(transaction) {
 		applicationState.balance.mode = 1;
 	}
 	if (transaction.balance) {
-		appRoundState.lastTrade = transaction.balance;
+		appRoundState.lastTrade = _.cloneDeep(transaction.balance);
 
 		let staticProduction = 0,
 			staticConsumption = 0,
@@ -98,27 +98,29 @@ function onTransaction(transaction) {
 			defaultConsumptionPrice = 22000;
 
 		_.each(applicationState.contracts, contract => {
-			staticProduction += _.sum(contract.prediction_production);
-			staticConsumption += _.sum(contract.prediction_consumption);
-			flexibleConsumption += _.sum(contract.consumption_flexibility);
-			flexibleProduction += _.sum(contract.production_flexibility);
+			staticProduction += sumMapValues(contract.prediction_production);
+			staticConsumption += sumMapValues(contract.prediction_consumption);
+			flexibleConsumption += sumMapValues(
+				contract.consumption_flexibility
+			);
+			flexibleProduction += sumMapValues(contract.production_flexibility);
 
 			var contractVolume =
-				_.sum(contract.prediction_production) +
-				_.sum(contract.production_flexibility) -
-				_.sum(contract.prediction_consumption) -
-				_.sum(contract.consumption_flexibility);
+				sumMapValues(contract.prediction_production) +
+				sumMapValues(contract.production_flexibility) -
+				sumMapValues(contract.prediction_consumption) -
+				sumMapValues(contract.consumption_flexibility);
 			prebalanceVolume += contractVolume;
 
 			var productionPrice =
-				(_.sum(contract.prediction_production) +
-					_.sum(contract.production_flexibility)) *
+				(sumMapValues(contract.prediction_production) +
+					sumMapValues(contract.production_flexibility)) *
 				contract.default_production_price;
 			prebalanceProductionPrice += productionPrice;
 
 			var consumptionPrice =
-				(_.sum(contract.prediction_consumption) +
-					_.sum(contract.consumption_flexibility)) *
+				(sumMapValues(contract.prediction_consumption) +
+					sumMapValues(contract.consumption_flexibility)) *
 				contract.default_consumption_price;
 			prebalanceConsumptionPrice += consumptionPrice;
 		});
@@ -131,30 +133,47 @@ function onTransaction(transaction) {
 			ASK = 1
 			BID = 2
 		 */
-		_.each(transaction.balance, trade => {
-			if (trade.orderType == 1) {
-				postbalanceVolume += trade.volume;
-				postbalanceConsumptionPrice += trade.volume * trade.price;
+		_.each(transaction.balance.trades, trade => {
+			if (parseInt(trade.orderType, 10) == 1) {
+				postbalanceVolume += parseInt(trade.volume, 10);
+				postbalanceConsumptionPrice +=
+					parseInt(trade.volume, 10) * parseInt(trade.price, 10);
 			}
-			if (trade.orderType == 2) {
-				postbalanceProductionPrice += trade.volume * trade.price;
+			if (parseInt(trade.orderType, 10) == 2) {
+				postbalanceProductionPrice +=
+					parseInt(trade.volume, 10) * parseInt(trade.price, 10);
 			}
 		});
 
 		postbalanceProductionPrice +=
 			staticProduction * defaultProductionPrice +
-			(flexibleProduction - postbalanceVolume) * defaultProductionPrice;
+			Math.max(flexibleProduction - postbalanceVolume, 0) *
+				defaultProductionPrice;
 
 		postbalanceConsumptionPrice +=
 			staticConsumption * defaultConsumptionPrice +
-			(flexibleConsumption - postbalanceVolume) * defaultConsumptionPrice;
+			Math.max(flexibleConsumption - postbalanceVolume, 0) *
+				defaultConsumptionPrice;
 
-		appRoundState.unbalanceBefore = `${prebalanceVolume} P:€${defaultProductionPrice} C:€${defaultConsumptionPrice}`;
-		appRoundState.unbalanceAfter = `${prebalanceVolume -
-			postbalanceVolume} P:€${postbalanceProductionPrice /
-			(staticProduction +
-				flexibleProduction)} C:€${defaultConsumptionPrice /
-			(staticConsumption + flexibleConsumption)}`;
+		console.log(prebalanceVolume, postbalanceVolume);
+		console.log(
+			staticProduction,
+			flexibleProduction,
+			staticConsumption,
+			flexibleConsumption
+		);
+		appRoundState.unbalanceBefore = `${Math.abs(
+			prebalanceVolume
+		)} P:€${defaultProductionPrice} C:€${defaultConsumptionPrice}`;
+		appRoundState.unbalanceAfter = `${Math.abs(prebalanceVolume) -
+			postbalanceVolume} P:€${roundBy(
+			postbalanceProductionPrice /
+				(staticProduction + flexibleProduction),
+			2
+		)} C:€${roundBy(
+			defaultConsumptionPrice / (staticConsumption + flexibleConsumption),
+			2
+		)}`;
 	}
 	if (transaction.balanceEnd) {
 		applicationState.balance.round = transaction.balanceEnd.roundNumber;

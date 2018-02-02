@@ -1,5 +1,3 @@
-
-
 class CommunicationChannel {
 	constructor(url) {
 		this.socket = new WebSocket(url);
@@ -9,7 +7,7 @@ class CommunicationChannel {
 		this.subscriptions = [];
 		this.nextId = 1;
 
-		this.socket.addEventListener('message', (event) => {
+		this.socket.addEventListener("message", event => {
 			this.onMessage(event);
 		});
 	}
@@ -28,7 +26,7 @@ class CommunicationChannel {
 
 	request(req, callback, event_listener) {
 		if (this.socket.readyState == 0) {
-			this.socket.addEventListener('open', () => {
+			this.socket.addEventListener("open", () => {
 				this.request(req, callback, event_listener);
 			});
 		} else {
@@ -40,7 +38,7 @@ class CommunicationChannel {
 				jsonrpc: "2.0",
 				id: id
 			};
-			if (event_listener && req.method === 'subscribe') {
+			if (event_listener && req.method === "subscribe") {
 				this.listeners[id + "#event"] = event_listener;
 				this.subscriptions.push(req);
 			}
@@ -50,27 +48,26 @@ class CommunicationChannel {
 	}
 }
 
-
 function stringToHex(s) {
 	// utf8 to latin1
-	var s = unescape(encodeURIComponent(s))
-	var h = ''
+	var s = unescape(encodeURIComponent(s));
+	var h = "";
 	for (var i = 0; i < s.length; i++) {
-		h += s.charCodeAt(i).toString(16)
+		h += s.charCodeAt(i).toString(16);
 	}
-	return h
+	return h;
 }
 
 function hexToString(h) {
-	var s = ''
+	var s = "";
 	for (var i = 0; i < h.length; i += 2) {
-		s += String.fromCharCode(parseInt(h.substr(i, 2), 16))
+		s += String.fromCharCode(parseInt(h.substr(i, 2), 16));
 	}
-	return decodeURIComponent(escape(s))
+	return decodeURIComponent(escape(s));
 }
 
 function bufferToHex(buf) {
-	var str = '';
+	var str = "";
 	for (var i = 0; i < 16; i += 1) {
 		if (buf[i] < 16) {
 			str += "0";
@@ -81,7 +78,7 @@ function bufferToHex(buf) {
 }
 
 function bufferToBase64(buf) {
-	return btoa(String.fromCharCode.apply(null, buf))
+	return btoa(String.fromCharCode.apply(null, buf));
 }
 
 function base64ToBuffer(base64str) {
@@ -96,7 +93,7 @@ function base64ToBuffer(base64str) {
 	var rawLength = raw.length;
 	var array = new Uint8Array(new ArrayBuffer(rawLength));
 
-	for(i = 0; i < rawLength; i++) {
+	for (i = 0; i < rawLength; i++) {
 		array[i] = raw.charCodeAt(i);
 	}
 	return array;
@@ -104,7 +101,16 @@ function base64ToBuffer(base64str) {
 
 function bufferToUUID(buf) {
 	var str = bufferToHex(buf);
-	var uuid = str.substr(0, 8) + '-' + str.substr(8, 4) + '-' + str.substr(12, 4) + '-' + str.substr(16, 4) + '-' + str.substr(20);
+	var uuid =
+		str.substr(0, 8) +
+		"-" +
+		str.substr(8, 4) +
+		"-" +
+		str.substr(12, 4) +
+		"-" +
+		str.substr(16, 4) +
+		"-" +
+		str.substr(20);
 	return uuid;
 }
 
@@ -114,7 +120,15 @@ function genUUIDBuffer() {
 	for (var i = 0; i < 16; i++) {
 		buf[i] = (Math.random() * 256) | 0;
 	}
-	buf[6] = buf[6] & 0x0F | 0x40; // 0b0100xxxx
-	buf[8] = buf[8] & 0x3F | 0x80; // 0b10xxxxxx
+	buf[6] = (buf[6] & 0x0f) | 0x40; // 0b0100xxxx
+	buf[8] = (buf[8] & 0x3f) | 0x80; // 0b10xxxxxx
 	return buf;
+}
+
+function sumMapValues(map) {
+	return _.sum(_.map(map, e => parseInt(e, 10)));
+}
+
+function roundBy(val, decimals) {
+	return ((val * Math.pow(10, decimals)) | 0) / Math.pow(10, decimals);
 }
