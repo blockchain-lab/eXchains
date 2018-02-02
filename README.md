@@ -49,7 +49,7 @@ Add additional notes about how to deploy this on a live system
 * **Jetse Brouwer** - *Balancing Algorithm* - [JetseBrouwer](https://github.com/JetseBrouwer)
 * **Evgenia Domnenkova** - *Other* - [edogithub](https://github.com/edogithub)
 * **Niels Hokke** - *Balancing Algorithm* - [NielsHokke](https://github.com/NielsHokke)
-* **Michal Loin** - *Tendermint* - [Meaglin](https://github.com/Meaglin)
+* **Michał Łoin** - *Tendermint* - [Meaglin](https://github.com/Meaglin)
 * **Joseph Verburg** - *Tendermint* - [michalloin](https://github.com/michalloin)
 
 ## Acknowledgments
