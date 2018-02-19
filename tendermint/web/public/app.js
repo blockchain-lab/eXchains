@@ -91,7 +91,7 @@ function onTransaction(transaction) {
 			flexibleProduction = 0,
 			flexibleConsumption = 0;
 
-		let prebalanceVolume = 0,
+		let prebalanceUnbalance = 0,
 			prebalanceProductionPrice = 0,
 			prebalanceConsumptionPrice = 0,
 			defaultProductionPrice = 500,
@@ -105,12 +105,15 @@ function onTransaction(transaction) {
 			);
 			flexibleProduction += sumMapValues(contract.production_flexibility);
 
-			var contractVolume =
-				sumMapValues(contract.prediction_production) +
-				sumMapValues(contract.production_flexibility) -
-				sumMapValues(contract.prediction_consumption) -
-				sumMapValues(contract.consumption_flexibility);
-			prebalanceVolume += contractVolume;
+			var difference =
+				sumMapValues(contract.prediction_production) -
+				sumMapValues(contract.predictionConsumption);
+			// var difference =
+			// 	sumMapValues(contract.prediction_production) +
+			// 	sumMapValues(contract.production_flexibility) -
+			// 	sumMapValues(contract.prediction_consumption) -
+			// 	sumMapValues(contract.consumption_flexibility);
+			prebalanceUnbalance += difference;
 
 			var productionPrice =
 				(sumMapValues(contract.prediction_production) +
@@ -134,46 +137,58 @@ function onTransaction(transaction) {
 			BID = 2
 		 */
 		_.each(transaction.balance.trades, trade => {
+			let volume = parseInt(trade.volume, 10);
+			let price = parseInt(trade.price, 10);
+			// if (!trade.volume || !trade.price) {
+			// 	return;
+			// }
+			if (isNaN(volume)) {
+				volume = 0;
+			}
+			if (isNaN(price)) {
+				price = 0;
+			}
 			if (parseInt(trade.orderType, 10) == 1) {
-				postbalanceVolume += parseInt(trade.volume, 10);
-				postbalanceConsumptionPrice +=
-					parseInt(trade.volume, 10) * parseInt(trade.price, 10);
+				postbalanceVolume += volume;
+				postbalanceConsumptionPrice += volume * price;
 			}
 			if (parseInt(trade.orderType, 10) == 2) {
-				postbalanceProductionPrice +=
-					parseInt(trade.volume, 10) * parseInt(trade.price, 10);
+				postbalanceProductionPrice += volume * price;
 			}
 		});
 
-		postbalanceProductionPrice +=
-			staticProduction * defaultProductionPrice +
-			Math.max(flexibleProduction - postbalanceVolume, 0) *
-				defaultProductionPrice;
+		// postbalanceProductionPrice +=
+		// 	staticProduction * defaultProductionPrice +
+		// 	Math.max(flexibleProduction - postbalanceVolume, 0) *
+		// 		defaultProductionPrice;
 
-		postbalanceConsumptionPrice +=
-			staticConsumption * defaultConsumptionPrice +
-			Math.max(flexibleConsumption - postbalanceVolume, 0) *
-				defaultConsumptionPrice;
+		// postbalanceConsumptionPrice +=
+		// 	staticConsumption * defaultConsumptionPrice +
+		// 	Math.max(flexibleConsumption - postbalanceVolume, 0) *
+		// 		defaultConsumptionPrice;
 
-		console.log(prebalanceVolume, postbalanceVolume);
-		console.log(
-			staticProduction,
-			flexibleProduction,
-			staticConsumption,
-			flexibleConsumption
-		);
+		// console.log(prebalanceUnbalance, postbalanceVolume);
+		// console.log(
+		// 	staticProduction,
+		// 	flexibleProduction,
+		// 	staticConsumption,
+		// 	flexibleConsumption
+		// );
 		appRoundState.unbalanceBefore = `${Math.abs(
-			prebalanceVolume
+			prebalanceUnbalance
 		)} P:€${defaultProductionPrice} C:€${defaultConsumptionPrice}`;
-		appRoundState.unbalanceAfter = `${Math.abs(prebalanceVolume) -
-			postbalanceVolume} P:€${roundBy(
-			postbalanceProductionPrice /
-				(staticProduction + flexibleProduction),
+		appRoundState.unbalanceAfter = `${Math.abs(
+			postbalanceVolume - staticProduction - flexibleProduction
+		)} P:€${roundBy(
+			postbalanceProductionPrice / postbalanceVolume,
 			2
-		)} C:€${roundBy(
-			defaultConsumptionPrice / (staticConsumption + flexibleConsumption),
-			2
-		)}`;
+		)} C:€${roundBy(postbalanceConsumptionPrice / postbalanceVolume, 2)}`;
+		chartConfig.data.labels.push(transaction.balance.timestamp);
+		chartConfig.data.datasets[0].data.push(Math.abs(prebalanceUnbalance));
+		chartConfig.data.datasets[1].data.push(
+			Math.abs(postbalanceVolume - staticProduction - flexibleProduction)
+		);
+		theChart.update();
 	}
 	if (transaction.balanceEnd) {
 		applicationState.balance.round = transaction.balanceEnd.roundNumber;
@@ -219,3 +234,74 @@ protobuf.load("transaction.proto", function(err, root) {
 		}
 	);
 });
+window.chartColors = {
+	red: "rgb(255, 99, 132)",
+	orange: "rgb(255, 159, 64)",
+	yellow: "rgb(255, 205, 86)",
+	green: "rgb(75, 192, 192)",
+	blue: "rgb(54, 162, 235)",
+	purple: "rgb(153, 102, 255)",
+	grey: "rgb(201, 203, 207)"
+};
+var chartConfig = {
+	type: "line",
+	data: {
+		labels: [],
+		datasets: [
+			{
+				label: "Prebalance",
+				backgroundColor: window.chartColors.red,
+				borderColor: window.chartColors.red,
+				data: [],
+				fill: false
+			},
+			{
+				label: "Postbalance",
+				fill: false,
+				backgroundColor: window.chartColors.blue,
+				borderColor: window.chartColors.blue,
+				data: []
+			}
+		]
+	},
+	options: {
+		responsive: true,
+		title: {
+			display: false,
+			text: ""
+		},
+		tooltips: {
+			mode: "index",
+			intersect: false
+		},
+		hover: {
+			mode: "nearest",
+			intersect: true
+		},
+		scales: {
+			xAxes: [
+				{
+					display: true,
+					scaleLabel: {
+						display: false,
+						labelString: "Time"
+					}
+				}
+			],
+			yAxes: [
+				{
+					display: true,
+					scaleLabel: {
+						display: true,
+						labelString: "Volume"
+					}
+				}
+			]
+		}
+	}
+};
+
+window.onload = function() {
+	var ctx = document.getElementById("chart").getContext("2d");
+	window.theChart = new Chart(ctx, chartConfig);
+};

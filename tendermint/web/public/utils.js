@@ -126,7 +126,15 @@ function genUUIDBuffer() {
 }
 
 function sumMapValues(map) {
-	return _.sum(_.map(map, e => parseInt(e, 10)));
+	return _.sum(
+		_.map(map, e => {
+			var val = parseInt(e, 10);
+			if (isNaN(val)) {
+				val = 0;
+			}
+			return val;
+		})
+	);
 }
 
 function roundBy(val, decimals) {

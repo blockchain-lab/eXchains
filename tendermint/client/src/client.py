@@ -104,9 +104,10 @@ class Client(Process):
 						production_sum += int(float(row.split(';')[4].replace(",", ".")) * pow_significance)
 					else:
 						self.data_file.seek(0)
+						self.data_file.readline()
 
-				msg.usage.consumption = prev_consumption_sum
-				msg.usage.production = prev_production_sum
+				msg.usage.consumption = consumption_sum
+				msg.usage.production = production_sum
 
 				# Consumption prediction for coming blocks
 				msg.usage.prediction_consumption['t+1'] = int(consumption_sum * (1 - consumption_percentage_to_flexibility))
@@ -131,8 +132,8 @@ class Client(Process):
 				data = msg.SerializeToString()
 				self.send_request(data)
 
-				prev_consumption_sum = consumption_sum
-				prev_production_sum = production_sum
+				# prev_consumption_sum = consumption_sum
+				# prev_production_sum = production_sum
 
 				consumption_sum = 0
 				production_sum = 0
